@@ -20,9 +20,7 @@ Ein mächtiges Userscript (für Tampermonkey / Greasemonkey), das dir auf **Klei
 ---
 
 ## 📸 Screenshots
-
-*(Füge hier am besten ein Bild ein, das die neuen Buttons auf der Seite zeigt)*
-![Screenshot der Buttons](link-zu-deinem-bild.png)
+![Screenshot der Buttons](https://raw.githubusercontent.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/refs/heads/main/Buttons.png)
 
 ---
 

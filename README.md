@@ -1,7 +1,7 @@
 # 🚀 Kleinanzeigen - Anzeige duplizieren & neu einstellen
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-8.6.0-blue.svg)]()
+[![Version](https://img.shields.io/badge/version-2.0.4-blue.svg)]()
 [![Plattform](https://img.shields.io/badge/Plattform-Kleinanzeigen.de-green.svg)]()
 
 Das Userscript (für Tampermonkey / Greasemonkey), das dir auf **Kleinanzeigen.de** viel Zeit und Nerven spart. Es fügt der "Anzeige bearbeiten"-Seite zwei neue Buttons hinzu, mit denen du deine Anzeigen mit nur einem Klick duplizieren oder löschen und direkt wieder ganz oben neu einstellen kannst.

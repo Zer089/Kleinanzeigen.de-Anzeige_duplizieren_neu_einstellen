@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       8.6.0
+// @version       2.0.4
 // @match         https://www.kleinanzeigen.de/p-anzeige-bearbeiten.html*
 // @match         https://www.kleinanzeigen.de/p-anzeige-aufgeben-bestaetigung.html*
 // @grant         none

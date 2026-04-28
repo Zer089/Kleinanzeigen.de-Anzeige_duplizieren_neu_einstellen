@@ -20,6 +20,7 @@ Das Userscript (für Tampermonkey / Greasemonkey), das dir auf **Kleinanzeigen.d
 ---
 
 ## 📸 Screenshots
+
 ![Screenshot der Buttons](https://raw.githubusercontent.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/refs/heads/main/Buttons.png)
 
 ---
@@ -55,7 +56,7 @@ Klicke auf den folgenden Link, um das Skript direkt in deiner Erweiterung zu ins
 
 > **Hinweis:** Dieses Skript ist ein inoffizielles Tool und steht in keiner Verbindung zu Kleinanzeigen (Marktplaats B.V.). Die Nutzung erfolgt auf eigene Gefahr. 
 
-Das Skript agiert extrem rücksichtsvoll:
+Das Skript agiert datenkonform:
 * Es liest keine Passwörter oder privaten Nachrichten aus.
 * Es nutzt keine externen Server (alles läuft lokal in deinem Browser).
 * Es umgeht **keine** Limits von Kleinanzeigen (z. B. das Limit für kostenlose Anzeigen in bestimmten Kategorien). Wenn dein Limit erreicht ist, zeigt Kleinanzeigen dir den regulären Bezahl-Dialog an.

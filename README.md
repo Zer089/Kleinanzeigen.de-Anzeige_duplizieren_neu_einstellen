@@ -45,7 +45,7 @@ Klicke auf den folgenden Link, um das Skript direkt in deiner Erweiterung zu ins
 
 ## 🛠️ Bedienung
 
-1. Gehe auf Kleinanzeigen.de zu **Meine Anzeigen**.
+1. Gehe auf Kleinanzeigen.de zu **"Meine Anzeigen"**.
 2. Klicke bei einer beliebigen Anzeige auf **"Bearbeiten"**.
 3. Scrolle ganz nach unten. Rechts neben dem "Anzeige speichern" Button findest du nun die beiden neuen Buttons **Duplizieren** und **Neu einstellen**.
 4. Klicke auf deine gewünschte Aktion. Das Skript übernimmt den Rest (Ladebildschirm abwarten) und leitet dich direkt zur Bestätigungsseite weiter.

@@ -29,7 +29,7 @@ Das Userscript (für Tampermonkey / Greasemonkey), das dir auf **Kleinanzeigen.d
 
 Um dieses Skript zu nutzen, benötigst du eine Userscript-Erweiterung für deinen Browser.
 
-*Schritt 1:* Browser-Erweiterung installieren
+**Schritt 1:** Browser-Erweiterung installieren
 Installiere eine der folgenden Erweiterungen (kostenlos):
 * **Chrome / Edge:** [Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo) oder [Violentmonkey](https://chrome.google.com/webstore/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag)
 * **Firefox:** [Tampermonkey](https://addons.mozilla.org/de/firefox/addon/tampermonkey/) oder [Greasemonkey](https://addons.mozilla.org/de/firefox/addon/greasemonkey/)

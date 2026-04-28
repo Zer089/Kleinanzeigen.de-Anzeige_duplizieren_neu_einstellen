@@ -35,7 +35,7 @@ Installiere eine der folgenden Erweiterungen (kostenlos):
 * **Firefox:** [Tampermonkey](https://addons.mozilla.org/de/firefox/addon/tampermonkey/) oder [Greasemonkey](https://addons.mozilla.org/de/firefox/addon/greasemonkey/)
 * **Safari:** [Tampermonkey](https://apps.apple.com/de/app/tampermonkey/id1482490089)
 
-#### Schritt 2: Skript installieren
+**Schritt 2:** Skript installieren
 Klicke auf den folgenden Link, um das Skript direkt in deiner Erweiterung zu installieren:
 👉 **[Skript jetzt installieren](https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/blob/main/script.user.js)**
 

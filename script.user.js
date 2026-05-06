@@ -10,6 +10,9 @@
 // @match         https://www.kleinanzeigen.de/p-anzeige-aufgeben-bestaetigung.html*
 // @match         https://www.kleinanzeigen.de/m-meine-anzeigen.html*
 // @match         https://www.kleinanzeigen.de/s-anzeige/*
+// @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
+// @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
+// @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @grant         none
 // @run-at        document-start
 // ==/UserScript==

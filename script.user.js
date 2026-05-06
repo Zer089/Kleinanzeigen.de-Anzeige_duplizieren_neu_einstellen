@@ -1,13 +1,15 @@
 // ==UserScript==
 // @name          Kleinanzeigen - Anzeige duplizieren / neu einstellen
-// @namespace     https://github.com/Zer089/
+// @namespace     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @description   Bietet eine "Anzeige duplizieren / neu einstellen" Funktion beim Bearbeiten einer vorhandenen Anzeige in Kleinanzeigen.
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.0.4
+// @version       2.5.19
 // @match         https://www.kleinanzeigen.de/p-anzeige-bearbeiten.html*
 // @match         https://www.kleinanzeigen.de/p-anzeige-aufgeben-bestaetigung.html*
+// @match         https://www.kleinanzeigen.de/m-meine-anzeigen.html*
+// @match         https://www.kleinanzeigen.de/s-anzeige/*
 // @grant         none
 // @run-at        document-start
 // ==/UserScript==
@@ -15,244 +17,174 @@
 (function () {
     'use strict';
 
+    const isOverviewPage = window.location.href.includes('m-meine-anzeigen.html');
+    const isEditPage = window.location.href.includes('p-anzeige-bearbeiten.html');
+    const isConfirmPage = window.location.href.includes('bestaetigung.html');
+    const isDetailPage = window.location.href.includes('/s-anzeige/');
+
+    if (isOverviewPage) document.documentElement.classList.add('is-overview-page');
+    if (isDetailPage || isEditPage) document.documentElement.classList.add('is-detail-page');
+
     // ==========================================
-    // CSS INJECTION: STÖRENDE ELEMENTE AUSBLENDEN & BUTTON DESIGN
+    // TRACKING-BLOCKER
+    // ==========================================
+    const blockedKeywords = ['liberty', 'kameleoon', 'pubads', 'gpt.js', 'conversion.js', 'ads.js'];
+    const originalCreateElement = document.createElement;
+    document.createElement = function(tagName) {
+        const element = originalCreateElement.call(document, tagName);
+        if (typeof tagName === 'string' && tagName.toLowerCase() === 'script') {
+            Object.defineProperty(element, 'src', {
+                set: function(url) {
+                    const urlString = url ? String(url) : '';
+                    if (blockedKeywords.some(keyword => urlString.includes(keyword))) return;
+                    this.setAttribute('src', url);
+                },
+                get: function() { return this.getAttribute('src'); }
+            });
+        }
+        return element;
+    };
+
+    // ==========================================
+    // CSS INJECTION (Layout Fixes)
     // ==========================================
     const style = document.createElement('style');
     style.textContent = `
-        /* Versteckt das Fieldset, das die kostenpflichtigen Features (Highlight, Bumpup, etc.) enthält */
-        fieldset:has(#ad-feature-group),
-        fieldset:has(input[id^="ad-feature-"]) {
-            display: none !important;
-        }
-        
-        /* Versteckt den Info-Banner ("Das Bearbeiten deiner Anzeige schiebt sie nicht wieder hoch") */
-        span:has(> div.bg-accentContainer.border-accentContainer) {
-            display: none !important;
-        }
+        /* Werbe-Säuberung */
+        fieldset:has(#ad-feature-group), span:has(> div.bg-accentContainer), #feature-offer-section,
+        .site-base--left-banner, .site-base--right-banner, #vip-billboard, #vip-belly, #vip-middle, #vip-bottom,
+        [id^="vip-similar-ads-"], #pvap-featrs, .is-detail-page .icon-info-blue { display: none !important; }
 
-        /* Eigenes Lila-Design (Ausgefüllt) für unsere Custom Buttons */
+        section[data-testid="page-container"] { margin-bottom: 0px !important; }
+
+        /* Lila Buttons Design */
         .custom-purple-btn {
-            background-color: #5A33AE !important;
-            border-color: #5A33AE !important;
-            color: #ffffff !important;
-            transition: all 0.2s ease-in-out;
+            background-color: #5A33AE !important; border-color: #5A33AE !important; color: #ffffff !important;
+            height: 44px !important; padding: 0 16px !important; border-radius: 9999px !important;
+            font-weight: bold !important; font-size: 14px !important; cursor: pointer !important;
+            display: inline-flex !important; align-items: center !important; gap: 8px !important;
         }
-        .custom-purple-btn:hover {
-            background-color: #D1C4E9 !important; /* Extrem helles Pastell-Lila bei Mouse Over */
-            border-color: #D1C4E9 !important;
-            color: #5A33AE !important; /* Schriftfarbe auf dunkellila ändern für bessere Lesbarkeit auf hellem Grund */
+        .custom-purple-btn:hover { background-color: #D1C4E9 !important; border-color: #D1C4E9 !important; color: #5A33AE !important; }
+
+        /* Detailseite: Statistik & Button-Umbau */
+        .is-detail-page #pvap-mngad-stats { width: 150px !important; }
+        .is-detail-page .manageadbox--actions, .is-detail-page #pvap-mngad-actions {
+            display: flex !important; flex-wrap: wrap !important; gap: 8px !important;
+            justify-content: flex-end !important; list-style: none !important; margin-top: 15px !important;
         }
+        .is-detail-page .manageadbox--actions a, .is-detail-page .manageadbox--actions button,
+        .is-detail-page #pvap-mngad-actions a, .is-detail-page #pvap-mngad-actions button {
+            display: inline-flex !important; align-items: center !important; height: 44px !important;
+            padding: 0 16px !important; border-radius: 9999px !important; border: 2px solid #dcdcdc !important;
+            background: transparent !important; color: #222 !important; font-weight: bold !important; text-decoration: none !important;
+        }
+
+        /* Übersicht Seite Fix */
+        .is-overview-page .managead-list-item-action-buttons { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; justify-content: flex-end !important; }
+        .is-overview-page .managead-list-item-action-buttons li { margin: 0 !important; width: auto !important; }
     `;
-    
-    // So früh wie möglich in den <head> einfügen, um Flackern zu vermeiden
-    if (document.head) {
-        document.head.appendChild(style);
-    } else {
-        document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
+    document.head ? document.head.appendChild(style) : document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
+
+    // ==========================================
+    // BUTTON LOGIK
+    // ==========================================
+    function createBtn(text, icon, click) {
+        const b = document.createElement('button');
+        b.className = 'custom-purple-btn';
+        b.innerHTML = `<span>${icon}</span> <span>${text}</span>`;
+        b.onclick = click;
+        return b;
     }
 
+    const inject = () => {
+        const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
+        editLinks.forEach(link => {
+            const container = link.closest('ul') || link.parentElement;
+            if (!container || container.dataset.klInjected) return;
+            
+            const adId = link.getAttribute('href').match(/adId=(\d+)/)[1];
+            const doAction = (type) => {
+                localStorage.setItem('__KL_AUTO_ACTION', JSON.stringify({action: type, adId}));
+                window.location.href = link.href;
+            };
 
-    // Globale Variablen
-    window.__KL_ACTION = null;
-    window.__KL_OLD_AD_ID = null;
+            const li1 = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+            li1.appendChild(createBtn('Duplizieren', '⧉', () => doAction('duplicate')));
+            const li2 = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+            li2.appendChild(createBtn('Neu einstellen', '⟳', () => doAction('relist')));
 
-    const isEditPage = window.location.href.includes('bearbeiten.html');
-    const isConfirmPage = window.location.href.includes('bestaetigung.html');
-
-    // ==========================================
-    // TEIL 1: LÖSCH-LOGIK (Auf der Erfolgsseite)
-    // ==========================================
-    if (isConfirmPage) {
-        window.addEventListener('load', () => {
-            const pendingDeleteId = localStorage.getItem('__KL_PENDING_DELETE');
-            if (pendingDeleteId) {
-                console.log("🔥 Erfolgsseite geladen! Starte Löschung der alten Anzeige:", pendingDeleteId);
-                
-                const csrfTokenMeta = document.querySelector('meta[name="_csrf"]') || document.querySelector('meta[name="csrf-token"]');
-                const csrfToken = csrfTokenMeta ? csrfTokenMeta.getAttribute("content") : '';
-
-                fetch(`https://www.kleinanzeigen.de/m-anzeigen-loeschen.json?ids=${pendingDeleteId}`, {
-                    method: "POST",
-                    headers: {
-                        "Accept": "application/json, text/plain, */*",
-                        "X-Requested-With": "XMLHttpRequest",
-                        "x-csrf-token": csrfToken,
-                    }
-                }).then(res => {
-                    if (res.ok) {
-                        console.log("✅ Alte Anzeige wurde erfolgreich und sicher gelöscht!");
-                        localStorage.removeItem('__KL_PENDING_DELETE');
-                    } else {
-                        console.error("❌ Fehler beim Löschen der alten Anzeige (Status: " + res.status + ")");
-                    }
-                }).catch(e => console.error("Netzwerkfehler beim Löschen:", e));
-            }
+            container.append(li1, li2);
+            container.dataset.klInjected = 'true';
         });
-        return; // Stoppt das restliche Skript auf der Bestätigungsseite
-    }
+    };
+    setInterval(inject, 500);
 
-    // ==========================================
-    // TEIL 2: ABFANG-LOGIK (Auf der Bearbeiten-Seite)
-    // ==========================================
-
-    function scrubPayload(body) {
-        if (!body) return body;
-        
-        if (typeof body === 'string') {
-            try {
-                let json = JSON.parse(body);
-                if (json.adId || json.id) {
-                    delete json.adId;
-                    delete json.id;
-                    console.log("✂️ adId aus JSON-Payload entfernt!");
-                    return JSON.stringify(json);
-                }
-                return body; 
-            } catch (e) {
-                return body.replace(/(^|&)adId=[^&]*/g, '').replace(/(^|&)id=[^&]*/g, '');
+    // Top Paginierung Übersicht
+    if (isOverviewPage) {
+        setInterval(() => {
+            const bottomNav = document.querySelector('div.flex.justify-center:has(nav)');
+            if (!bottomNav || document.getElementById('custom-top-pagination')) return;
+            const topNav = bottomNav.cloneNode(true);
+            topNav.id = 'custom-top-pagination';
+            topNav.className = 'flex items-center justify-center';
+            const header = document.getElementById('my-ads-header');
+            if (header) {
+                header.parentElement.style.display = 'flex';
+                header.parentElement.style.alignItems = 'center';
+                header.style.flex = '1';
+                header.after(topNav);
+                topNav.onclick = (e) => {
+                    const idx = Array.from(topNav.querySelectorAll('button')).indexOf(e.target.closest('button'));
+                    if (idx > -1) bottomNav.querySelectorAll('button')[idx].click();
+                };
             }
-        }
-        
-        if (body instanceof FormData) {
-            body.delete('adId');
-            body.delete('id');
-        }
-        return body;
+        }, 500);
     }
 
-    const origFetch = window.fetch;
+    // Auto-Save Logik
+    if (isEditPage) {
+        const config = JSON.parse(localStorage.getItem('__KL_AUTO_ACTION') || '{}');
+        const currentId = new URLSearchParams(window.location.search).get('adId');
+        if (config.adId === currentId) {
+            localStorage.removeItem('__KL_AUTO_ACTION');
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Anzeige speichern'));
+                    if (btn) {
+                        window.__KL_ACTION = config.action;
+                        window.__KL_OLD_AD_ID = currentId;
+                        btn.click();
+                        setInterval(() => {
+                            const skip = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Ohne Hochschieben weiter'));
+                            if (skip) skip.click();
+                        }, 200);
+                    }
+                }, 800);
+            });
+        }
+    }
+
+    // Löschen & Interceptor
+    if (isConfirmPage) {
+        const delId = localStorage.getItem('__KL_PENDING_DELETE');
+        if (delId) {
+            const token = document.querySelector('meta[name="_csrf"]')?.content;
+            fetch(`/m-anzeigen-loeschen.json?ids=${delId}`, { method: 'POST', headers: { 'x-csrf-token': token }})
+            .then(() => localStorage.removeItem('__KL_PENDING_DELETE'));
+        }
+    }
+
+    const originalFetch = window.fetch;
     window.fetch = async function(...args) {
         if (window.__KL_ACTION) {
-            let url = args[0];
-            if (typeof url === 'string') {
-                args[0] = url.replace('bearbeiten', 'aufgeben').replace(/[\?&]adId=\d+/, '');
+            if (typeof args[0] === 'string') args[0] = args[0].replace('bearbeiten', 'aufgeben').replace(/adId=\d+/, '');
+            if (args[1]?.body) {
+                if (typeof args[1].body === 'string') args[1].body = args[1].body.replace(/adId=\d+/, '').replace(/"adId":\d+/, '');
+                else if (args[1].body instanceof FormData) { args[1].body.delete('adId'); args[1].body.delete('id'); }
             }
-            
-            let options = args[1];
-            if (options && options.body) {
-                options.body = scrubPayload(options.body);
-            }
-
-            if (window.__KL_ACTION === 'relist' && window.__KL_OLD_AD_ID) {
-                localStorage.setItem('__KL_PENDING_DELETE', window.__KL_OLD_AD_ID);
-            }
+            if (window.__KL_ACTION === 'relist') localStorage.setItem('__KL_PENDING_DELETE', window.__KL_OLD_AD_ID);
         }
-        return origFetch.apply(this, args);
+        return originalFetch.apply(this, args);
     };
-
-    const origSubmit = HTMLFormElement.prototype.submit;
-    HTMLFormElement.prototype.submit = function() {
-        if (window.__KL_ACTION) {
-            this.action = '/p-anzeige-aufgeben.html';
-            this.querySelectorAll('input[name="adId"], input[name="id"]').forEach(i => i.remove());
-            
-            if (window.__KL_ACTION === 'relist' && window.__KL_OLD_AD_ID) {
-                localStorage.setItem('__KL_PENDING_DELETE', window.__KL_OLD_AD_ID);
-            }
-        }
-        return origSubmit.apply(this, arguments);
-    };
-
-    document.addEventListener('submit', function(e) {
-        if (window.__KL_ACTION) {
-            const form = e.target;
-            form.action = '/p-anzeige-aufgeben.html';
-            form.querySelectorAll('input[name="adId"], input[name="id"]').forEach(i => i.remove());
-            
-            if (window.__KL_ACTION === 'relist' && window.__KL_OLD_AD_ID) {
-                localStorage.setItem('__KL_PENDING_DELETE', window.__KL_OLD_AD_ID);
-            }
-        }
-    }, true);
-
-
-    // ==========================================
-    // TEIL 3: OBERFLÄCHE & STEUERUNG
-    // ==========================================
-
-    function showLoading() {
-        const spinnerContainer = document.createElement("div");
-        Object.assign(spinnerContainer.style, {
-            height: '100%', width: '100%', position: 'fixed', top: '0', left: '0',
-            backdropFilter: 'blur(5px)', zIndex: '999999', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'
-        });
-        spinnerContainer.innerHTML = '<div style="font-size: 20px; font-weight: bold; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: #86B817; text-align: center;">Aktion wird ausgeführt...<br><span style="font-size: 14px; color: #666; font-weight: normal; margin-top: 10px; display: block;">Bitte klicke nichts an. Die Seite lädt gleich neu.</span></div>';
-        document.body.appendChild(spinnerContainer);
-    }
-
-    function triggerSaveProcess(actionType, adId) {
-        window.__KL_ACTION = actionType;
-        window.__KL_OLD_AD_ID = adId;
-
-        const allButtons = Array.from(document.querySelectorAll('button'));
-        const saveButton = allButtons.find(btn => btn.textContent.trim() === 'Anzeige speichern');
-        
-        if (!saveButton) return alert("Fehler: Original-Speichern-Button nicht gefunden.");
-
-        showLoading();
-        saveButton.click();
-
-        const popupInterval = setInterval(() => {
-            const btns = Array.from(document.querySelectorAll('button'));
-            const skipButton = btns.find(b => b.textContent.trim().includes('Ohne Hochschieben weiter'));
-            if (skipButton) {
-                skipButton.click();
-                clearInterval(popupInterval);
-            }
-        }, 150);
-
-        setTimeout(() => clearInterval(popupInterval), 8000);
-    }
-
-    function createCustomButton(text, clickHandler) {
-        const button = document.createElement('button');
-        button.setAttribute('type', 'button');
-        button.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline focus:outline-none border-2 border-solid h-[44px] min-h-[44px] min-w-[44px] w-fit px-medium custom-purple-btn";
-        button.innerHTML = `<div class="relative flex items-center justify-center"><div class="flex items-center justify-center gap-xsmall"><span>${text}</span></div></div>`;
-        button.addEventListener('click', clickHandler);
-        return button;
-    }
-
-    function initButtons() {
-        if (document.getElementById('custom-duplicate-btn')) return true;
-
-        const allButtons = Array.from(document.querySelectorAll('button'));
-        const saveButton = allButtons.find(btn => btn.textContent.trim() === 'Anzeige speichern');
-
-        if (!saveButton) return false;
-        const container = saveButton.closest('.flex.gap-small');
-        if (!container) return false;
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const adId = urlParams.get('adId');
-        if (!adId) return false;
-
-        const duplicateBtn = createCustomButton('Duplizieren', (e) => {
-            e.preventDefault(); e.stopPropagation();
-            triggerSaveProcess('duplicate', adId);
-        });
-        duplicateBtn.id = 'custom-duplicate-btn';
-
-        const relistBtn = createCustomButton('Neu einstellen', (e) => {
-            e.preventDefault(); e.stopPropagation();
-            if (!confirm("Alte Anzeige wird gelöscht und als NEU eingestellt. Fortfahren?")) return;
-            triggerSaveProcess('relist', adId);
-        });
-        relistBtn.id = 'custom-relist-btn';
-
-        // Die Buttons NACH dem Speichern-Button einfügen (rechts davon)
-        saveButton.after(duplicateBtn, relistBtn);
-
-        return true;
-    }
-
-    window.addEventListener('load', () => {
-        const interval = setInterval(() => {
-            if (initButtons()) clearInterval(interval);
-        }, 500);
-        setTimeout(() => clearInterval(interval), 15000);
-    });
 
 })();

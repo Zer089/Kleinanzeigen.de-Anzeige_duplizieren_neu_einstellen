@@ -43,7 +43,7 @@ Installiere eine der folgenden Erweiterungen (kostenlos):
 Klicke auf den folgenden Link, um das Skript direkt in deiner Erweiterung zu installieren:
 👉 **[Skript jetzt installieren](https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js)**
 
-[![Installieren: Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen]([https://img.shields.io/badge/License-MIT-yellow.svg](https://camo.githubusercontent.com/74fe27537b22e7fd57eb8ba179998391181955f2e99ad27e1d73855b8823fde0/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f496e7374616c6c2d48617570747363726970742d3030616130303f7374796c653d666f722d7468652d6261646765266c6f676f3d74616d7065726d6f6e6b6579))]([https://opensource.org/licenses/MIT](https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js))
+[![Installieren: Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen](https://img.shields.io/badge/Install-Hauptscript-00aa00?style=for-the-badge&amp;logo=tampermonkey)](https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js))
 
 
 

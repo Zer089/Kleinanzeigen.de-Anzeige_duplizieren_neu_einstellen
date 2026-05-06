@@ -41,7 +41,7 @@ Installiere eine der folgenden Erweiterungen (kostenlos):
 
 **Schritt 2: Skript installieren**
 Klicke auf den folgenden Link, um das Skript direkt in deiner Erweiterung zu installieren:
-👉 **[Skript jetzt installieren](https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/blob/main/script.user.js)**
+👉 **[Skript jetzt installieren](https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js)**
 
 *(Alternativ: Kopiere den Code aus der `script.user.js` Datei und füge ihn manuell als neues Skript in Tampermonkey ein.)*
 

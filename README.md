@@ -41,9 +41,8 @@ Installiere eine der folgenden Erweiterungen (kostenlos):
 
 **Schritt 2: Skript installieren**
 Klicke auf den folgenden Link, um das Skript direkt in deiner Erweiterung zu installieren:
-👉 **[Skript jetzt installieren](https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js)**
 
-[![Installieren: Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen](https://img.shields.io/badge/Installieren-Script-00aa00?style=for-the-badge&amp;logo=tampermonkey)](https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js)
+[![Installieren: Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen](https://img.shields.io/badge/Installieren-Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen-00aa00?style=for-the-badge&amp;logo=tampermonkey)](https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js)
 
 
 

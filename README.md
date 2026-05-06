@@ -7,7 +7,8 @@
 Das Userscript (für Tampermonkey / Greasemonkey), das dir auf **Kleinanzeigen.de** viel Zeit und Nerven spart. Es fügt der "Anzeige bearbeiten"-Seite zwei neue Buttons hinzu, mit denen du deine Anzeigen mit nur einem Klick duplizieren oder löschen und direkt wieder ganz oben neu einstellen kannst.
 
 Die meisten Userscripte für Kleinanzeigen funktionieren nach den letzten großen Architektur-Updates der Plattform nicht mehr. Dieses Tool wurde von Grund auf neu entwickelt, um das aktuelle React-Frontend und die neuen JSON-Schnittstellen von Kleinanzeigen.de zu unterstützen. Es fängt Datenpakete direkt im Netzwerkverkehr ab, überspringt unsichtbare Werbe-Popups und bietet eine 100%ige "Zero-Data-Loss"-Garantie.
-<img width="2912" height="1440" alt="Kleinanzeigen-Social_Preview" src="https://github.com/user-attachments/assets/997aa03e-ae3e-482b-b32d-bf5acf7e4da6" />
+
+<img width="2912" height="1440" alt="Kleinanzeigen-Social_Preview" src="https://github.com/user-attachments/assets/11e33dab-8d34-4047-a66a-67742ba2193a" />
 
 ---
 

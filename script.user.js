@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.21
+// @version       2.5.22
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -98,7 +98,7 @@
         /* Befreit den Button-Footer und zwingt ihn kompromisslos nach oben rechts */
         .is-overview-page li[data-testid="ad-card"] .card-footer {
             position: absolute !important;
-            top: 16px !important; /* Entspricht dem Padding der Box */
+            top: 16px !important; 
             right: 16px !important;
             max-width: 50% !important; 
             z-index: 10 !important;
@@ -120,7 +120,7 @@
             padding: 0 !important;
         }
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
-            margin: 0 !important; /* Entfernt die nativen Abstände */
+            margin: 0 !important;
             width: auto !important;
         }
 
@@ -254,7 +254,6 @@
         }
     };
     
-    // Injektions-Intervall permanent laufen lassen
     setInterval(inject, 500);
 
     // ==========================================
@@ -266,12 +265,20 @@
             if (!bottomNav || document.getElementById('custom-top-pagination')) return;
             const topNav = bottomNav.cloneNode(true);
             topNav.id = 'custom-top-pagination';
-            topNav.className = 'flex items-center justify-center';
+            
+            // Zentrierung der Paginierung via Absolute Positioning
+            topNav.style.position = 'absolute';
+            topNav.style.left = '50%';
+            topNav.style.transform = 'translateX(-50%)';
+            topNav.style.zIndex = '10';
+
             const header = document.getElementById('my-ads-header');
             if (header) {
-                header.parentElement.style.display = 'flex';
-                header.parentElement.style.alignItems = 'center';
-                header.style.flex = '1';
+                const headerFlexBox = header.parentElement;
+                headerFlexBox.style.display = 'flex';
+                headerFlexBox.style.alignItems = 'center';
+                headerFlexBox.style.position = 'relative'; // Wichtig, damit das absolute child greift
+                
                 header.after(topNav);
                 topNav.onclick = (e) => {
                     const idx = Array.from(topNav.querySelectorAll('button')).indexOf(e.target.closest('button'));

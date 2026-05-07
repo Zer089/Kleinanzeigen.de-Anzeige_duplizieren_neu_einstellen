@@ -90,23 +90,41 @@
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
            ---------------------------------------------------- */
         
-        /* Die originalen Buttons zwingen wir rechtsbündig und nach oben in einen Block */
+        /* Die Anzeigen-Karte als Ankerpunkt für absolute Positionierung setzen */
+        .is-overview-page li[data-testid="ad-card"] {
+            position: relative !important;
+        }
+
+        /* Befreit den Button-Footer und zwingt ihn kompromisslos nach oben rechts */
+        .is-overview-page li[data-testid="ad-card"] .card-footer {
+            position: absolute !important;
+            top: 16px !important; /* Entspricht dem Padding der Box */
+            right: 16px !important;
+            max-width: 50% !important; 
+            z-index: 10 !important;
+        }
+
+        /* Überschreiben nerviger Margins von Kleinanzeigen */
+        .is-overview-page li[data-testid="ad-card"] .card-footer footer {
+            margin-top: 0 !important;
+        }
+
+        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet */
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
             justify-content: flex-end !important;
-            align-content: flex-start !important; /* Zieht mehrzeilige Blöcke nach oben */
-            align-items: flex-start !important;
+            align-content: flex-start !important;
             gap: 8px !important;
-            margin-top: 0 !important; /* Entfernt leeren Raum oben */
-            padding-top: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
-            margin: 0 !important;
+            margin: 0 !important; /* Entfernt die nativen Abstände */
             width: auto !important;
         }
 
-        /* Höhe der lila Buttons exakt an die originalen Übersicht-Buttons anpassen */
+        /* Strenge Zwangshöhe für die lila Buttons auf der Übersicht */
         .is-overview-page .custom-purple-btn {
             height: 32px !important;
             min-height: 32px !important;
@@ -142,6 +160,7 @@
             display: inline-flex !important; align-items: center !important; height: 44px !important;
             padding: 0 16px !important; border-radius: 9999px !important; border: 2px solid #dcdcdc !important;
             background: transparent !important; color: #222 !important; font-weight: bold !important; text-decoration: none !important;
+            box-sizing: border-box !important;
         }
     `;
     document.head ? document.head.appendChild(style) : document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));

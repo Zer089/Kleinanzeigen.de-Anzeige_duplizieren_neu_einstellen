@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.25
+// @version       2.5.26
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -79,6 +79,7 @@
             text-decoration: none !important;
             transition: all 0.2s ease-in-out;
             box-sizing: border-box !important;
+            margin: 0 !important; /* Verhindert unsichtbare Standard-Abstände */
         }
         .custom-purple-btn:hover { 
             background-color: #D1C4E9 !important; 
@@ -109,7 +110,7 @@
             margin-top: 0 !important;
         }
 
-        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet */
+        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet. Fixiert exakt 8px Abstand. */
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
@@ -119,16 +120,19 @@
             margin: 0 !important;
             padding: 0 !important;
         }
+        
+        /* Die Listenelemente ihrer Standard-Abstände berauben */
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
             margin: 0 !important;
             width: auto !important;
         }
 
-        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile */
+        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile und setzt exakt 8px Abstand */
         .custom-buttons-wrapper {
             display: flex !important;
             gap: 8px !important;
             justify-content: flex-end !important;
+            margin: 0 !important;
         }
         .is-overview-page .custom-buttons-wrapper {
             flex-basis: 100% !important; 

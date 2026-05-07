@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.24
+// @version       2.5.25
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -124,6 +124,16 @@
             width: auto !important;
         }
 
+        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile */
+        .custom-buttons-wrapper {
+            display: flex !important;
+            gap: 8px !important;
+            justify-content: flex-end !important;
+        }
+        .is-overview-page .custom-buttons-wrapper {
+            flex-basis: 100% !important; 
+        }
+
         /* Strenge Zwangshöhe für die lila Buttons auf der Übersicht */
         .is-overview-page .custom-purple-btn {
             height: 32px !important;
@@ -210,12 +220,13 @@
                     window.location.href = link.href;
                 };
 
-                const li1 = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                li1.appendChild(createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate')));
-                const li2 = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                li2.appendChild(createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist')));
+                const wrapper = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                wrapper.className = 'custom-buttons-wrapper';
+                
+                wrapper.appendChild(createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate')));
+                wrapper.appendChild(createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist')));
 
-                container.append(li1, li2);
+                container.append(wrapper);
                 container.dataset.klInjected = 'true';
             });
         }

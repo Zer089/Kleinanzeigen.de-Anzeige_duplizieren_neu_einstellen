@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.23
+// @version       2.5.24
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -260,47 +260,81 @@
     // PAGINIERUNG (Übersicht) SYNC & ZENTRIERUNG
     // ==========================================
     if (isOverviewPage) {
+        
+        // Hilfsfunktion: Sucht zielsicher die originale Leiste anhand des Textes
+        function getBottomNavContainer() {
+            const navs = Array.from(document.querySelectorAll('nav'));
+            for (const nav of navs) {
+                const span = nav.querySelector('span.sr-only');
+                if (span && span.textContent.includes('Seiten-Navigation')) {
+                    // Ignoriere unseren eigenen Klon!
+                    if (!nav.closest('#custom-top-pagination')) {
+                        return nav.parentElement; 
+                    }
+                }
+            }
+            return null;
+        }
+
         setInterval(() => {
-            const bottomNav = document.querySelector('div.flex.justify-center:has(nav)');
-            if (!bottomNav) return;
+            const bottomContainer = getBottomNavContainer();
+            if (!bottomContainer) return;
 
-            const currentHTML = bottomNav.innerHTML;
-            const existingTop = document.getElementById('custom-top-pagination');
+            // Speichern wir den originalen HTML-String als "Fingerabdruck"
+            const currentHTML = bottomContainer.innerHTML;
+            let topContainer = document.getElementById('custom-top-pagination');
 
-            // Wenn die Paginierung oben existiert und aktuell ist, nichts machen
-            if (existingTop && existingTop.dataset.sourceHtml === currentHTML) return;
+            // 1. Klon anlegen, wenn er noch gar nicht existiert
+            if (!topContainer) {
+                topContainer = document.createElement('div');
+                topContainer.id = 'custom-top-pagination';
+                
+                // Absolute Zentrierung
+                topContainer.style.position = 'absolute';
+                topContainer.style.left = '50%';
+                topContainer.style.transform = 'translateX(-50%)';
+                topContainer.style.zIndex = '10';
 
-            // Wenn sie existiert, aber veraltet ist (z.B. Seitenwechsel), alte löschen
-            if (existingTop) {
-                existingTop.remove();
+                const header = document.getElementById('my-ads-header');
+                if (header) {
+                    const headerFlexBox = header.parentElement;
+                    headerFlexBox.style.display = 'flex';
+                    headerFlexBox.style.alignItems = 'center';
+                    headerFlexBox.style.position = 'relative'; // Referenz für absolute child
+                    header.after(topContainer);
+                }
+
+                // Klick-Ereignisse vom Klon an das Original weiterleiten
+                topContainer.addEventListener('click', (e) => {
+                    const btn = e.target.closest('button');
+                    if (btn) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const cloneButtons = Array.from(topContainer.querySelectorAll('button'));
+                        const idx = cloneButtons.indexOf(btn);
+                        
+                        const realNavContainer = getBottomNavContainer();
+                        if (realNavContainer) {
+                            const realButtons = Array.from(realNavContainer.querySelectorAll('button'));
+                            if (realButtons[idx]) {
+                                realButtons[idx].click();
+                            }
+                        }
+                    }
+                });
             }
 
-            // Neu klonen und Status merken
-            const topNav = bottomNav.cloneNode(true);
-            topNav.id = 'custom-top-pagination';
-            topNav.dataset.sourceHtml = currentHTML; 
-            
-            // Zentrierung der Paginierung via Absolute Positioning
-            topNav.style.position = 'absolute';
-            topNav.style.left = '50%';
-            topNav.style.transform = 'translateX(-50%)';
-            topNav.style.zIndex = '10';
-
-            const header = document.getElementById('my-ads-header');
-            if (header) {
-                const headerFlexBox = header.parentElement;
-                headerFlexBox.style.display = 'flex';
-                headerFlexBox.style.alignItems = 'center';
-                headerFlexBox.style.position = 'relative'; // Wichtig für die absolute Positionierung des Klons
+            // 2. Zustand synchronisieren (nur wenn es sich ECHT verändert hat)
+            if (topContainer.dataset.sourceHtml !== currentHTML) {
+                // Den neuen Fingerabdruck merken
+                topContainer.dataset.sourceHtml = currentHTML;
+                // Inhalt austauschen
+                topContainer.innerHTML = currentHTML;
                 
-                header.after(topNav);
-                
-                // Klick-Logik sicher auf die echten Buttons unten routen (verhindert ID-Konflikte)
-                topNav.onclick = (e) => {
-                    const idx = Array.from(topNav.querySelectorAll('button')).indexOf(e.target.closest('button'));
-                    if (idx > -1) bottomNav.querySelectorAll('button')[idx].click();
-                };
+                // WICHTIG: IDs entfernen, um Kollisionen und CSS-Fehler zu vermeiden
+                topContainer.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
             }
+
         }, 500);
     }
 

@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.28
+// @version       2.5.29
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -79,7 +79,7 @@
             text-decoration: none !important;
             transition: all 0.2s ease-in-out;
             box-sizing: border-box !important;
-            margin: 0 !important; /* Verhindert unsichtbare Standard-Abstände */
+            margin: 0 !important;
         }
         .custom-purple-btn:hover { 
             background-color: #D1C4E9 !important; 
@@ -110,7 +110,7 @@
             margin-top: 0 !important;
         }
 
-        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet. Fixiert exakt 8px Abstand. */
+        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet. */
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
@@ -127,7 +127,7 @@
             width: auto !important;
         }
 
-        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile und setzt exakt 8px Abstand */
+        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile */
         .custom-buttons-wrapper {
             display: flex !important;
             gap: 8px !important;
@@ -138,14 +138,17 @@
             flex-basis: 100% !important; 
         }
 
-        /* Strenge Zwangshöhe für die lila Buttons auf der Übersicht */
-        .is-overview-page .custom-purple-btn {
+        /* Strenge Zwangshöhe für die lila Buttons UND den neuen Verkaufsschild-Button */
+        .is-overview-page .custom-purple-btn,
+        .is-overview-page .custom-native-btn {
             height: 32px !important;
             min-height: 32px !important;
             max-height: 32px !important;
             padding: 0 12px !important;
             font-size: 13px !important;
             line-height: 1 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
         }
 
         /* ----------------------------------------------------
@@ -222,19 +225,18 @@
                 if (mehrBtn) {
                     const mehrLi = mehrBtn.closest('li');
                     if (mehrLi) {
-                        // Dropdown absolut unsichtbar machen und aus dem Fluss nehmen
+                        // Originales Dropdown absolut unsichtbar machen
                         mehrLi.style.position = 'absolute';
                         mehrLi.style.opacity = '0';
                         mehrLi.style.pointerEvents = 'none';
                     }
 
-                    // Unseren perfekten Fake-Button bauen (exakte native Klassen)
                     const printLi = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
                     printLi.style.margin = '0';
 
                     const printBtn = document.createElement('button');
                     printBtn.type = 'button';
-                    printBtn.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium";
+                    printBtn.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn";
                     printBtn.innerHTML = `
                         <div class="relative flex items-center justify-center">
                             <div class="flex items-center justify-center gap-xsmall">
@@ -245,38 +247,57 @@
                             </div>
                         </div>`;
 
-                    // "Geist"-Klick Logik
+                    // Geist-Klick-Logik mit Anti-Scroll-Lock Fix
                     printBtn.onclick = (e) => {
                         e.preventDefault();
-                        
-                        // Anti-Flash-Style injizieren (unterdrückt das optische Aufpoppen des Menüs)
+                        e.stopPropagation();
+
+                        // Verhindert das kurze optische Aufblitzen des Menüs
                         const antiFlashStyle = document.createElement('style');
                         antiFlashStyle.id = 'hide-dropdown-flash';
-                        antiFlashStyle.textContent = `div[role="menu"], ul[role="menu"], div[data-testid*="menu"] { opacity: 0 !important; pointer-events: none !important; }`;
+                        antiFlashStyle.textContent = `
+                            [role="menu"], [data-testid*="menu"], [id^="radix-"] { 
+                                opacity: 0 !important; 
+                                visibility: hidden !important; 
+                                pointer-events: none !important;
+                            }
+                        `;
                         document.head.appendChild(antiFlashStyle);
-                        
-                        // Originales Dropdown triggern
+
+                        // Original-Menü triggern
                         mehrBtn.click(); 
-                        
+
                         let attempts = 0;
                         const interval = setInterval(() => {
                             attempts++;
-                            // Suche den originalen Verkaufsschild-Button im aufklappten Menü
-                            const menuItems = document.querySelectorAll('[role="menuitem"], a, button');
-                            const nativePrintBtn = Array.from(menuItems).find(b => b.textContent.includes('Verkaufsschild') && b !== printBtn);
                             
+                            // Alle Verkaufsschild-Buttons in Menüs suchen
+                            const candidates = Array.from(document.querySelectorAll('button, a, [role="menuitem"]'))
+                                .filter(b => b.textContent.includes('Verkaufsschild') && b !== printBtn);
+                            
+                            // WICHTIG: Nur den Button nehmen, der in genau diesem Moment sichtbar (geöffnet) wurde!
+                            const nativePrintBtn = candidates.find(b => {
+                                const rect = b.getBoundingClientRect();
+                                return rect.width > 0 && rect.height > 0;
+                            });
+
                             if (nativePrintBtn) {
                                 clearInterval(interval);
-                                nativePrintBtn.click(); // Natives PDF-Download Script wird gefeuert!
+                                nativePrintBtn.click(); // Download triggern
                                 
-                                // Aufräumen & Menü wieder unsichtbar schließen
+                                // Scroll-Lock sofort lösen
                                 setTimeout(() => {
+                                    // Simuliert das Klicken außerhalb des Menüs und drückt Escape
+                                    document.body.click();
+                                    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
                                     antiFlashStyle.remove();
-                                    mehrBtn.click(); 
-                                }, 300);
+                                }, 100);
+                                
                             } else if (attempts > 30) {
-                                // Fallback: Timeout nach ca. 1.5 Sekunden
+                                // Fallback bei Timeout
                                 clearInterval(interval);
+                                document.body.click();
+                                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
                                 antiFlashStyle.remove();
                             }
                         }, 50);

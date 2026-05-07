@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.20
+// @version       2.5.19
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -78,6 +78,7 @@
             border: 2px solid #5A33AE !important;
             text-decoration: none !important;
             transition: all 0.2s ease-in-out;
+            box-sizing: border-box !important;
         }
         .custom-purple-btn:hover { 
             background-color: #D1C4E9 !important; 
@@ -89,25 +90,30 @@
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
            ---------------------------------------------------- */
         
-        /* Die originalen Buttons zwingen wir rechtsbündig in einen Block */
+        /* Die originalen Buttons zwingen wir rechtsbündig und nach oben in einen Block */
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
             justify-content: flex-end !important;
+            align-content: flex-start !important; /* Zieht mehrzeilige Blöcke nach oben */
+            align-items: flex-start !important;
             gap: 8px !important;
-            max-width: 360px !important;
-            margin-left: auto !important; /* Drückt den Container sicher nach rechts */
+            margin-top: 0 !important; /* Entfernt leeren Raum oben */
+            padding-top: 0 !important;
         }
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
             margin: 0 !important;
             width: auto !important;
         }
 
-        /* Höhe der lila Buttons exakt an die originalen Übersicht-Buttons anpassen (ca. 32px) */
+        /* Höhe der lila Buttons exakt an die originalen Übersicht-Buttons anpassen */
         .is-overview-page .custom-purple-btn {
             height: 32px !important;
+            min-height: 32px !important;
+            max-height: 32px !important;
             padding: 0 12px !important;
             font-size: 13px !important;
+            line-height: 1 !important;
         }
 
 
@@ -119,6 +125,7 @@
         .is-detail-page .custom-purple-btn, 
         .is-edit-page .custom-purple-btn {
             height: 44px !important;
+            min-height: 44px !important;
             padding: 0 16px !important;
             font-size: 14px !important;
         }

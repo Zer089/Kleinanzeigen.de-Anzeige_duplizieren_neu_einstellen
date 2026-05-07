@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.22
+// @version       2.5.23
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -257,14 +257,28 @@
     setInterval(inject, 500);
 
     // ==========================================
-    // PAGINIERUNG (Übersicht)
+    // PAGINIERUNG (Übersicht) SYNC & ZENTRIERUNG
     // ==========================================
     if (isOverviewPage) {
         setInterval(() => {
             const bottomNav = document.querySelector('div.flex.justify-center:has(nav)');
-            if (!bottomNav || document.getElementById('custom-top-pagination')) return;
+            if (!bottomNav) return;
+
+            const currentHTML = bottomNav.innerHTML;
+            const existingTop = document.getElementById('custom-top-pagination');
+
+            // Wenn die Paginierung oben existiert und aktuell ist, nichts machen
+            if (existingTop && existingTop.dataset.sourceHtml === currentHTML) return;
+
+            // Wenn sie existiert, aber veraltet ist (z.B. Seitenwechsel), alte löschen
+            if (existingTop) {
+                existingTop.remove();
+            }
+
+            // Neu klonen und Status merken
             const topNav = bottomNav.cloneNode(true);
             topNav.id = 'custom-top-pagination';
+            topNav.dataset.sourceHtml = currentHTML; 
             
             // Zentrierung der Paginierung via Absolute Positioning
             topNav.style.position = 'absolute';
@@ -277,9 +291,11 @@
                 const headerFlexBox = header.parentElement;
                 headerFlexBox.style.display = 'flex';
                 headerFlexBox.style.alignItems = 'center';
-                headerFlexBox.style.position = 'relative'; // Wichtig, damit das absolute child greift
+                headerFlexBox.style.position = 'relative'; // Wichtig für die absolute Positionierung des Klons
                 
                 header.after(topNav);
+                
+                // Klick-Logik sicher auf die echten Buttons unten routen (verhindert ID-Konflikte)
                 topNav.onclick = (e) => {
                     const idx = Array.from(topNav.querySelectorAll('button')).indexOf(e.target.closest('button'));
                     if (idx > -1) bottomNav.querySelectorAll('button')[idx].click();

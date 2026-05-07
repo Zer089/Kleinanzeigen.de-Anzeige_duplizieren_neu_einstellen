@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.19
+// @version       2.5.20
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -20,16 +20,19 @@
 (function () {
     'use strict';
 
+    // Seitenerkennung
     const isOverviewPage = window.location.href.includes('m-meine-anzeigen.html');
     const isEditPage = window.location.href.includes('p-anzeige-bearbeiten.html');
     const isConfirmPage = window.location.href.includes('bestaetigung.html');
     const isDetailPage = window.location.href.includes('/s-anzeige/');
 
+    // Klassen für seitenspezifisches CSS vergeben
     if (isOverviewPage) document.documentElement.classList.add('is-overview-page');
-    if (isDetailPage || isEditPage) document.documentElement.classList.add('is-detail-page');
+    if (isDetailPage) document.documentElement.classList.add('is-detail-page');
+    if (isEditPage) document.documentElement.classList.add('is-edit-page');
 
     // ==========================================
-    // TRACKING-BLOCKER
+    // TRACKING-BLOCKER (DevTools Fix)
     // ==========================================
     const blockedKeywords = ['liberty', 'kameleoon', 'pubads', 'gpt.js', 'conversion.js', 'ads.js'];
     const originalCreateElement = document.createElement;
@@ -49,28 +52,80 @@
     };
 
     // ==========================================
-    // CSS INJECTION (Layout Fixes)
+    // CSS INJECTION (Design & Layout)
     // ==========================================
     const style = document.createElement('style');
     style.textContent = `
-        /* Werbe-Säuberung */
+        /* Werbe- & Upsell-Säuberung */
         fieldset:has(#ad-feature-group), span:has(> div.bg-accentContainer), #feature-offer-section,
         .site-base--left-banner, .site-base--right-banner, #vip-billboard, #vip-belly, #vip-middle, #vip-bottom,
         [id^="vip-similar-ads-"], #pvap-featrs, .is-detail-page .icon-info-blue { display: none !important; }
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
-        /* Lila Buttons Design */
+        /* Basis-Design unserer lila Buttons */
         .custom-purple-btn {
-            background-color: #5A33AE !important; border-color: #5A33AE !important; color: #ffffff !important;
-            height: 44px !important; padding: 0 16px !important; border-radius: 9999px !important;
-            font-weight: bold !important; font-size: 14px !important; cursor: pointer !important;
-            display: inline-flex !important; align-items: center !important; gap: 8px !important;
+            background-color: #5A33AE !important; 
+            border-color: #5A33AE !important; 
+            color: #ffffff !important;
+            border-radius: 9999px !important;
+            font-weight: bold !important; 
+            cursor: pointer !important;
+            display: inline-flex !important; 
+            align-items: center !important; 
+            justify-content: center !important;
+            gap: 6px !important;
+            border: 2px solid #5A33AE !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease-in-out;
         }
-        .custom-purple-btn:hover { background-color: #D1C4E9 !important; border-color: #D1C4E9 !important; color: #5A33AE !important; }
+        .custom-purple-btn:hover { 
+            background-color: #D1C4E9 !important; 
+            border-color: #D1C4E9 !important; 
+            color: #5A33AE !important; 
+        }
 
-        /* Detailseite: Statistik & Button-Umbau */
+        /* ----------------------------------------------------
+           1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
+           ---------------------------------------------------- */
+        
+        /* Die originalen Buttons zwingen wir rechtsbündig in einen Block */
+        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: flex-end !important;
+            gap: 8px !important;
+            max-width: 360px !important;
+            margin-left: auto !important; /* Drückt den Container sicher nach rechts */
+        }
+        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
+            margin: 0 !important;
+            width: auto !important;
+        }
+
+        /* Höhe der lila Buttons exakt an die originalen Übersicht-Buttons anpassen (ca. 32px) */
+        .is-overview-page .custom-purple-btn {
+            height: 32px !important;
+            padding: 0 12px !important;
+            font-size: 13px !important;
+        }
+
+
+        /* ----------------------------------------------------
+           2. DETAILSEITE & BEARBEITEN-SEITE
+           ---------------------------------------------------- */
+           
+        /* Größere Button-Höhe für Detail- & Bearbeiten-Seite */
+        .is-detail-page .custom-purple-btn, 
+        .is-edit-page .custom-purple-btn {
+            height: 44px !important;
+            padding: 0 16px !important;
+            font-size: 14px !important;
+        }
+
         .is-detail-page #pvap-mngad-stats { width: 150px !important; }
+        
+        /* Umstyling der nativen Textlinks auf der Detailseite zu runden Buttons */
         .is-detail-page .manageadbox--actions, .is-detail-page #pvap-mngad-actions {
             display: flex !important; flex-wrap: wrap !important; gap: 8px !important;
             justify-content: flex-end !important; list-style: none !important; margin-top: 15px !important;
@@ -81,12 +136,24 @@
             padding: 0 16px !important; border-radius: 9999px !important; border: 2px solid #dcdcdc !important;
             background: transparent !important; color: #222 !important; font-weight: bold !important; text-decoration: none !important;
         }
-
-        /* Übersicht Seite Fix */
-        .is-overview-page .managead-list-item-action-buttons { display: flex !important; flex-wrap: wrap !important; gap: 8px !important; justify-content: flex-end !important; }
-        .is-overview-page .managead-list-item-action-buttons li { margin: 0 !important; width: auto !important; }
     `;
     document.head ? document.head.appendChild(style) : document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
+
+    // ==========================================
+    // UI FEEDBACK (Ladebildschirm)
+    // ==========================================
+    function showLoading() {
+        if (document.getElementById('custom-loading-overlay')) return;
+        const spinnerContainer = document.createElement("div");
+        spinnerContainer.id = "custom-loading-overlay";
+        Object.assign(spinnerContainer.style, {
+            height: '100%', width: '100%', position: 'fixed', top: '0', left: '0',
+            backdropFilter: 'blur(5px)', zIndex: '999999', display: 'flex',
+            alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'
+        });
+        spinnerContainer.innerHTML = '<div style="font-size: 20px; font-weight: bold; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: #86B817; text-align: center;">Aktion wird ausgeführt...<br><span style="font-size: 14px; color: #666; font-weight: normal; margin-top: 10px; display: block;">Bitte klicke nichts an. Die Seite lädt gleich neu.</span></div>';
+        document.body.appendChild(spinnerContainer);
+    }
 
     // ==========================================
     // BUTTON LOGIK
@@ -100,29 +167,73 @@
     }
 
     const inject = () => {
-        const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
-        editLinks.forEach(link => {
-            const container = link.closest('ul') || link.parentElement;
-            if (!container || container.dataset.klInjected) return;
+        // --- LOGIK FÜR ÜBERSICHTS- UND DETAILSEITE ---
+        if (isOverviewPage || isDetailPage) {
+            const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
+            editLinks.forEach(link => {
+                const container = link.closest('ul') || link.parentElement;
+                if (!container || container.dataset.klInjected) return;
+                
+                const match = link.getAttribute('href').match(/adId=(\d+)/);
+                if (!match) return;
+                const adId = match[1];
+
+                const doAction = (e, type) => {
+                    e.preventDefault();
+                    localStorage.setItem('__KL_AUTO_ACTION', JSON.stringify({action: type, adId}));
+                    window.location.href = link.href;
+                };
+
+                const li1 = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                li1.appendChild(createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate')));
+                const li2 = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                li2.appendChild(createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist')));
+
+                container.append(li1, li2);
+                container.dataset.klInjected = 'true';
+            });
+        }
+
+        // --- LOGIK FÜR DIE BEARBEITEN-SEITE ---
+        if (isEditPage) {
+            const saveBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Anzeige speichern'));
+            if (!saveBtn) return;
             
-            const adId = link.getAttribute('href').match(/adId=(\d+)/)[1];
-            const doAction = (type) => {
-                localStorage.setItem('__KL_AUTO_ACTION', JSON.stringify({action: type, adId}));
-                window.location.href = link.href;
+            const container = saveBtn.closest('.flex.gap-small') || saveBtn.parentElement;
+            if (!container || container.dataset.klInjected) return;
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentAdId = urlParams.get('adId');
+            if (!currentAdId) return;
+
+            const doAction = (e, type) => {
+                e.preventDefault(); e.stopPropagation();
+                window.__KL_ACTION = type;
+                window.__KL_OLD_AD_ID = currentAdId;
+                showLoading();
+                saveBtn.click();
+                
+                // Pop-Up zum Hochschieben automatisch überspringen
+                setInterval(() => {
+                    const skip = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Ohne Hochschieben weiter'));
+                    if (skip) skip.click();
+                }, 200);
             };
 
-            const li1 = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-            li1.appendChild(createBtn('Duplizieren', '⧉', () => doAction('duplicate')));
-            const li2 = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-            li2.appendChild(createBtn('Neu einstellen', '⟳', () => doAction('relist')));
+            const btnDup = createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate'));
+            const btnRelist = createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist'));
 
-            container.append(li1, li2);
+            saveBtn.after(btnDup, btnRelist);
             container.dataset.klInjected = 'true';
-        });
+        }
     };
+    
+    // Injektions-Intervall permanent laufen lassen
     setInterval(inject, 500);
 
-    // Top Paginierung Übersicht
+    // ==========================================
+    // PAGINIERUNG (Übersicht)
+    // ==========================================
     if (isOverviewPage) {
         setInterval(() => {
             const bottomNav = document.querySelector('div.flex.justify-center:has(nav)');
@@ -144,13 +255,16 @@
         }, 500);
     }
 
-    // Auto-Save Logik
+    // ==========================================
+    // AUTO-SAVE VERARBEITUNG
+    // ==========================================
     if (isEditPage) {
         const config = JSON.parse(localStorage.getItem('__KL_AUTO_ACTION') || '{}');
         const currentId = new URLSearchParams(window.location.search).get('adId');
         if (config.adId === currentId) {
             localStorage.removeItem('__KL_AUTO_ACTION');
             window.addEventListener('load', () => {
+                showLoading();
                 setTimeout(() => {
                     const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Anzeige speichern'));
                     if (btn) {
@@ -167,7 +281,9 @@
         }
     }
 
-    // Löschen & Interceptor
+    // ==========================================
+    // LÖSCHEN & NETWORK INTERCEPTOR
+    // ==========================================
     if (isConfirmPage) {
         const delId = localStorage.getItem('__KL_PENDING_DELETE');
         if (delId) {

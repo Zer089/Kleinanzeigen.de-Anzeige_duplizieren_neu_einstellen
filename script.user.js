@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.26
+// @version       2.5.27
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -138,16 +138,18 @@
             flex-basis: 100% !important; 
         }
 
-        /* Strenge Zwangshöhe für die lila Buttons auf der Übersicht */
-        .is-overview-page .custom-purple-btn {
+        /* Strenge Zwangshöhe für die lila Buttons UND den neuen Verkaufsschild-Button auf der Übersicht */
+        .is-overview-page .custom-purple-btn,
+        .is-overview-page .custom-native-btn {
             height: 32px !important;
             min-height: 32px !important;
             max-height: 32px !important;
             padding: 0 12px !important;
             font-size: 13px !important;
             line-height: 1 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
         }
-
 
         /* ----------------------------------------------------
            2. DETAILSEITE & BEARBEITEN-SEITE
@@ -218,6 +220,32 @@
                 if (!match) return;
                 const adId = match[1];
 
+                // --- DROP DOWN "MEHR" ENTFERNEN & VERKAUFSSCHILD EINFÜGEN ---
+                const mehrBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent.includes('Mehr'));
+                if (mehrBtn) {
+                    const mehrLi = mehrBtn.closest('li');
+                    if (mehrLi) mehrLi.style.display = 'none'; // Versteckt das originale Dropdown
+                }
+
+                const printLi = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                const printBtn = document.createElement('a');
+                // Mimikry der nativen Button-Klassen für perfektes Einfügen in das Theme
+                printBtn.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none border-2 border-solid border-utility text-interactive bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer px-medium custom-native-btn";
+                printBtn.href = `/p-anzeige-drucken.html?adId=${adId}`;
+                printBtn.target = "_blank"; // Öffnet direkt in neuem Tab (wie das Original)
+                printBtn.innerHTML = `
+                    <div class="relative flex items-center justify-center">
+                        <div class="flex items-center justify-center gap-xsmall">
+                            <svg viewBox="0 0 24 24" fill="none" class="shrink-0 fill-current block align-middle w-medium h-medium">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M17 7V4H7V7H4C2.89543 7 2 7.89543 2 9V15H6V20H18V15H22V9C22 7.89543 21.1046 7 20 7H17ZM9 6H15V7H9V6ZM16 15V18H8V15H16ZM16 13H8C6.89543 13 6 12.1046 6 11C6 9.89543 6.89543 9 8 9H16C17.1046 9 18 9.89543 18 11C18 12.1046 17.1046 13 16 13ZM15 10H17V12H15V10Z" fill="currentColor"></path>
+                            </svg>
+                            <span>Verkaufsschild</span>
+                        </div>
+                    </div>`;
+                printLi.appendChild(printBtn);
+
+
+                // --- LILA CUSTOM BUTTONS ---
                 const doAction = (e, type) => {
                     e.preventDefault();
                     localStorage.setItem('__KL_AUTO_ACTION', JSON.stringify({action: type, adId}));
@@ -226,11 +254,11 @@
 
                 const wrapper = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
                 wrapper.className = 'custom-buttons-wrapper';
-                
                 wrapper.appendChild(createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate')));
                 wrapper.appendChild(createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist')));
 
-                container.append(wrapper);
+                // Beide (Verkaufsschild + unsere lila Buttons) an das Ende anfügen
+                container.append(printLi, wrapper);
                 container.dataset.klInjected = 'true';
             });
         }

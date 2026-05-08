@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.37
+// @version       2.5.38
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -26,15 +26,13 @@
     const isConfirmPage = window.location.href.includes('bestaetigung.html');
     const isDetailPage = window.location.href.includes('/s-anzeige/');
 
-    // Klassen für seitenspezifisches CSS vergeben
     if (isOverviewPage) document.documentElement.classList.add('is-overview-page');
     if (isDetailPage) document.documentElement.classList.add('is-detail-page');
     if (isEditPage) document.documentElement.classList.add('is-edit-page');
 
     // ==========================================
-    // TRACKING-BLOCKER (Verbessert: Vermeidet libertyjs DOM-Fehler)
+    // TRACKING-BLOCKER
     // ==========================================
-    // Erweitert um prebid und casale, um die nervigen CORS-Fehler in der Konsole zu minimieren
     const blockedKeywords = ['liberty', 'kameleoon', 'pubads', 'gpt.js', 'conversion.js', 'ads.js', 'prebid', 'casalemedia', 'criteo'];
     const originalCreateElement = document.createElement;
     document.createElement = function(tagName) {
@@ -43,10 +41,7 @@
             Object.defineProperty(element, 'src', {
                 set: function(url) {
                     const urlString = url ? String(url) : '';
-                    if (blockedKeywords.some(keyword => urlString.includes(keyword))) {
-                        // Wir schlucken die Anfrage stillschweigend, ohne Fehler zu werfen
-                        return; 
-                    }
+                    if (blockedKeywords.some(keyword => urlString.includes(keyword))) return; 
                     this.setAttribute('src', url);
                 },
                 get: function() { return this.getAttribute('src'); }
@@ -95,9 +90,7 @@
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
            ---------------------------------------------------- */
         
-        .is-overview-page li[data-testid="ad-card"] {
-            position: relative !important;
-        }
+        .is-overview-page li[data-testid="ad-card"] { position: relative !important; }
 
         .is-overview-page li[data-testid="ad-card"] .card-footer {
             position: absolute !important;
@@ -107,9 +100,7 @@
             z-index: 10 !important;
         }
 
-        .is-overview-page li[data-testid="ad-card"] .card-footer footer {
-            margin-top: 0 !important;
-        }
+        .is-overview-page li[data-testid="ad-card"] .card-footer footer { margin-top: 0 !important; }
 
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
@@ -132,10 +123,9 @@
             justify-content: flex-end !important;
             margin: 0 !important;
         }
-        .is-overview-page .custom-buttons-wrapper {
-            flex-basis: 100% !important; 
-        }
+        .is-overview-page .custom-buttons-wrapper { flex-basis: 100% !important; }
 
+        /* Strenge Zwangshöhe für Buttons */
         .is-overview-page .custom-purple-btn,
         .is-overview-page .custom-native-btn {
             height: 32px !important;
@@ -153,6 +143,15 @@
             font-size: 13px !important;
             color: #757575 !important;
             font-weight: normal !important;
+            white-space: nowrap;
+        }
+
+        /* Styling für unsere neu verschobenen Statistik-Elemente (Ort, Datum) */
+        .custom-stat-li {
+            display: flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            color: inherit !important; /* Erbt automatisch text-onSurfaceNonessential (Grau) vom Parent */
             white-space: nowrap;
         }
 
@@ -212,7 +211,7 @@
     }
 
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V6_${adId}`; 
+        const cacheKey = `__KL_AD_DETAILS_V8_${adId}`; // Cache V8 für neues Statistik-Design
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
@@ -221,7 +220,6 @@
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
             
             const html = await response.text();
-            
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 
@@ -244,7 +242,7 @@
             sessionStorage.setItem(cacheKey, JSON.stringify(result));
             return result;
         } catch (e) {
-            console.error('Kleinanzeigen Script - Fehler beim Abrufen der Inseratsdetails (Möglicherweise Netzwerk/CORS):', e);
+            console.error('Fehler beim Abrufen der Inseratsdetails (CORS/Netzwerk blockiert?):', e);
             return null;
         }
     }
@@ -369,11 +367,10 @@
         if (isOverviewPage && !window.__KL_FETCHING_ADS) {
             const pendingCards = document.querySelectorAll('li[data-testid="ad-card"]:not([data-kl-details-injected])');
             if (pendingCards.length > 0) {
-                window.__KL_FETCHING_ADS = true; // Lock einschalten
+                window.__KL_FETCHING_ADS = true; 
                 
                 (async () => {
-                    // Kurze Initiale Pause, damit die Hauptseite erst in Ruhe laden kann
-                    await new Promise(r => setTimeout(r, 800));
+                    await new Promise(r => setTimeout(r, 800)); // Initiale Pause
 
                     for (const card of pendingCards) {
                         card.dataset.klDetailsInjected = 'pending'; 
@@ -390,63 +387,102 @@
                                 const details = await fetchAdDetails(adUrl, adId);
                                 
                                 if (details) {
-                                    // 1. Ort in die Statistik-Section einklinken
+                                    // 1. Hole die untere Statistik-Box ("Besucher" etc.)
                                     const statsSection = card.querySelector('section.text-onSurfaceNonessential');
                                     
-                                    if (statsSection && !statsSection.querySelector('.custom-ad-extra-info')) {
-                                        const infoUl = document.createElement('ul');
-                                        infoUl.className = 'm-none mb-xxsmall flex min-h-[22px] list-none gap-x-xsmall p-none custom-ad-extra-info';
-                                        infoUl.style.flexWrap = 'wrap';
-                                        infoUl.style.marginTop = '2px';
-                                        infoUl.style.rowGap = '4px';
-                                        infoUl.style.columnGap = '12px';
+                                    if (statsSection) {
+                                        let statsUl = statsSection.querySelector('ul');
+                                        if (!statsUl) {
+                                            // Falls keine Statistik da war, baue die Liste nativgetreu auf
+                                            statsUl = document.createElement('ul');
+                                            statsUl.className = 'm-none mb-xxsmall flex min-h-[22px] list-none gap-x-xsmall p-none';
+                                            statsSection.appendChild(statsUl);
+                                        }
 
-                                        infoUl.innerHTML = `
-                                            <li style="display: flex; align-items: center; gap: 4px;">
-                                                <span class="inline-block-icon" style="display: flex; align-items: center;">
-                                                    <svg viewBox="0 0 24 24" class="shrink-0 fill-current block align-middle w-medium h-medium text-onSurfaceNonessential">
-                                                        <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
-                                                    </svg>
-                                                </span>
-                                                <span>${details.location}</span>
-                                            </li>
-                                        `;
-                                        statsSection.appendChild(infoUl);
+                                        // Marker setzen, damit wir nicht doppelt anhängen
+                                        if (!statsUl.classList.contains('custom-stats-injected')) {
+                                            statsUl.classList.add('custom-stats-injected');
+
+                                            // Wir machen die Statistik-Liste mehrzeilenfähig und richten Abstände aus
+                                            statsUl.style.flexWrap = 'wrap';
+                                            statsUl.style.rowGap = '4px';
+                                            statsUl.style.columnGap = '12px';
+
+                                            // Bestehende native LIs perfekt auf der X-Achse zentrieren
+                                            Array.from(statsUl.querySelectorAll('li')).forEach(li => {
+                                                li.style.display = 'flex';
+                                                li.style.alignItems = 'center';
+                                                li.style.gap = '4px';
+                                            });
+
+                                            // 2. Wir pflücken das "Endet am" Datum aus dem ALTEN Container oben heraus
+                                            let endDateStr = "Unbekannt";
+                                            const oldEndDateSpan = card.querySelector('.managead-listitem-enddate');
+                                            if (oldEndDateSpan) {
+                                                endDateStr = oldEndDateSpan.textContent.trim();
+                                                const oldLi = oldEndDateSpan.closest('li');
+                                                if (oldLi) oldLi.remove(); // Komplettes <li> löschen, das "Endet am " enthielt
+                                            }
+
+                                            // Allgemeine SVG Klassen (Exakt wie Kleinanzeigen)
+                                            const svgClass = "shrink-0 fill-current block align-middle w-medium h-medium text-onSurfaceNonessential";
+
+                                            // 3. Ort anhängen
+                                            if (details.location) {
+                                                const liLoc = document.createElement('li');
+                                                liLoc.className = 'custom-stat-li';
+                                                liLoc.innerHTML = `
+                                                    <span class="inline-block-icon">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
+                                                            <title>Ort</title>
+                                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                                            <circle cx="12" cy="10" r="3"></circle>
+                                                        </svg>
+                                                    </span>
+                                                    <span>${details.location}</span>
+                                                `;
+                                                statsUl.appendChild(liLoc);
+                                            }
+
+                                            // 4. Erstellt am anhängen
+                                            if (details.date) {
+                                                const liCreated = document.createElement('li');
+                                                liCreated.className = 'custom-stat-li';
+                                                liCreated.innerHTML = `
+                                                    <span class="inline-block-icon">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
+                                                            <title>Erstellt am</title>
+                                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                        </svg>
+                                                    </span>
+                                                    <span>${details.date}</span>
+                                                `;
+                                                statsUl.appendChild(liCreated);
+                                            }
+
+                                            // 5. Endet am NEU anhängen (jetzt im Statistik-Layout)
+                                            if (endDateStr !== "Unbekannt") {
+                                                const liEnd = document.createElement('li');
+                                                liEnd.className = 'custom-stat-li';
+                                                liEnd.innerHTML = `
+                                                    <span class="inline-block-icon">
+                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
+                                                            <title>Endet am</title>
+                                                            <circle cx="12" cy="12" r="10"></circle>
+                                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                                        </svg>
+                                                    </span>
+                                                    <span class="managead-listitem-enddate">${endDateStr}</span>
+                                                `;
+                                                statsUl.appendChild(liEnd);
+                                            }
+                                        }
                                     }
 
-                                    // 2. Erstellungsdatum links neben "Endet am" und Text durch Icon ersetzen
-                                    const endDateSpan = card.querySelector('.managead-listitem-enddate');
-                                    if (endDateSpan && !card.querySelector('.custom-date-container')) {
-                                        const endDateText = endDateSpan.textContent;
-                                        const dateContainer = endDateSpan.parentElement; 
-                                        
-                                        dateContainer.classList.add('custom-date-container');
-                                        dateContainer.style.display = 'flex';
-                                        dateContainer.style.alignItems = 'center';
-                                        dateContainer.style.gap = '16px';
-                                        dateContainer.style.flexWrap = 'wrap';
-
-                                        dateContainer.innerHTML = `
-                                            <div style="display: flex; align-items: center; gap: 4px;" title="Erstellt am">
-                                                <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                                </svg>
-                                                <span>${details.date}</span>
-                                            </div>
-                                            <div style="display: flex; align-items: center; gap: 4px;" title="Endet am">
-                                                <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <circle cx="12" cy="12" r="10"></circle>
-                                                    <polyline points="12 6 12 12 16 14"></polyline>
-                                                </svg>
-                                                <span class="managead-listitem-enddate">${endDateText}</span>
-                                            </div>
-                                        `;
-                                    }
-
-                                    // 3. Versandkosten neben dem Preis platzieren
+                                    // 6. Versandkosten neben dem Preis platzieren
                                     if (details.shipping) {
                                         let priceEl = card.querySelector('.text-title3');
                                         
@@ -479,7 +515,6 @@
                                 }
                             }
                         }
-                        // Längere Pause zwischen den Fetches, um Netzwerk-Spikes und CORS-Probleme zu vermeiden
                         await new Promise(r => setTimeout(r, 400)); 
                     }
                     window.__KL_FETCHING_ADS = false;

@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.54
+// @version       2.5.55
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -569,7 +569,7 @@
                                                     today.setHours(0, 0, 0, 0);
                                                     const diffTime = Math.abs(today - createdDate);
                                                     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                                                    const daysText = diffDays === 1 ? 'Tag' : 'Tagen';
+                                                    const daysText = diffDays === 1 ? 'Tag' : 'Tage';
                                                     
                                                     datesUl.innerHTML += `
                                                         <li class="custom-stat-li" title="Online seit">
@@ -582,6 +582,38 @@
                                                             <span>${diffDays} ${daysText}</span>
                                                         </li>
                                                     `;
+
+                                                    // NEU: Durchschnittliche Besucher und Gemerkt pro Tag berechnen
+                                                    let calcDays = Math.max(1, diffDays); // Verhindert Division durch 0 am ersten Tag
+                                                    let visitors = 0;
+                                                    let favorites = 0;
+
+                                                    Array.from(statsUl.querySelectorAll('li')).forEach(li => {
+                                                        const text = li.textContent.replace(/\./g, ''); // Tausendertrennzeichen entfernen
+                                                        const visMatch = text.match(/(\d+)\s*Besucher/i);
+                                                        if (visMatch) visitors = parseInt(visMatch[1], 10);
+                                                        
+                                                        const favMatch = text.match(/(\d+)\s*.*gemerkt/i);
+                                                        if (favMatch) favorites = parseInt(favMatch[1], 10);
+                                                    });
+
+                                                    // Runden auf 1 Nachkommastelle, ".0" entfernen und Dezimalpunkt durch Komma ersetzen
+                                                    const avgVis = (visitors / calcDays).toFixed(1).replace('.0', '').replace('.', ',');
+                                                    const avgFav = (favorites / calcDays).toFixed(1).replace('.0', '').replace('.', ',');
+
+                                                    const avgLi = document.createElement('li');
+                                                    avgLi.className = 'custom-stat-li';
+                                                    avgLi.title = 'Durchschnitt pro Tag (Besucher / Gemerkt)';
+                                                    avgLi.innerHTML = `
+                                                        <span class="inline-block-icon" style="display: flex; align-items: center;">
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
+                                                                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                                                <polyline points="17 6 23 6 23 12"></polyline>
+                                                            </svg>
+                                                        </span>
+                                                        <span>${avgVis} / ${avgFav}</span>
+                                                    `;
+                                                    statsUl.appendChild(avgLi);
                                                 }
                                             }
                                             

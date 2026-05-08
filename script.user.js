@@ -215,7 +215,161 @@
         }
 
         /* ----------------------------------------------------
-           2. DETAILSEITE & BEARBEITEN-SEITE
+           3. BENUTZERPROFIL-BOX (Übersichtsseite)
+           ---------------------------------------------------- */
+        
+        /* Hauptbox Styling */
+        .is-overview-page .ownprofile-main {
+            background-color: #ffffff !important;
+            border: 1px solid #eaeaea !important;
+            border-radius: 8px !important;
+            padding: 24px !important;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        }
+
+        /* Flex-Container für die obere Hälfte */
+        .is-overview-page .UserProfile.flex.w-full.justify-between {
+            align-items: center !important;
+            padding-bottom: 20px !important;
+        }
+
+        /* Avatar (Initialen) */
+        .is-overview-page .user-profile-badge {
+            width: 100px !important;
+            height: 100px !important;
+            line-height: 100px !important;
+            font-size: 32px !important;
+            background-color: #BDBDBD !important; 
+            color: #222 !important;
+            margin-right: 24px !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Container für Name, Badges & Anzeigen-Zähler */
+        .is-overview-page [data-testid="ownprofile-header"] {
+            align-items: center !important;
+        }
+        .is-overview-page [data-testid="ownprofile-header"] > div.mt-xxsmall {
+            margin-top: 0 !important;
+            padding-left: 0 !important; 
+            justify-content: center !important;
+        }
+
+        /* Benutzername */
+        .is-overview-page [data-testid="ownprofile-header"] h2 {
+            font-size: 26px !important;
+            font-weight: bold !important;
+            color: #222 !important;
+            margin-bottom: 6px !important;
+        }
+
+        /* Auszeichnungen (Badges) horizontal auflisten */
+        .is-overview-page ul.ownprofile-badges {
+            display: flex !important;
+            flex-direction: row !important;
+            gap: 12px !important;
+            margin-bottom: 12px !important;
+            padding: 0 !important;
+            list-style: none !important;
+        }
+        .is-overview-page ul.ownprofile-badges li.userbadges--item {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .is-overview-page ul.ownprofile-badges .ActivityIndicator {
+            background-color: #EBE4FF !important; 
+            color: #4A148C !important; 
+            border-radius: 9999px !important;
+            padding: 4px 12px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            font-size: 13px !important;
+            font-weight: normal !important;
+            height: 28px !important;
+        }
+        .is-overview-page ul.ownprofile-badges .ActivityIndicator svg {
+            color: #4A148C !important;
+            width: 16px !important;
+            height: 16px !important;
+        }
+        .is-overview-page ul.ownprofile-badges button {
+            cursor: default !important;
+        }
+
+        /* "Anzeigen online / gesamt" Counter */
+        .is-overview-page [data-testid="posted-ads"] {
+            font-size: 24px !important;
+            font-weight: bold !important;
+            color: #222 !important;
+        }
+        .is-overview-page [data-testid="posted-ads"] span {
+            color: #222 !important;
+            font-weight: bold !important;
+        }
+
+        /* Verkaufsübersicht rechts */
+        .is-overview-page a.user--trx-overview {
+            width: 380px !important;
+            margin-left: auto !important;
+            margin-right: 20px !important;
+        }
+        .is-overview-page a.user--trx-overview > div {
+            padding: 16px !important;
+            border: 1px solid #dcdcdc !important; 
+            border-radius: 8px !important;
+            background: white !important;
+        }
+        .is-overview-page a.user--trx-overview span.font-medium.underline {
+            text-decoration: underline !important;
+            font-weight: normal !important;
+            color: #222 !important;
+            font-size: 16px !important;
+        }
+        .is-overview-page a.user--trx-overview p {
+            color: #222 !important;
+            margin-top: 4px !important;
+        }
+
+        /* Info Button vertikal zentrieren */
+        .is-overview-page .ownprofile-main .pl-xsmall.pt-\\[10px\\] {
+            padding-top: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+        }
+        .is-overview-page .UserProfile button[aria-label="Profilinformationen öffnen"] svg {
+            color: #388e3c !important; 
+        }
+
+        /* Untere Statuszeile (Aktiv seit, Follower etc.) */
+        .is-overview-page ul[data-testid="user-info"] {
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: flex-start !important;
+            margin-left: 124px !important; /* Exakte Einrückung passend zum 100px Avatar + 24px Margin */
+            gap: 32px !important;
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+            color: #444 !important;
+        }
+        .is-overview-page ul[data-testid="user-info"] li {
+            align-items: center !important;
+            font-size: 14px !important;
+            color: #444 !important;
+            white-space: nowrap !important;
+        }
+        .is-overview-page ul[data-testid="user-info"] li svg {
+            color: #444 !important;
+            width: 18px !important;
+            height: 18px !important;
+        }
+        .is-overview-page ul[data-testid="user-info"] li a {
+            color: #444 !important;
+            text-decoration: underline !important;
+        }
+
+        /* ----------------------------------------------------
+           4. DETAILSEITE & BEARBEITEN-SEITE
            ---------------------------------------------------- */
            
         .is-detail-page .custom-purple-btn, 
@@ -310,6 +464,25 @@
         // --- DOM CLEANUP: Banner physisch entfernen ---
         const banners = document.querySelectorAll('.site-base--left-banner, .site-base--right-banner');
         banners.forEach(b => b.remove());
+
+        // --- BENUTZERPROFIL-BOX RESTRUKTURIEREN ---
+        if (isOverviewPage) {
+            const profileBox = document.querySelector('.ownprofile-main');
+            if (profileBox && !profileBox.dataset.klProfileStyled) {
+                const header = profileBox.querySelector('[data-testid="ownprofile-header"]');
+                const textWrapper = header ? header.querySelector('.flex-col') : null;
+                const h2 = textWrapper ? textWrapper.querySelector('h2') : null;
+                const badgesContainer = profileBox.querySelector('[data-testid="userbadges-container"]');
+                const badgesList = badgesContainer ? badgesContainer.querySelector('ul.ownprofile-badges') : null;
+
+                // Verschiebe die Auszeichnungen (Badges) direkt unter den Benutzernamen
+                if (textWrapper && h2 && badgesList) {
+                    h2.after(badgesList);
+                    badgesContainer.remove(); // Leeren Wrapper entfernen
+                    profileBox.dataset.klProfileStyled = 'true';
+                }
+            }
+        }
 
         if (isOverviewPage || isDetailPage) {
             const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');

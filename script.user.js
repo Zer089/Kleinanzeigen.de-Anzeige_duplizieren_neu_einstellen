@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.31
+// @version       2.5.32
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -151,6 +151,22 @@
             box-sizing: border-box !important;
         }
 
+        /* Styling für die neuen Metadaten (Datum & Ort) auf der Übersicht */
+        .custom-ad-extra-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 13px;
+            color: #555;
+            margin-top: 4px;
+            align-items: center;
+        }
+        .custom-ad-extra-info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
         /* ----------------------------------------------------
            2. DETAILSEITE & BEARBEITEN-SEITE
            ---------------------------------------------------- */
@@ -198,7 +214,7 @@
     }
 
     // ==========================================
-    // BUTTON LOGIK
+    // BUTTON LOGIK & METADATEN FETCHING
     // ==========================================
     function createBtn(text, icon, click) {
         const b = document.createElement('button');
@@ -206,6 +222,41 @@
         b.innerHTML = `<span>${icon}</span> <span>${text}</span>`;
         b.onclick = click;
         return b;
+    }
+
+    // Holt unsichtbar die Metadaten einer Anzeige und speichert sie lokal zwischen
+    async function fetchAdDetails(adUrl, adId) {
+        const cacheKey = `__KL_AD_DETAILS_${adId}`;
+        const cached = sessionStorage.getItem(cacheKey);
+        if (cached) return JSON.parse(cached);
+
+        try {
+            const response = await fetch(adUrl);
+            const html = await response.text();
+            
+            // HTML im Hintergrund analysieren ohne es anzuzeigen
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            const locationEl = doc.querySelector('#viewad-locality');
+            const dateIcon = doc.querySelector('.icon-calendar-gray-simple');
+            
+            let location = locationEl ? locationEl.textContent.replace(/\s+/g, ' ').trim() : 'Unbekannt';
+            
+            let date = 'Unbekannt';
+            if (dateIcon && dateIcon.nextElementSibling) {
+                date = dateIcon.nextElementSibling.textContent.trim();
+            } else if (dateIcon && dateIcon.parentElement.textContent) {
+                date = dateIcon.parentElement.textContent.replace(/\s+/g, ' ').trim();
+            }
+
+            const result = { location, date };
+            sessionStorage.setItem(cacheKey, JSON.stringify(result)); // Cache für schnelles Neuladen
+            return result;
+        } catch (e) {
+            console.error('Fehler beim Abrufen der Inseratsdetails:', e);
+            return null;
+        }
     }
 
     const inject = () => {
@@ -225,7 +276,6 @@
                 if (mehrBtn) {
                     const mehrLi = mehrBtn.closest('li');
                     if (mehrLi) {
-                        // Originales Dropdown absolut unsichtbar machen
                         mehrLi.style.position = 'absolute';
                         mehrLi.style.opacity = '0';
                         mehrLi.style.pointerEvents = 'none';
@@ -247,16 +297,13 @@
                             </div>
                         </div>`;
 
-                    // Ghost-Klick-Logik mit strikter DOM-Zuordnung
                     printBtn.onclick = async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        // 1. Sichere Ausgangslage: Alle eventuell offenen Menüs schließen
                         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
                         document.body.click();
 
-                        // 2. Anti-Flash-Style injizieren, damit das Menü beim Öffnen unsichtbar bleibt
                         const antiFlashStyle = document.createElement('style');
                         antiFlashStyle.id = 'hide-dropdown-flash';
                         antiFlashStyle.textContent = `
@@ -269,45 +316,35 @@
                         `;
                         document.head.appendChild(antiFlashStyle);
 
-                        // Kurze Pause, um das Schließen alter Menüs zu garantieren
                         await new Promise(r => setTimeout(r, 50));
-
-                        // 3. Menü für GENAU DIESE Anzeige öffnen
                         mehrBtn.click(); 
 
                         let attempts = 0;
                         const interval = setInterval(() => {
                             attempts++;
                             
-                            // 4. Logische Zuordnung: Das Attribut "aria-controls" verrät uns die exakte ID des neu geöffneten Menüs
                             const menuId = mehrBtn.getAttribute('aria-controls');
                             let targetMenu = menuId ? document.getElementById(menuId) : null;
                             
-                            // Fallback, falls aria-controls verspätet ist: Nimm das einzig offene Menü
-                            if (!targetMenu) {
-                                targetMenu = document.querySelector('[data-state="open"]');
-                            }
+                            if (!targetMenu) targetMenu = document.querySelector('[data-state="open"]');
 
                             if (targetMenu) {
-                                // 5. Suche "Verkaufsschild" AUSSCHLIESSLICH in dem zugeordneten Menü dieser Anzeige
                                 const nativePrintBtn = Array.from(targetMenu.querySelectorAll('button, a, [role="menuitem"]'))
                                     .find(b => b.textContent.includes('Verkaufsschild') && b !== printBtn);
 
                                 if (nativePrintBtn) {
                                     clearInterval(interval);
-                                    nativePrintBtn.click(); // Echten Download feuern
+                                    nativePrintBtn.click(); 
                                     
-                                    // 6. Aufräumen und Scroll-Sperre lösen
                                     setTimeout(() => {
                                         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
                                         document.body.click(); 
                                         antiFlashStyle.remove();
                                     }, 100);
-                                    return; // Erfolgreich beendet
+                                    return; 
                                 }
                             }
                             
-                            // Fallback nach ca. 1.5 Sekunden
                             if (attempts > 30) {
                                 clearInterval(interval);
                                 document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
@@ -337,6 +374,62 @@
                 container.append(wrapper);
                 container.dataset.klInjected = 'true';
             });
+        }
+
+        // --- BACKGROUND FETCH FÜR DATUM & ORT AUF ÜBERSICHTSSEITE ---
+        if (isOverviewPage && !window.__KL_FETCHING_ADS) {
+            const pendingCards = document.querySelectorAll('li[data-testid="ad-card"]:not([data-kl-details-injected])');
+            if (pendingCards.length > 0) {
+                window.__KL_FETCHING_ADS = true; // Lock einschalten, damit sich Intervalle nicht überlappen
+                
+                (async () => {
+                    for (const card of pendingCards) {
+                        card.dataset.klDetailsInjected = 'pending'; // Sofort markieren, um Doppel-Fetches zu vermeiden
+                        
+                        const titleLink = card.querySelector('a[href*="/s-anzeige/"]');
+                        const editLink = card.querySelector('a[href*="adId="]');
+                        
+                        if (titleLink && editLink) {
+                            const adUrl = titleLink.href;
+                            const match = editLink.href.match(/adId=(\d+)/);
+                            
+                            if (match) {
+                                const adId = match[1];
+                                const details = await fetchAdDetails(adUrl, adId);
+                                
+                                if (details) {
+                                    // Ort und Datum als HTML zusammenbauen
+                                    const infoDiv = document.createElement('div');
+                                    infoDiv.className = 'custom-ad-extra-info';
+                                    infoDiv.innerHTML = `
+                                        <div class="custom-ad-extra-info-item" title="Ort">
+                                            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                                <circle cx="12" cy="10" r="3"></circle>
+                                            </svg>
+                                            <span>${details.location}</span>
+                                        </div>
+                                        <div class="custom-ad-extra-info-item" title="Erstellt am">
+                                            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                            </svg>
+                                            <span>${details.date}</span>
+                                        </div>
+                                    `;
+                                    // Exakt nach dem Titel-Link (meistens eine Zeile darunter) einfügen
+                                    titleLink.after(infoDiv);
+                                }
+                            }
+                        }
+                        // Höfliche Pause von 250ms einlegen, um den Server nicht zu fluten
+                        await new Promise(r => setTimeout(r, 250)); 
+                    }
+                    window.__KL_FETCHING_ADS = false; // Lock aufheben
+                })();
+            }
         }
 
         // --- LOGIK FÜR DIE BEARBEITEN-SEITE ---
@@ -380,13 +473,11 @@
     // ==========================================
     if (isOverviewPage) {
         
-        // Hilfsfunktion: Sucht zielsicher die originale Leiste anhand des Textes
         function getBottomNavContainer() {
             const navs = Array.from(document.querySelectorAll('nav'));
             for (const nav of navs) {
                 const span = nav.querySelector('span.sr-only');
                 if (span && span.textContent.includes('Seiten-Navigation')) {
-                    // Ignoriere unseren eigenen Klon!
                     if (!nav.closest('#custom-top-pagination')) {
                         return nav.parentElement; 
                     }
@@ -399,16 +490,13 @@
             const bottomContainer = getBottomNavContainer();
             if (!bottomContainer) return;
 
-            // Speichern wir den originalen HTML-String als "Fingerabdruck"
             const currentHTML = bottomContainer.innerHTML;
             let topContainer = document.getElementById('custom-top-pagination');
 
-            // 1. Klon anlegen, wenn er noch gar nicht existiert
             if (!topContainer) {
                 topContainer = document.createElement('div');
                 topContainer.id = 'custom-top-pagination';
                 
-                // Absolute Zentrierung
                 topContainer.style.position = 'absolute';
                 topContainer.style.left = '50%';
                 topContainer.style.transform = 'translateX(-50%)';
@@ -419,11 +507,10 @@
                     const headerFlexBox = header.parentElement;
                     headerFlexBox.style.display = 'flex';
                     headerFlexBox.style.alignItems = 'center';
-                    headerFlexBox.style.position = 'relative'; // Referenz für absolute child
+                    headerFlexBox.style.position = 'relative'; 
                     header.after(topContainer);
                 }
 
-                // Klick-Ereignisse vom Klon an das Original weiterleiten
                 topContainer.addEventListener('click', (e) => {
                     const btn = e.target.closest('button');
                     if (btn) {
@@ -443,14 +530,9 @@
                 });
             }
 
-            // 2. Zustand synchronisieren (nur wenn es sich ECHT verändert hat)
             if (topContainer.dataset.sourceHtml !== currentHTML) {
-                // Den neuen Fingerabdruck merken
                 topContainer.dataset.sourceHtml = currentHTML;
-                // Inhalt austauschen
                 topContainer.innerHTML = currentHTML;
-                
-                // WICHTIG: IDs entfernen, um Kollisionen und CSS-Fehler zu vermeiden
                 topContainer.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
             }
 

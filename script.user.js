@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.38
+// @version       2.5.39
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -151,7 +151,7 @@
             display: flex !important;
             align-items: center !important;
             gap: 4px !important;
-            color: inherit !important; /* Erbt automatisch text-onSurfaceNonessential (Grau) vom Parent */
+            color: inherit !important; 
             white-space: nowrap;
         }
 
@@ -211,7 +211,7 @@
     }
 
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V8_${adId}`; // Cache V8 für neues Statistik-Design
+        const cacheKey = `__KL_AD_DETAILS_V9_${adId}`; // Cache V9 (Perfektes 3-Zeilen Layout, SVG Outlines)
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
@@ -242,7 +242,7 @@
             sessionStorage.setItem(cacheKey, JSON.stringify(result));
             return result;
         } catch (e) {
-            console.error('Fehler beim Abrufen der Inseratsdetails (CORS/Netzwerk blockiert?):', e);
+            console.error('Fehler beim Abrufen der Inseratsdetails:', e);
             return null;
         }
     }
@@ -391,98 +391,107 @@
                                     const statsSection = card.querySelector('section.text-onSurfaceNonessential');
                                     
                                     if (statsSection) {
+                                        // Originale Liste (Besucher/Gemerkt)
                                         let statsUl = statsSection.querySelector('ul');
                                         if (!statsUl) {
-                                            // Falls keine Statistik da war, baue die Liste nativgetreu auf
                                             statsUl = document.createElement('ul');
                                             statsUl.className = 'm-none mb-xxsmall flex min-h-[22px] list-none gap-x-xsmall p-none';
                                             statsSection.appendChild(statsUl);
                                         }
 
-                                        // Marker setzen, damit wir nicht doppelt anhängen
-                                        if (!statsUl.classList.contains('custom-stats-injected')) {
-                                            statsUl.classList.add('custom-stats-injected');
+                                        // Optische Ausrichtung der Besucher/Gemerkt Zeile
+                                        statsUl.style.flexWrap = 'wrap';
+                                        statsUl.style.rowGap = '4px';
+                                        statsUl.style.columnGap = '12px';
+                                        statsUl.style.marginBottom = '4px'; 
 
-                                            // Wir machen die Statistik-Liste mehrzeilenfähig und richten Abstände aus
-                                            statsUl.style.flexWrap = 'wrap';
-                                            statsUl.style.rowGap = '4px';
-                                            statsUl.style.columnGap = '12px';
+                                        Array.from(statsUl.querySelectorAll('li')).forEach(li => {
+                                            li.style.display = 'flex';
+                                            li.style.alignItems = 'center';
+                                            li.style.gap = '4px';
+                                        });
 
-                                            // Bestehende native LIs perfekt auf der X-Achse zentrieren
-                                            Array.from(statsUl.querySelectorAll('li')).forEach(li => {
-                                                li.style.display = 'flex';
-                                                li.style.alignItems = 'center';
-                                                li.style.gap = '4px';
-                                            });
+                                        // 2. Extrahiere "Endet am" aus dem Preis-Block oben und LÖSCHE es dort
+                                        let endDateStr = "Unbekannt";
+                                        const oldEndDateSpan = card.querySelector('.managead-listitem-enddate');
+                                        if (oldEndDateSpan) {
+                                            endDateStr = oldEndDateSpan.textContent.trim();
+                                            const oldLi = oldEndDateSpan.closest('li');
+                                            if (oldLi) oldLi.remove(); // Das alte <li> restlos löschen!
+                                        }
 
-                                            // 2. Wir pflücken das "Endet am" Datum aus dem ALTEN Container oben heraus
-                                            let endDateStr = "Unbekannt";
-                                            const oldEndDateSpan = card.querySelector('.managead-listitem-enddate');
-                                            if (oldEndDateSpan) {
-                                                endDateStr = oldEndDateSpan.textContent.trim();
-                                                const oldLi = oldEndDateSpan.closest('li');
-                                                if (oldLi) oldLi.remove(); // Komplettes <li> löschen, das "Endet am " enthielt
+                                        // Einheitliche Icon-Klasse ohne das fehlerhafte 'fill-current'
+                                        const svgClass = "shrink-0 block align-middle w-medium h-medium text-onSurfaceNonessential";
+
+                                        // 3. NEUE ZEILE 1 (Erstellt & Endet) erzeugen und VOR die Besucher-Liste setzen
+                                        if (!statsSection.querySelector('.custom-dates-ul')) {
+                                            const datesUl = document.createElement('ul');
+                                            datesUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-dates-ul';
+                                            datesUl.style.flexWrap = 'wrap';
+                                            datesUl.style.rowGap = '4px';
+                                            datesUl.style.columnGap = '12px';
+                                            datesUl.style.marginBottom = '4px'; // Abstand zur nächsten Zeile
+
+                                            if (details.date) {
+                                                datesUl.innerHTML += `
+                                                    <li class="custom-stat-li" title="Erstellt am">
+                                                        <span class="inline-block-icon" style="display: flex; align-items: center;">
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
+                                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                            </svg>
+                                                        </span>
+                                                        <span>${details.date}</span>
+                                                    </li>
+                                                `;
                                             }
 
-                                            // Allgemeine SVG Klassen (Exakt wie Kleinanzeigen)
-                                            const svgClass = "shrink-0 fill-current block align-middle w-medium h-medium text-onSurfaceNonessential";
+                                            if (endDateStr !== "Unbekannt") {
+                                                datesUl.innerHTML += `
+                                                    <li class="custom-stat-li" title="Endet am">
+                                                        <span class="inline-block-icon" style="display: flex; align-items: center;">
+                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
+                                                                <circle cx="12" cy="12" r="10"></circle>
+                                                                <polyline points="12 6 12 12 16 14"></polyline>
+                                                            </svg>
+                                                        </span>
+                                                        <span class="managead-listitem-enddate">${endDateStr}</span>
+                                                    </li>
+                                                `;
+                                            }
+                                            
+                                            // VOR die originale Besucher-Statistik einfügen
+                                            statsSection.insertBefore(datesUl, statsUl);
+                                        }
 
-                                            // 3. Ort anhängen
-                                            if (details.location) {
-                                                const liLoc = document.createElement('li');
-                                                liLoc.className = 'custom-stat-li';
-                                                liLoc.innerHTML = `
-                                                    <span class="inline-block-icon">
+                                        // 4. NEUE ZEILE 3 (Ort) erzeugen und NACH der Besucher-Liste setzen
+                                        if (details.location && !statsSection.querySelector('.custom-loc-ul')) {
+                                            const locUl = document.createElement('ul');
+                                            locUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-loc-ul';
+                                            locUl.style.flexWrap = 'wrap';
+                                            locUl.style.rowGap = '4px';
+                                            locUl.style.columnGap = '12px';
+
+                                            locUl.innerHTML = `
+                                                <li class="custom-stat-li" title="Ort">
+                                                    <span class="inline-block-icon" style="display: flex; align-items: center;">
                                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                            <title>Ort</title>
                                                             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                                             <circle cx="12" cy="10" r="3"></circle>
                                                         </svg>
                                                     </span>
                                                     <span>${details.location}</span>
-                                                `;
-                                                statsUl.appendChild(liLoc);
-                                            }
-
-                                            // 4. Erstellt am anhängen
-                                            if (details.date) {
-                                                const liCreated = document.createElement('li');
-                                                liCreated.className = 'custom-stat-li';
-                                                liCreated.innerHTML = `
-                                                    <span class="inline-block-icon">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                            <title>Erstellt am</title>
-                                                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                                                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                                                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                                                        </svg>
-                                                    </span>
-                                                    <span>${details.date}</span>
-                                                `;
-                                                statsUl.appendChild(liCreated);
-                                            }
-
-                                            // 5. Endet am NEU anhängen (jetzt im Statistik-Layout)
-                                            if (endDateStr !== "Unbekannt") {
-                                                const liEnd = document.createElement('li');
-                                                liEnd.className = 'custom-stat-li';
-                                                liEnd.innerHTML = `
-                                                    <span class="inline-block-icon">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                            <title>Endet am</title>
-                                                            <circle cx="12" cy="12" r="10"></circle>
-                                                            <polyline points="12 6 12 12 16 14"></polyline>
-                                                        </svg>
-                                                    </span>
-                                                    <span class="managead-listitem-enddate">${endDateStr}</span>
-                                                `;
-                                                statsUl.appendChild(liEnd);
-                                            }
+                                                </li>
+                                            `;
+                                            
+                                            // HINTER die originale Besucher-Statistik einfügen
+                                            statsSection.appendChild(locUl);
                                         }
                                     }
 
-                                    // 6. Versandkosten neben dem Preis platzieren
+                                    // 5. Versandkosten neben dem Preis platzieren
                                     if (details.shipping) {
                                         let priceEl = card.querySelector('.text-title3');
                                         

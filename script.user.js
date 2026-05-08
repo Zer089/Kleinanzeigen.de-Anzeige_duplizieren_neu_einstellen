@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.69
+// @version       2.5.70
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -20,6 +20,7 @@
 (function () {
     'use strict';
 
+    // Seitenerkennung
     const isOverviewPage = window.location.href.includes('m-meine-anzeigen.html');
     const isEditPage = window.location.href.includes('p-anzeige-bearbeiten.html');
     const isConfirmPage = window.location.href.includes('bestaetigung.html');
@@ -66,7 +67,7 @@
             grid-template-columns: 1fr minmax(auto, 1100px) 1fr !important;
         }
 
-        /* Container-Breite anpassen und Zentrierung reparieren - 1100px */
+        /* Container-Breite anpassen und Zentrierung reparieren - Mit absoluter maximaler CSS-Spezifität! */
         html.is-overview-page body .site-base--content,
         html.is-overview-page body .l-page-wrapper,
         html.is-overview-page body .l-container,
@@ -110,13 +111,16 @@
             display: flex !important;
             flex-direction: row !important;
             padding-left: 0px !important;
-            gap: 12px !important; /* Erhöhter Abstand zwischen den Items */
+            gap: 12px !important; 
+        }
+
+        .jsx-1176518552.userbadges--item {
+            padding-left: 0px !important;
         }
         
-        /* Verhindert den Mauszeiger-Wechsel (Hand) bei den Badges */
+        /* Verhindert den Mauszeiger-Wechsel (Hand) bei den Badges auf allen Ebenen */
         .jsx-1176518552.userbadges--item,
-        .jsx-1176518552.ownprofile-badges.userbadges button { 
-            padding-left: 0px !important; 
+        .jsx-1176518552.userbadges--item * { 
             cursor: default !important;
         }
 
@@ -128,7 +132,10 @@
         }
 
         .jsx-3029977195.UserProfile--Info { width: 530px !important; }
-        .jsx-1176518552.text-left.text-onInteractiveContainer.user--trx-overview { width: 300px !important; padding-left: 0px !important; }
+        .jsx-1176518552.text-left.text-onInteractiveContainer.user--trx-overview { 
+            width: 300px !important; 
+            padding-left: 0px !important; 
+        }
 
         .jsx-3029977195.mt-xxsmall.flex.flex-col.content-between.gap-small.pl-large.text-bodyRegular.text-onBackgroundSubdued { 
             row-gap: 8px !important; 
@@ -142,48 +149,6 @@
             padding-left: 0px !important;
             padding-top: 0px !important;
         }
-
-        /* ----------------------------------------------------
-           ÜBERSICHTSSEITE ("Meine Anzeigen") 
-           ---------------------------------------------------- */
-        
-        /* Grid Layout (Spalte 2 auf 570px verbreitert) */
-        .custom-ad-grid {
-            display: grid !important;
-            width: 100% !important;
-            grid-template-columns: 200px 570px auto !important;
-        }
-
-        /* Margin-Korrektur für die 3. Spalte (Footer-Div) */
-        .custom-ad-grid .mt-xsmall { margin-top: 0px !important; }
-
-        /* Abstände der Titel */
-        .mx-none.my-xsmall.text-title4 { margin-top: 4px !important; margin-bottom: 6px !important; }
-        .mx-none.my-xsmall.text-title3.text-secondary { margin-top: 6px !important; margin-bottom: 6px !important; }
-
-        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            justify-content: flex-end !important;
-            align-content: flex-start !important;
-            gap: 7px !important; /* Abstand der Buttons auf 7px reduziert */
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important;
-        }
-        
-        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
-            margin: 0 !important;
-            width: auto !important;
-        }
-
-        .custom-buttons-wrapper {
-            display: flex !important;
-            gap: 7px !important; /* Abstand der Buttons auf 7px reduziert */
-            justify-content: flex-end !important;
-            margin: 0 !important;
-        }
-        .is-overview-page .custom-buttons-wrapper { flex-basis: 100% !important; }
 
         /* Basis-Design unserer lila Buttons */
         .custom-purple-btn {
@@ -208,6 +173,46 @@
             border-color: #D1C4E9 !important; 
             color: #5A33AE !important; 
         }
+
+        /* ----------------------------------------------------
+           1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
+           ---------------------------------------------------- */
+        
+        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt (Spalte 2 auf 570px verbreitert) */
+        .custom-ad-grid {
+            display: grid !important;
+            width: 100% !important;
+            grid-template-columns: 200px 570px auto !important;
+        }
+
+        /* Margin-Korrektur für die 3. Spalte (Footer-Div) */
+        .custom-ad-grid .mt-xsmall {
+            margin-top: 0px !important;
+        }
+
+        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            justify-content: flex-end !important; /* Buttons rechtsbündig in der 3. Spalte */
+            align-content: flex-start !important;
+            gap: 8px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100% !important; /* Zwingt den Container auf volle Breite, um flex-end zu garantieren */
+        }
+        
+        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
+            margin: 0 !important;
+            width: auto !important;
+        }
+
+        .custom-buttons-wrapper {
+            display: flex !important;
+            gap: 8px !important;
+            justify-content: flex-end !important; /* Buttons rechtsbündig */
+            margin: 0 !important;
+        }
+        .is-overview-page .custom-buttons-wrapper { flex-basis: 100% !important; } /* Zwingt custom Buttons in eine neue Zeile */
 
         /* Strenge Zwangshöhe für Buttons */
         .is-overview-page .custom-purple-btn,
@@ -240,8 +245,9 @@
         }
 
         /* ----------------------------------------------------
-           DETAILSEITE & BEARBEITEN-SEITE
+           2. DETAILSEITE & BEARBEITEN-SEITE
            ---------------------------------------------------- */
+           
         .is-detail-page .custom-purple-btn, 
         .is-edit-page .custom-purple-btn {
             height: 44px !important;
@@ -249,7 +255,9 @@
             padding: 0 16px !important;
             font-size: 14px !important;
         }
+
         .is-detail-page #pvap-mngad-stats { width: 150px !important; }
+        
         .is-detail-page .manageadbox--actions, .is-detail-page #pvap-mngad-actions {
             display: flex !important; flex-wrap: wrap !important; gap: 8px !important;
             justify-content: flex-end !important; list-style: none !important; margin-top: 15px !important;
@@ -280,6 +288,9 @@
         document.body.appendChild(spinnerContainer);
     }
 
+    // ==========================================
+    // BUTTON LOGIK & METADATEN FETCHING
+    // ==========================================
     function createBtn(text, icon, click) {
         const b = document.createElement('button');
         b.className = 'custom-purple-btn';
@@ -337,17 +348,17 @@
             const userInfoUl = document.querySelector('.m-none.flex.gap-xxlarge.pl-none.pt-large.text-onBackgroundSubdued');
             const infoIconContainer = document.querySelector('.pl-xsmall.pt-\\[10px\\]');
             
+            // Lösche das Info-Icon komplett
             if (infoIconContainer) infoIconContainer.remove();
 
             if (targetContainer) {
-                // 1. Badges verschieben und Antwortzeit umbauen
+                // 1. Badges über die UserProfile--Info verschieben anstatt ans Ende!
                 if (badgesUl && !badgesUl.dataset.moved) {
                     badgesUl.dataset.moved = 'true';
                     
-                    // VOR UserProfile--Info verschieben anstatt ans Ende!
                     const userProfileInfo = targetContainer.querySelector('.UserProfile--Info');
                     if (userProfileInfo) {
-                        targetContainer.insertBefore(badgesUl, userProfileInfo);
+                        targetContainer.insertBefore(badgesUl, userProfileInfo); // VOR Info-Zeile einfügen!
                     } else {
                         targetContainer.appendChild(badgesUl);
                     }
@@ -361,24 +372,27 @@
                             // Suche nach Stunden, Minuten, Tagen, Wochen
                             const match = replyLi.textContent.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
                             if (match) {
-                                let unit = '';
-                                if (match[2].toLowerCase().includes('stunde')) unit = 'h';
-                                else if (match[2].toLowerCase().includes('minute')) unit = 'm';
-                                else if (match[2].toLowerCase().includes('tage') || match[2].toLowerCase().includes('tag')) unit = 'T';
-                                else if (match[2].toLowerCase().includes('woche')) unit = 'W';
+                                let val = match[1];
+                                let type = match[2].toLowerCase();
+                                let timeStr = '';
                                 
-                                timeText = `Antwortet in <${match[1]}${unit}`;
+                                if (type.includes('stunde')) timeStr = val + 'h';
+                                else if (type.includes('minute')) timeStr = val + 'm';
+                                else if (type.includes('tag')) timeStr = val + (val === '1' ? ' Tag' : ' Tage');
+                                else if (type.includes('woche')) timeStr = val + (val === '1' ? ' Woche' : ' Wochen');
+                                
+                                timeText = `Antwortet innerhalb ${timeStr}`;
                             } else {
                                 timeText = replyLi.textContent
-                                    .replace('Antwortet in der Regel innerhalb von', 'Antwortet in <')
-                                    .replace('wenigen Minuten', '1m')
+                                    .replace(/Antwortet in der Regel innerhalb von/i, 'Antwortet innerhalb')
+                                    .replace(/wenigen Minuten/i, '1m')
                                     .trim();
                             }
 
                             const newBadgeLi = document.createElement('li');
                             newBadgeLi.className = 'jsx-1176518552 userbadges--item';
                             newBadgeLi.innerHTML = `
-                                <button data-testid="user-badge" aria-haspopup="dialog" class="jsx-2505060003 bg-transparent h-auto min-h-none p-none" style="cursor: default;">
+                                <button data-testid="user-badge" aria-haspopup="dialog" class="jsx-2505060003 bg-transparent h-auto min-h-none p-none">
                                     <div class="jsx-464155839 ActivityIndicator text-bodySmall bg-accentContainer text-onAccentContainer rounded-full">
                                         ${svgIcon ? svgIcon.outerHTML.replace(/w-\w+ h-\w+/, 'w-small h-small text-onAccentContainer') : ''}
                                         <span class="jsx-464155839 ActivityIndicator--Name">${timeText}</span>
@@ -523,21 +537,26 @@
                             const featureSection = card.querySelector('#feature-offer-section');
                             if (featureSection) featureSection.remove();
                             
-                            // Leeres Wrapper-Div von Kleinanzeigen aufspüren
+                            // Leeres Wrapper-Div von Kleinanzeigen aufspüren, bevor wir den Footer herausholen
                             const oldCardFooterWrapper = card.querySelector('.card-footer');
 
-                            // Footer sicher in ein DIV umbauen
+                            // Footer sicher in ein DIV umbauen, indem wir Nodes verschieben (erhält Klick-Events/React-Listener)
                             const newFooterDiv = document.createElement('div');
                             newFooterDiv.className = 'mt-xsmall';
                             while (footer.firstChild) {
                                 newFooterDiv.appendChild(footer.firstChild);
                             }
                             
-                            // Neues Grid auf den Haupt-Wrapper anwenden (Spalte 2 auf 570px)
+                            // Neues Grid auf den Haupt-Wrapper anwenden (Spalte 2 auf 570px vergrößert)
                             mainWrapper.className = "grid w-full grid-cols-[200px_570px_auto] custom-ad-grid";
+                            
+                            // Neues DIV als 3. Spalte in den Wrapper verschieben
                             mainWrapper.appendChild(newFooterDiv);
+
+                            // Den nun leeren, alten <footer> Tag sauber entfernen
                             footer.remove();
 
+                            // Alten Container löschen, wenn er leer ist
                             if (oldCardFooterWrapper) {
                                 oldCardFooterWrapper.remove();
                             }
@@ -583,7 +602,7 @@
                                             statsSection.appendChild(statsUl);
                                         }
 
-                                        // Optische Ausrichtung
+                                        // Optische Ausrichtung der Besucher/Gemerkt Zeile
                                         statsUl.style.flexWrap = 'wrap';
                                         statsUl.style.rowGap = '4px';
                                         statsUl.style.columnGap = '12px';
@@ -595,13 +614,13 @@
                                             li.style.gap = '4px';
                                         });
 
-                                        // 2. Extrahiere "Endet am"
+                                        // 2. Extrahiere "Endet am" aus dem Preis-Block oben und LÖSCHE es dort
                                         let endDateStr = "Unbekannt";
                                         const oldEndDateSpan = card.querySelector('.managead-listitem-enddate');
                                         if (oldEndDateSpan) {
                                             endDateStr = oldEndDateSpan.textContent.trim();
                                             const oldLi = oldEndDateSpan.closest('li');
-                                            if (oldLi) oldLi.remove(); 
+                                            if (oldLi) oldLi.remove(); // Das alte <li> restlos löschen!
                                         }
 
                                         // Berechne Tage online
@@ -633,20 +652,20 @@
                                         const avgVisitors = (visitors / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
                                         const avgWatchers = (watchers / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
 
+                                        // Einheitliche Icon-Klasse ohne das fehlerhafte 'fill-current'
                                         const svgClass = "shrink-0 block align-middle w-medium h-medium text-onSurfaceNonessential";
 
-                                        // 3. NEUE ZEILE 1 (Erstellt & Endet) erzeugen
+                                        // 3. NEUE ZEILE 1 (Erstellt & Endet) erzeugen und VOR die Besucher-Liste setzen
                                         if (!statsSection.querySelector('.custom-dates-ul')) {
                                             const datesUl = document.createElement('ul');
                                             datesUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-dates-ul';
                                             datesUl.style.flexWrap = 'wrap';
                                             datesUl.style.rowGap = '4px';
                                             datesUl.style.columnGap = '12px';
-                                            datesUl.style.marginBottom = '4px'; 
+                                            datesUl.style.marginBottom = '4px'; // Abstand zur nächsten Zeile
 
-                                            let datesHtml = '';
                                             if (details.date) {
-                                                datesHtml += `
+                                                datesUl.innerHTML += `
                                                     <li class="custom-stat-li" title="Erstellt am">
                                                         <span class="inline-block-icon" style="display: flex; align-items: center;">
                                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
@@ -662,7 +681,7 @@
                                             }
 
                                             if (endDateStr !== "Unbekannt") {
-                                                datesHtml += `
+                                                datesUl.innerHTML += `
                                                     <li class="custom-stat-li" title="Endet am">
                                                         <span class="inline-block-icon" style="display: flex; align-items: center;">
                                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
@@ -678,7 +697,8 @@
                                                     </li>
                                                 `;
                                             }
-                                            datesUl.innerHTML = datesHtml;
+                                            
+                                            // VOR die originale Besucher-Statistik einfügen
                                             statsSection.insertBefore(datesUl, statsUl);
                                         }
 
@@ -701,7 +721,7 @@
                                             statsUl.appendChild(avgLi);
                                         }
 
-                                        // 5. NEUE ZEILE 3 (Ort)
+                                        // 5. NEUE ZEILE 3 (Ort) erzeugen und NACH der Besucher-Liste setzen
                                         if (details.location && !statsSection.querySelector('.custom-loc-ul')) {
                                             const locUl = document.createElement('ul');
                                             locUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-loc-ul';
@@ -720,11 +740,13 @@
                                                     <span>${details.location}</span>
                                                 </li>
                                             `;
+                                            
+                                            // HINTER die originale Besucher-Statistik einfügen
                                             statsSection.appendChild(locUl);
                                         }
                                     }
 
-                                    // 6. Versandkosten
+                                    // 6. Versandkosten neben dem Preis platzieren
                                     if (details.shipping) {
                                         let priceEl = card.querySelector('.text-title3');
                                         
@@ -828,18 +850,36 @@
                 topContainer = document.createElement('div');
                 topContainer.id = 'custom-top-pagination';
                 
+                // Styles exakt nach Vorlage
                 topContainer.style.position = 'absolute';
                 topContainer.style.left = '50%';
                 topContainer.style.transform = 'translateX(-50%)';
                 topContainer.style.zIndex = '10';
+                topContainer.style.top = '0px';    // Neu vertikal füllend
+                topContainer.style.bottom = '0px'; // Neu vertikal füllend
+                
+                // Zusätzliche Styles zur vertikalen Zentrierung des Nav-Inhalts
+                topContainer.style.display = 'flex';
+                topContainer.style.alignItems = 'center';
 
                 const header = document.getElementById('my-ads-header');
                 if (header) {
-                    const headerFlexBox = header.parentElement;
-                    headerFlexBox.style.display = 'flex';
-                    headerFlexBox.style.alignItems = 'center';
-                    headerFlexBox.style.position = 'relative'; 
-                    header.after(topContainer);
+                    // 1. Erstelle die umschließende Section exakt nach Vorlage
+                    const sectionWrapper = document.createElement('section');
+                    sectionWrapper.dataset.testid = "page-container";
+                    sectionWrapper.className = "bg-surface relative mb-large p-small rounded-small bg-transparent";
+                    
+                    // 2. Füge den Header in die neue Section ein
+                    header.after(sectionWrapper);
+                    sectionWrapper.appendChild(header);
+                    
+                    // 3. Passe Header-Styles an
+                    header.classList.add('text-title2', 'text-onSurfaceSubdued');
+                    header.style.marginBottom = '0px';
+                    header.style.width = '200px';
+
+                    // 4. Füge die geklonte Paginierung in die gleiche Section ein
+                    sectionWrapper.appendChild(topContainer);
                 }
 
                 topContainer.addEventListener('click', (e) => {

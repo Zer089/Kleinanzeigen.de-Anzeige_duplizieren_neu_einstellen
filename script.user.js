@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.51
+// @version       2.5.52
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -62,9 +62,9 @@
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
-        /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1200px in der Mitte) */
+        /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1100px in der Mitte) */
         html.is-overview-page body .site-base {
-            grid-template-columns: 1fr minmax(auto, 1200px) 1fr !important;
+            grid-template-columns: 1fr minmax(auto, 1100px) 1fr !important;
         }
 
         /* Container-Breite anpassen und Zentrierung reparieren - Mit absoluter maximaler CSS-Spezifität! */
@@ -81,7 +81,7 @@
         html.is-overview-page body [aria-labelledby="tabs-all"],
         html.is-overview-page body #tab-panel-all {
             width: 100% !important;
-            max-width: 1200px !important;
+            max-width: 1100px !important;
             margin-left: auto !important;
             margin-right: auto !important;
             box-sizing: border-box !important;
@@ -91,7 +91,7 @@
         html.is-overview-page body ul#my-manageitems-adlist,
         html.is-overview-page body li[data-testid="ad-card"] {
             width: 100% !important;
-            max-width: 1200px !important;
+            max-width: 1100px !important;
             margin-left: 0 !important;
             margin-right: 0 !important;
             box-sizing: border-box !important;
@@ -125,11 +125,11 @@
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
            ---------------------------------------------------- */
         
-        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt (Spalte 2 auf 670px verbreitert) */
+        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt (Spalte 2 auf 570px verbreitert) */
         .custom-ad-grid {
             display: grid !important;
             width: 100% !important;
-            grid-template-columns: 200px 670px auto !important;
+            grid-template-columns: 200px 570px auto !important;
         }
 
         /* Margin-Korrektur für die 3. Spalte (Footer-Div) */
@@ -425,8 +425,8 @@
                                 newFooterDiv.appendChild(footer.firstChild);
                             }
                             
-                            // Neues Grid auf den Haupt-Wrapper anwenden (Spalte 2 auf 670px vergrößert)
-                            mainWrapper.className = "grid w-full grid-cols-[200px_670px_auto] custom-ad-grid";
+                            // Neues Grid auf den Haupt-Wrapper anwenden (Spalte 2 auf 570px vergrößert)
+                            mainWrapper.className = "grid w-full grid-cols-[200px_570px_auto] custom-ad-grid";
                             
                             // Neues DIV als 3. Spalte in den Wrapper verschieben
                             mainWrapper.appendChild(newFooterDiv);

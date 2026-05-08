@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.36
+// @version       2.5.37
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -32,9 +32,10 @@
     if (isEditPage) document.documentElement.classList.add('is-edit-page');
 
     // ==========================================
-    // TRACKING-BLOCKER (DevTools Fix)
+    // TRACKING-BLOCKER (Verbessert: Vermeidet libertyjs DOM-Fehler)
     // ==========================================
-    const blockedKeywords = ['liberty', 'kameleoon', 'pubads', 'gpt.js', 'conversion.js', 'ads.js'];
+    // Erweitert um prebid und casale, um die nervigen CORS-Fehler in der Konsole zu minimieren
+    const blockedKeywords = ['liberty', 'kameleoon', 'pubads', 'gpt.js', 'conversion.js', 'ads.js', 'prebid', 'casalemedia', 'criteo'];
     const originalCreateElement = document.createElement;
     document.createElement = function(tagName) {
         const element = originalCreateElement.call(document, tagName);
@@ -42,7 +43,10 @@
             Object.defineProperty(element, 'src', {
                 set: function(url) {
                     const urlString = url ? String(url) : '';
-                    if (blockedKeywords.some(keyword => urlString.includes(keyword))) return;
+                    if (blockedKeywords.some(keyword => urlString.includes(keyword))) {
+                        // Wir schlucken die Anfrage stillschweigend, ohne Fehler zu werfen
+                        return; 
+                    }
                     this.setAttribute('src', url);
                 },
                 get: function() { return this.getAttribute('src'); }
@@ -91,12 +95,10 @@
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
            ---------------------------------------------------- */
         
-        /* Die Anzeigen-Karte als Ankerpunkt für absolute Positionierung setzen */
         .is-overview-page li[data-testid="ad-card"] {
             position: relative !important;
         }
 
-        /* Befreit den Button-Footer und zwingt ihn kompromisslos nach oben rechts */
         .is-overview-page li[data-testid="ad-card"] .card-footer {
             position: absolute !important;
             top: 16px !important; 
@@ -105,12 +107,10 @@
             z-index: 10 !important;
         }
 
-        /* Überschreiben nerviger Margins von Kleinanzeigen */
         .is-overview-page li[data-testid="ad-card"] .card-footer footer {
             margin-top: 0 !important;
         }
 
-        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet. */
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
@@ -121,13 +121,11 @@
             padding: 0 !important;
         }
         
-        /* Die Listenelemente ihrer Standard-Abstände berauben */
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
             margin: 0 !important;
             width: auto !important;
         }
 
-        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile */
         .custom-buttons-wrapper {
             display: flex !important;
             gap: 8px !important;
@@ -138,7 +136,6 @@
             flex-basis: 100% !important; 
         }
 
-        /* Strenge Zwangshöhe für Buttons */
         .is-overview-page .custom-purple-btn,
         .is-overview-page .custom-native-btn {
             height: 32px !important;
@@ -214,14 +211,15 @@
         return b;
     }
 
-    // Holt unsichtbar die Metadaten einer Anzeige und speichert sie lokal zwischen
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V5_${adId}`; // Cache-Key V5 (Erstellungsdatum umgezogen)
+        const cacheKey = `__KL_AD_DETAILS_V6_${adId}`; 
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
         try {
             const response = await fetch(adUrl);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
             const html = await response.text();
             
             const parser = new DOMParser();
@@ -246,7 +244,7 @@
             sessionStorage.setItem(cacheKey, JSON.stringify(result));
             return result;
         } catch (e) {
-            console.error('Fehler beim Abrufen der Inseratsdetails:', e);
+            console.error('Kleinanzeigen Script - Fehler beim Abrufen der Inseratsdetails (Möglicherweise Netzwerk/CORS):', e);
             return null;
         }
     }
@@ -374,6 +372,9 @@
                 window.__KL_FETCHING_ADS = true; // Lock einschalten
                 
                 (async () => {
+                    // Kurze Initiale Pause, damit die Hauptseite erst in Ruhe laden kann
+                    await new Promise(r => setTimeout(r, 800));
+
                     for (const card of pendingCards) {
                         card.dataset.klDetailsInjected = 'pending'; 
                         
@@ -417,7 +418,7 @@
                                     const endDateSpan = card.querySelector('.managead-listitem-enddate');
                                     if (endDateSpan && !card.querySelector('.custom-date-container')) {
                                         const endDateText = endDateSpan.textContent;
-                                        const dateContainer = endDateSpan.parentElement; // Container, der "Endet am..." hielt
+                                        const dateContainer = endDateSpan.parentElement; 
                                         
                                         dateContainer.classList.add('custom-date-container');
                                         dateContainer.style.display = 'flex';
@@ -478,7 +479,8 @@
                                 }
                             }
                         }
-                        await new Promise(r => setTimeout(r, 250)); 
+                        // Längere Pause zwischen den Fetches, um Netzwerk-Spikes und CORS-Probleme zu vermeiden
+                        await new Promise(r => setTimeout(r, 400)); 
                     }
                     window.__KL_FETCHING_ADS = false;
                 })();

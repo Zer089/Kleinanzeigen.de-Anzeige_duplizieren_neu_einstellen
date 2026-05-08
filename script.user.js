@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.64
+// @version       2.5.65
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -143,7 +143,7 @@
         .m-none.flex.gap-xxlarge.pl-none.pt-large.text-onBackgroundSubdued { 
             gap: 8px !important; 
             row-gap: 8px !important; 
-            column-gap: 8px !important;
+            column-gap: 15px !important;
         }
         
         .is-overview-page .user--trx-overview { width: 300px !important; padding-left: 0px !important; }
@@ -365,6 +365,38 @@
                         targetDiv.appendChild(userInfoUl);
                         userInfoUl.style.setProperty('padding-left', '0px', 'important');
                         userInfoUl.style.setProperty('padding-top', '0px', 'important');
+                        
+                        // Reply-Element (Antwortzeit) in die Badges verschieben und Text kürzen
+                        if (badgesUl) {
+                            const replyLi = Array.from(userInfoUl.querySelectorAll('li')).find(li => li.textContent.includes('Antwortet'));
+                            if (replyLi) {
+                                // Design für die Integration in die Badge-Leiste anpassen
+                                replyLi.style.display = 'flex';
+                                replyLi.style.alignItems = 'center';
+                                replyLi.style.height = '24px';
+                                replyLi.style.fontSize = '12px'; // Optische Anpassung an Badges
+                                
+                                // Textknoten suchen und umschreiben
+                                Array.from(replyLi.childNodes).forEach(node => {
+                                    if (node.nodeType === Node.TEXT_NODE && node.textContent.includes('Antwortet')) {
+                                        const match = node.textContent.match(/(\d+)\s*(Stunden?|Minuten?)/i);
+                                        if (match) {
+                                            const unit = match[2].toLowerCase().includes('stunde') ? 'h' : 'm';
+                                            node.textContent = ` Antwortet innerhalb ${match[1]}${unit}`;
+                                        } else {
+                                            // Fallback
+                                            node.textContent = node.textContent
+                                                .replace('in der Regel innerhalb von', 'innerhalb')
+                                                .replace('wenigen Minuten', '<1m')
+                                                .replace('Stunden', 'h')
+                                                .replace('Stunde', 'h')
+                                                .replace('Minuten', 'm');
+                                        }
+                                    }
+                                });
+                                badgesUl.appendChild(replyLi); // Direkt neben die Badges schieben
+                            }
+                        }
                     }
 
                     // Neue Style-Vorgaben für Header und Badges-Container anwenden

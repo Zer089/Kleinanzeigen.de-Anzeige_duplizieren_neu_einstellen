@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.58
+// @version       2.5.59
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -318,23 +318,33 @@
                 const badgesContainer = profileMain.querySelector('[data-testid="userbadges-container"]');
                 const badgesUl = badgesContainer ? badgesContainer.querySelector('ul.ownprofile-badges.userbadges') : null;
                 const targetDiv = profileMain.querySelector('.mt-xxsmall.flex.flex-col.content-between.gap-small.pl-large');
+                const userInfoUl = profileMain.querySelector('ul[data-testid="user-info"]');
 
-                if (badgesUl && targetDiv) {
-                    const h2 = targetDiv.querySelector('h2');
-                    if (h2) {
-                        h2.after(badgesUl); // Direkt unter den Namen schieben
-                    } else {
-                        targetDiv.appendChild(badgesUl);
+                if (targetDiv) {
+                    if (badgesUl) {
+                        const h2 = targetDiv.querySelector('h2');
+                        if (h2) {
+                            h2.after(badgesUl); // Direkt unter den Namen schieben
+                        } else {
+                            targetDiv.appendChild(badgesUl);
+                        }
+
+                        // Flex-Layout für die Badges erzwingen (nebeneinander)
+                        badgesUl.style.display = 'flex';
+                        badgesUl.style.flexDirection = 'row';
+                        badgesUl.style.flexWrap = 'wrap';
+                        badgesUl.style.gap = '8px';
+                        badgesUl.style.padding = '0';
+                        badgesUl.style.margin = '4px 0 8px 0';
+                        badgesUl.style.listStyle = 'none';
                     }
 
-                    // Flex-Layout für die Badges erzwingen (nebeneinander)
-                    badgesUl.style.display = 'flex';
-                    badgesUl.style.flexDirection = 'row';
-                    badgesUl.style.flexWrap = 'wrap';
-                    badgesUl.style.gap = '8px';
-                    badgesUl.style.padding = '0';
-                    badgesUl.style.margin = '4px 0 8px 0';
-                    badgesUl.style.listStyle = 'none';
+                    // User Info verschieben und Padding anpassen
+                    if (userInfoUl) {
+                        targetDiv.appendChild(userInfoUl);
+                        userInfoUl.style.setProperty('padding-left', '125px', 'important');
+                        userInfoUl.style.setProperty('padding-top', '10px', 'important');
+                    }
 
                     profileMain.dataset.klProfileReordered = 'true';
                 }

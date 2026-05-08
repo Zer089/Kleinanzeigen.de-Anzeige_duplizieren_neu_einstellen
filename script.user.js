@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.55
+// @version       2.5.56
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -132,32 +132,22 @@
             grid-template-columns: 200px 570px auto !important;
         }
 
-        /* Abstände der Text-Elemente anpassen */
-        .is-overview-page .mb-xsmall.text-bodySmall.text-onSurfaceNonessential {
-            margin-bottom: 0px !important;
-        }
-
-        .is-overview-page .mx-none.my-xsmall.text-title4 {
-            margin-top: 4px !important;
-            margin-bottom: 6px !important;
-        }
-
-        .is-overview-page .mx-none.my-xsmall.text-title3.text-secondary {
-            margin-top: 6px !important;
-            margin-bottom: 6px !important;
-        }
-
         /* Margin-Korrektur für die 3. Spalte (Footer-Div) */
         .custom-ad-grid .mt-xsmall {
             margin-top: 0px !important;
         }
+
+        /* User-Spezifische Anpassungen der Abstände auf der Übersicht */
+        .is-overview-page .mb-xsmall.text-bodySmall.text-onSurfaceNonessential { margin-bottom: 0px !important; }
+        .is-overview-page .mx-none.my-xsmall.text-title4 { margin-top: 4px !important; margin-bottom: 6px !important; }
+        .is-overview-page .mx-none.my-xsmall.text-title3.text-secondary { margin-top: 6px !important; margin-bottom: 6px !important; }
 
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
             justify-content: flex-end !important; /* Buttons rechtsbündig in der 3. Spalte */
             align-content: flex-start !important;
-            gap: 7px !important; /* Abstand der Buttons auf 7px reduziert */
+            gap: 7px !important;
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important; /* Zwingt den Container auf volle Breite, um flex-end zu garantieren */
@@ -170,7 +160,7 @@
 
         .custom-buttons-wrapper {
             display: flex !important;
-            gap: 7px !important; /* Abstand der Custom-Buttons auf 7px reduziert */
+            gap: 7px !important;
             justify-content: flex-end !important; /* Buttons rechtsbündig */
             margin: 0 !important;
         }
@@ -569,7 +559,6 @@
                                                     today.setHours(0, 0, 0, 0);
                                                     const diffTime = Math.abs(today - createdDate);
                                                     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                                                    const daysText = diffDays === 1 ? 'Tag' : 'Tage';
                                                     
                                                     datesUl.innerHTML += `
                                                         <li class="custom-stat-li" title="Online seit">
@@ -579,12 +568,12 @@
                                                                     <polyline points="12 6 12 12"></polyline>
                                                                 </svg>
                                                             </span>
-                                                            <span>${diffDays} ${daysText}</span>
+                                                            <span>${diffDays} Tage</span>
                                                         </li>
                                                     `;
 
-                                                    // NEU: Durchschnittliche Besucher und Gemerkt pro Tag berechnen
-                                                    let calcDays = Math.max(1, diffDays); // Verhindert Division durch 0 am ersten Tag
+                                                    // Durchschnittliche Besucher und Gemerkt pro Tag berechnen
+                                                    let calcDays = Math.max(1, diffDays); // Verhindert Division durch 0
                                                     let visitors = 0;
                                                     let favorites = 0;
 
@@ -597,7 +586,6 @@
                                                         if (favMatch) favorites = parseInt(favMatch[1], 10);
                                                     });
 
-                                                    // Runden auf 1 Nachkommastelle, ".0" entfernen und Dezimalpunkt durch Komma ersetzen
                                                     const avgVis = (visitors / calcDays).toFixed(1).replace('.0', '').replace('.', ',');
                                                     const avgFav = (favorites / calcDays).toFixed(1).replace('.0', '').replace('.', ',');
 
@@ -747,22 +735,37 @@
             let topContainer = document.getElementById('custom-top-pagination');
 
             if (!topContainer) {
+                const header = document.getElementById('my-ads-header');
+                if (!header) return;
+
+                // Erstelle den umschließenden Section-Container exakt nach Vorgabe
+                const sectionContainer = document.createElement('section');
+                sectionContainer.dataset.testid = "page-container";
+                sectionContainer.className = "bg-surface relative mb-large p-small rounded-small bg-transparent";
+                
+                // Füge die neue Section dort ein, wo der Header war
+                header.after(sectionContainer);
+
+                // Passe den Header an und verschiebe ihn in die neue Section
+                header.className = "text-title2 text-onSurfaceSubdued";
+                header.style.marginBottom = "0px";
+                header.style.width = "200px";
+                sectionContainer.appendChild(header);
+
+                // Erstelle den Paginierungs-Container
                 topContainer = document.createElement('div');
                 topContainer.id = 'custom-top-pagination';
                 
-                topContainer.style.position = 'absolute';
-                topContainer.style.left = '50%';
-                topContainer.style.transform = 'translateX(-50%)';
-                topContainer.style.zIndex = '10';
+                // Wende die exakten Inline-Styles an
+                topContainer.style.position = "absolute";
+                topContainer.style.left = "50%";
+                topContainer.style.transform = "translateX(-50%)";
+                topContainer.style.zIndex = "10";
+                topContainer.style.top = "0px";
+                topContainer.style.bottom = "0px";
 
-                const header = document.getElementById('my-ads-header');
-                if (header) {
-                    const headerFlexBox = header.parentElement;
-                    headerFlexBox.style.display = 'flex';
-                    headerFlexBox.style.alignItems = 'center';
-                    headerFlexBox.style.position = 'relative'; 
-                    header.after(topContainer);
-                }
+                // Füge den Paginierungs-Container in die Section ein
+                sectionContainer.appendChild(topContainer);
 
                 topContainer.addEventListener('click', (e) => {
                     const btn = e.target.closest('button');

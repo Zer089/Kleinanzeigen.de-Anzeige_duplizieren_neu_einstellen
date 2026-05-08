@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.53
+// @version       2.5.54
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -138,7 +138,7 @@
         }
 
         .is-overview-page .mx-none.my-xsmall.text-title4 {
-            margin-top: 6px !important;
+            margin-top: 4px !important;
             margin-bottom: 6px !important;
         }
 
@@ -556,6 +556,33 @@
                                                         <span class="managead-listitem-enddate">${endDateStr}</span>
                                                     </li>
                                                 `;
+                                            }
+
+                                            // Tage berechnen, die die Anzeige schon online ist
+                                            if (details.date && details.date !== "Unbekannt") {
+                                                const parts = details.date.split('.');
+                                                if (parts.length === 3) {
+                                                    const createdDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+                                                    const today = new Date();
+                                                    // Setze Uhrzeit auf Mitternacht für beide, um nur Tage zu zählen
+                                                    createdDate.setHours(0, 0, 0, 0);
+                                                    today.setHours(0, 0, 0, 0);
+                                                    const diffTime = Math.abs(today - createdDate);
+                                                    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                                                    const daysText = diffDays === 1 ? 'Tag' : 'Tagen';
+                                                    
+                                                    datesUl.innerHTML += `
+                                                        <li class="custom-stat-li" title="Online seit">
+                                                            <span class="inline-block-icon" style="display: flex; align-items: center;">
+                                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
+                                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                                    <polyline points="12 6 12 12"></polyline>
+                                                                </svg>
+                                                            </span>
+                                                            <span>${diffDays} ${daysText}</span>
+                                                        </li>
+                                                    `;
+                                                }
                                             }
                                             
                                             // VOR die originale Besucher-Statistik einfügen

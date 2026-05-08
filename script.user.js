@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.47
+// @version       2.5.48
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -62,8 +62,12 @@
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
+        /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1200px in der Mitte) */
+        html.is-overview-page body .site-base {
+            grid-template-columns: 1fr minmax(auto, 1200px) 1fr !important;
+        }
+
         /* Container-Breite anpassen und Zentrierung reparieren - Mit absoluter maximaler CSS-Spezifität! */
-        html.is-overview-page body .site-base,
         html.is-overview-page body .site-base--content,
         html.is-overview-page body .l-page-wrapper,
         html.is-overview-page body .l-container,

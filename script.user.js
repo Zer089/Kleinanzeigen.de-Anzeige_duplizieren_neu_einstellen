@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.71
+// @version       2.5.72
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -850,36 +850,22 @@
                 topContainer = document.createElement('div');
                 topContainer.id = 'custom-top-pagination';
                 
-                // Styles exakt nach Vorlage
                 topContainer.style.position = 'absolute';
                 topContainer.style.left = '50%';
-                topContainer.style.transform = 'translateX(-50%)';
+                topContainer.style.top = '50%';
+                topContainer.style.transform = 'translate(-50%, -50%)';
                 topContainer.style.zIndex = '10';
-                topContainer.style.top = '0px';    // Neu vertikal füllend
-                topContainer.style.bottom = '0px'; // Neu vertikal füllend
-                
-                // Zusätzliche Styles zur vertikalen Zentrierung des Nav-Inhalts
-                topContainer.style.display = 'flex';
-                topContainer.style.alignItems = 'center';
 
                 const header = document.getElementById('my-ads-header');
                 if (header) {
-                    // 1. Erstelle die umschließende Section exakt nach Vorlage
-                    const sectionWrapper = document.createElement('section');
-                    sectionWrapper.dataset.testid = "page-container";
-                    sectionWrapper.className = "bg-surface relative mb-large p-small rounded-small bg-transparent";
+                    const headerFlexBox = header.closest('.flex.flex-row.justify-between') || header.parentElement;
+                    headerFlexBox.style.display = 'flex';
+                    headerFlexBox.style.alignItems = 'center';
+                    headerFlexBox.style.position = 'relative'; 
+                    headerFlexBox.style.height = '40px';
                     
-                    // 2. Füge den Header in die neue Section ein
-                    header.after(sectionWrapper);
-                    sectionWrapper.appendChild(header);
-                    
-                    // 3. Passe Header-Styles an
-                    header.classList.add('text-title2', 'text-onSurfaceSubdued');
                     header.style.marginBottom = '0px';
-                    header.style.width = '200px';
-
-                    // 4. Füge die geklonte Paginierung in die gleiche Section ein
-                    sectionWrapper.appendChild(topContainer);
+                    header.after(topContainer);
                 }
 
                 topContainer.addEventListener('click', (e) => {

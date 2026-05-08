@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.33
+// @version       2.5.34
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -166,14 +166,6 @@
             align-items: center;
             gap: 4px;
         }
-        
-        /* Styling für die Versandinfo neben dem Preis */
-        .custom-shipping-info {
-            font-size: 13px !important;
-            color: #555 !important;
-            font-weight: normal !important;
-            white-space: nowrap;
-        }
 
         /* ----------------------------------------------------
            2. DETAILSEITE & BEARBEITEN-SEITE
@@ -234,7 +226,7 @@
 
     // Holt unsichtbar die Metadaten einer Anzeige und speichert sie lokal zwischen
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V2_${adId}`; // Cache-Key V2 wegen neuer Versand-Info
+        const cacheKey = `__KL_AD_DETAILS_V3_${adId}`; // Cache-Key V3 (Erzwingt frischen Ladevorgang nach Update)
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
@@ -242,7 +234,6 @@
             const response = await fetch(adUrl);
             const html = await response.text();
             
-            // HTML im Hintergrund analysieren ohne es anzuzeigen
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
 
@@ -262,7 +253,7 @@
             let shipping = shippingEl ? shippingEl.textContent.trim() : '';
 
             const result = { location, date, shipping };
-            sessionStorage.setItem(cacheKey, JSON.stringify(result)); // Cache für schnelles Neuladen
+            sessionStorage.setItem(cacheKey, JSON.stringify(result));
             return result;
         } catch (e) {
             console.error('Fehler beim Abrufen der Inseratsdetails:', e);
@@ -271,7 +262,6 @@
     }
 
     const inject = () => {
-        // --- LOGIK FÜR ÜBERSICHTS- UND DETAILSEITE ---
         if (isOverviewPage || isDetailPage) {
             const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
             editLinks.forEach(link => {
@@ -391,11 +381,11 @@
         if (isOverviewPage && !window.__KL_FETCHING_ADS) {
             const pendingCards = document.querySelectorAll('li[data-testid="ad-card"]:not([data-kl-details-injected])');
             if (pendingCards.length > 0) {
-                window.__KL_FETCHING_ADS = true; // Lock einschalten, damit sich Intervalle nicht überlappen
+                window.__KL_FETCHING_ADS = true; // Lock einschalten
                 
                 (async () => {
                     for (const card of pendingCards) {
-                        card.dataset.klDetailsInjected = 'pending'; // Sofort markieren, um Doppel-Fetches zu vermeiden
+                        card.dataset.klDetailsInjected = 'pending'; 
                         
                         const titleLink = card.querySelector('a[href*="/s-anzeige/"]');
                         const editLink = card.querySelector('a[href*="adId="]');
@@ -409,7 +399,7 @@
                                 const details = await fetchAdDetails(adUrl, adId);
                                 
                                 if (details) {
-                                    // 1. Ort und Datum als HTML unter dem Titel zusammenbauen
+                                    // 1. Ort und Datum unter Titel
                                     const infoDiv = document.createElement('div');
                                     infoDiv.className = 'custom-ad-extra-info';
                                     infoDiv.innerHTML = `
@@ -432,37 +422,46 @@
                                     `;
                                     titleLink.after(infoDiv);
 
-                                    // 2. Versandkosten rechts neben dem Preis platzieren
+                                    // 2. Versandkosten neben dem Preis platzieren
                                     if (details.shipping) {
-                                        // Zielsichere Suche nach dem Element, das den Preis enthält ("€" oder "VB")
-                                        const priceCandidates = Array.from(card.querySelectorAll('p, span')).filter(el => 
-                                            (el.textContent.includes('€') || el.textContent.includes('VB')) &&
-                                            !el.classList.contains('custom-shipping-info') &&
-                                            el.children.length === 0
-                                        );
+                                        // Wir suchen nach dem genauen <li> oder einem Fallback-Element mit dem Preis
+                                        let priceEl = card.querySelector('.text-title3');
+                                        
+                                        if (!priceEl) {
+                                            priceEl = Array.from(card.querySelectorAll('li, p, span, div')).find(el => 
+                                                (el.textContent.includes('€') || el.textContent.includes('VB')) &&
+                                                !el.classList.contains('custom-shipping-info') &&
+                                                el.children.length === 0
+                                            );
+                                        }
 
-                                        if (priceCandidates.length > 0) {
-                                            const priceEl = priceCandidates[0];
+                                        if (priceEl && !priceEl.querySelector('.custom-shipping-info')) {
                                             const shipSpan = document.createElement('span');
                                             shipSpan.className = 'custom-shipping-info';
+                                            
+                                            // Optische Anpassung für den Versand neben dem dicken Preis
+                                            shipSpan.style.fontSize = '12px';
+                                            shipSpan.style.fontWeight = 'normal';
+                                            shipSpan.style.color = '#757575'; 
+                                            shipSpan.style.marginLeft = '4px';
                                             shipSpan.textContent = details.shipping;
                                             
-                                            const parent = priceEl.parentElement;
-                                            parent.style.display = 'flex';
-                                            parent.style.alignItems = 'center';
-                                            parent.style.gap = '8px';
-                                            parent.style.flexWrap = 'wrap'; 
+                                            // Das übergeordnete Element (li) in eine Flexbox umwandeln
+                                            priceEl.style.display = 'flex';
+                                            priceEl.style.alignItems = 'baseline'; // Baseline ist wichtig, damit das Euro-Zeichen und das "+ Versand" auf einer Linie bleiben
+                                            priceEl.style.gap = '4px';
+                                            priceEl.style.flexWrap = 'wrap'; 
                                             
-                                            priceEl.after(shipSpan);
+                                            // Direkt als Kind anhängen, dann bleibt es innerhalb des <li>
+                                            priceEl.appendChild(shipSpan);
                                         }
                                     }
                                 }
                             }
                         }
-                        // Höfliche Pause von 250ms einlegen, um den Server nicht zu fluten
                         await new Promise(r => setTimeout(r, 250)); 
                     }
-                    window.__KL_FETCHING_ADS = false; // Lock aufheben
+                    window.__KL_FETCHING_ADS = false;
                 })();
             }
         }
@@ -486,7 +485,6 @@
                 showLoading();
                 saveBtn.click();
                 
-                // Pop-Up zum Hochschieben automatisch überspringen
                 setInterval(() => {
                     const skip = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Ohne Hochschieben weiter'));
                     if (skip) skip.click();

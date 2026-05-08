@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.60
+// @version       2.5.61
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -121,17 +121,16 @@
             color: #5A33AE !important; 
         }
 
+        /* Profilbox Anpassungen (Breiten & Abstände) */
+        .is-overview-page .userbadges--item { padding-left: 0px !important; }
+        .is-overview-page .ownprofile-main .text-title2.text-onSurfaceSubdued { width: 530px !important; }
+        .is-overview-page .ownprofile-badges.userbadges { width: 530px !important; }
+        .is-overview-page .UserProfile--Info { width: 530px !important; }
+        .is-overview-page .ownprofile-main .mt-xxsmall.flex.flex-col.content-between { row-gap: 5px !important; }
+
         /* ----------------------------------------------------
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
            ---------------------------------------------------- */
-
-        /* Überschrift und Header-Zeile */
-        .is-overview-page .text-title2.text-onSurfaceSubdued {
-            margin-bottom: 0px !important;
-        }
-        .is-overview-page .flex.flex-row.justify-between {
-            height: 40px !important;
-        }
         
         /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt (Spalte 2 auf 570px verbreitert) */
         .custom-ad-grid {

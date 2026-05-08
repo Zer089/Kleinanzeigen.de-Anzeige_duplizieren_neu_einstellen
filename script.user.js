@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.39
+// @version       2.5.40
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -90,22 +90,17 @@
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
            ---------------------------------------------------- */
         
-        .is-overview-page li[data-testid="ad-card"] { position: relative !important; }
-
-        .is-overview-page li[data-testid="ad-card"] .card-footer {
-            position: absolute !important;
-            top: 16px !important; 
-            right: 16px !important;
-            max-width: 50% !important; 
-            z-index: 10 !important;
+        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt */
+        .custom-ad-grid {
+            display: grid !important;
+            width: 100% !important;
+            grid-template-columns: 200px 330px auto !important;
         }
-
-        .is-overview-page li[data-testid="ad-card"] .card-footer footer { margin-top: 0 !important; }
 
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
-            justify-content: flex-end !important;
+            justify-content: flex-start !important; /* Buttons linksbündig in der neuen 3. Spalte */
             align-content: flex-start !important;
             gap: 8px !important;
             margin: 0 !important;
@@ -120,10 +115,10 @@
         .custom-buttons-wrapper {
             display: flex !important;
             gap: 8px !important;
-            justify-content: flex-end !important;
+            justify-content: flex-start !important;
             margin: 0 !important;
         }
-        .is-overview-page .custom-buttons-wrapper { flex-basis: 100% !important; }
+        .is-overview-page .custom-buttons-wrapper { flex-basis: 100% !important; } /* Zwingt custom Buttons in eine neue Zeile */
 
         /* Strenge Zwangshöhe für Buttons */
         .is-overview-page .custom-purple-btn,
@@ -211,7 +206,7 @@
     }
 
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V9_${adId}`; // Cache V9 (Perfektes 3-Zeilen Layout, SVG Outlines)
+        const cacheKey = `__KL_AD_DETAILS_V10_${adId}`; 
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
@@ -360,6 +355,33 @@
 
                 container.append(wrapper);
                 container.dataset.klInjected = 'true';
+
+                // --- NEU: 3-SPALTEN GRID LAYOUT (Vom User gewünscht) ---
+                if (isOverviewPage) {
+                    const card = container.closest('li[data-testid="ad-card"]');
+                    if (card) {
+                        const footer = card.querySelector('footer');
+                        const infoCol = card.querySelector('.pl-medium.align-top');
+                        
+                        if (footer && infoCol) {
+                            const mainWrapper = infoCol.parentElement;
+                            
+                            // Unnötige Werbesektion löschen
+                            const featureSection = card.querySelector('#feature-offer-section');
+                            if (featureSection) featureSection.remove();
+                            
+                            // Footer anpassen (alte Klasse raus, margin rein)
+                            footer.classList.remove('card-footer');
+                            footer.classList.add('mt-xsmall');
+                            
+                            // Neues Grid auf den Haupt-Wrapper anwenden
+                            mainWrapper.className = "grid w-full grid-cols-[200px_330px_auto] custom-ad-grid";
+                            
+                            // Footer als 3. Spalte in den Wrapper verschieben (falls er nicht ohnehin dort ist)
+                            mainWrapper.appendChild(footer);
+                        }
+                    }
+                }
             });
         }
 

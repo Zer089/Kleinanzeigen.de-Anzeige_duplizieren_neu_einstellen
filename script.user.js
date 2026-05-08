@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.48
+// @version       2.5.49
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -80,6 +80,16 @@
         html.is-overview-page body .ownprofile-main {
             width: 100% !important;
             max-width: 1200px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Korrektur für die Anzeigenliste wegen 16px Padding links/rechts (1200px - 32px = 1168px) */
+        html.is-overview-page body [aria-labelledby="tabs-all"],
+        html.is-overview-page body #tab-panel-all {
+            width: 100% !important;
+            max-width: 1168px !important;
             margin-left: auto !important;
             margin-right: auto !important;
             box-sizing: border-box !important;

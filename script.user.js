@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.68
+// @version       2.5.69
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -103,15 +103,22 @@
         [data-testid="userbadges-container"] { height: 70px !important; margin-left: -360px !important; width: 300px !important; }
         
         .jsx-1176518552.ownprofile-badges.userbadges { 
-            width: 530px !important; 
+            width: 610px !important; 
             margin-top: 0px !important; 
             margin-bottom: 0px !important; 
             height: 24px !important; 
             display: flex !important;
             flex-direction: row !important;
             padding-left: 0px !important;
+            gap: 12px !important; /* Erhöhter Abstand zwischen den Items */
         }
-        .jsx-1176518552.userbadges--item { padding-left: 0px !important; }
+        
+        /* Verhindert den Mauszeiger-Wechsel (Hand) bei den Badges */
+        .jsx-1176518552.userbadges--item,
+        .jsx-1176518552.ownprofile-badges.userbadges button { 
+            padding-left: 0px !important; 
+            cursor: default !important;
+        }
 
         .text-title2.text-onSurfaceSubdued { margin-bottom: 0px !important; }
         .jsx-3029977195.mb-none.text-title2.text-onSurfaceSubdued { 
@@ -336,7 +343,14 @@
                 // 1. Badges verschieben und Antwortzeit umbauen
                 if (badgesUl && !badgesUl.dataset.moved) {
                     badgesUl.dataset.moved = 'true';
-                    targetContainer.appendChild(badgesUl);
+                    
+                    // VOR UserProfile--Info verschieben anstatt ans Ende!
+                    const userProfileInfo = targetContainer.querySelector('.UserProfile--Info');
+                    if (userProfileInfo) {
+                        targetContainer.insertBefore(badgesUl, userProfileInfo);
+                    } else {
+                        targetContainer.appendChild(badgesUl);
+                    }
 
                     if (userInfoUl) {
                         const replyLi = Array.from(userInfoUl.querySelectorAll('li')).find(li => li.textContent.includes('Antwortet'));
@@ -344,6 +358,7 @@
                             const svgIcon = replyLi.querySelector('svg');
                             
                             let timeText = '';
+                            // Suche nach Stunden, Minuten, Tagen, Wochen
                             const match = replyLi.textContent.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
                             if (match) {
                                 let unit = '';
@@ -374,7 +389,7 @@
                             replyLi.remove(); 
                         }
                         
-                        // 2. Info-Ul verschieben
+                        // 2. Info-Ul verschieben (wird nach Badges und UserProfile--Info ans Ende gehängt)
                         targetContainer.appendChild(userInfoUl);
                     }
                 }
@@ -813,7 +828,6 @@
                 topContainer = document.createElement('div');
                 topContainer.id = 'custom-top-pagination';
                 
-                // Styles für vertikale Zentrierung nach Original-Vorlage 2.5.55
                 topContainer.style.position = 'absolute';
                 topContainer.style.left = '50%';
                 topContainer.style.transform = 'translateX(-50%)';

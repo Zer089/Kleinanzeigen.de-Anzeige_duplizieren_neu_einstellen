@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.46
+// @version       2.5.47
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -62,21 +62,30 @@
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
-        /* Container-Breite anpassen und Zentrierung reparieren - Mit maximaler CSS-Spezifität! */
-        html body .site-base--content,
-        html body .l-page-wrapper,
-        html body .l-container,
-        html body .l-container-row,
-        html body .l-splitpage,
-        html body #site-content,
-        html body main#main,
-        html body #my-ads-frontend,
-        html body [data-testid="site-content"] {
+        /* Container-Breite anpassen und Zentrierung reparieren - Mit absoluter maximaler CSS-Spezifität! */
+        html.is-overview-page body .site-base,
+        html.is-overview-page body .site-base--content,
+        html.is-overview-page body .l-page-wrapper,
+        html.is-overview-page body .l-container,
+        html.is-overview-page body .l-container-row,
+        html.is-overview-page body .l-splitpage,
+        html.is-overview-page body #site-content,
+        html.is-overview-page body main#main,
+        html.is-overview-page body #my-ads-frontend,
+        html.is-overview-page body [data-testid="site-content"],
+        html.is-overview-page body .ownprofile-main {
             width: 100% !important;
             max-width: 1200px !important;
             margin-left: auto !important;
             margin-right: auto !important;
             box-sizing: border-box !important;
+        }
+
+        /* Verhindert, dass die Liste selbst eine harte Breitenbegrenzung hat */
+        html.is-overview-page body ul#my-manageitems-adlist,
+        html.is-overview-page body li[data-testid="ad-card"] {
+            width: 100% !important;
+            max-width: none !important;
         }
 
         /* Basis-Design unserer lila Buttons */

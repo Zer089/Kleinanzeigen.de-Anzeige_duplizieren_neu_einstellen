@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.52
+// @version       2.5.53
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -132,6 +132,21 @@
             grid-template-columns: 200px 570px auto !important;
         }
 
+        /* Abstände der Text-Elemente anpassen */
+        .is-overview-page .mb-xsmall.text-bodySmall.text-onSurfaceNonessential {
+            margin-bottom: 0px !important;
+        }
+
+        .is-overview-page .mx-none.my-xsmall.text-title4 {
+            margin-top: 6px !important;
+            margin-bottom: 6px !important;
+        }
+
+        .is-overview-page .mx-none.my-xsmall.text-title3.text-secondary {
+            margin-top: 6px !important;
+            margin-bottom: 6px !important;
+        }
+
         /* Margin-Korrektur für die 3. Spalte (Footer-Div) */
         .custom-ad-grid .mt-xsmall {
             margin-top: 0px !important;
@@ -142,7 +157,7 @@
             flex-wrap: wrap !important;
             justify-content: flex-end !important; /* Buttons rechtsbündig in der 3. Spalte */
             align-content: flex-start !important;
-            gap: 8px !important;
+            gap: 7px !important; /* Abstand der Buttons auf 7px reduziert */
             margin: 0 !important;
             padding: 0 !important;
             width: 100% !important; /* Zwingt den Container auf volle Breite, um flex-end zu garantieren */
@@ -155,7 +170,7 @@
 
         .custom-buttons-wrapper {
             display: flex !important;
-            gap: 8px !important;
+            gap: 7px !important; /* Abstand der Custom-Buttons auf 7px reduziert */
             justify-content: flex-end !important; /* Buttons rechtsbündig */
             margin: 0 !important;
         }

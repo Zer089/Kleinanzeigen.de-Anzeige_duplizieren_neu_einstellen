@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.35
+// @version       2.5.36
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -216,7 +216,7 @@
 
     // Holt unsichtbar die Metadaten einer Anzeige und speichert sie lokal zwischen
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V4_${adId}`; // Cache-Key V4 für das neue, verbesserte Platzierungs-Layout
+        const cacheKey = `__KL_AD_DETAILS_V5_${adId}`; // Cache-Key V5 (Erstellungsdatum umgezogen)
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
@@ -389,12 +389,11 @@
                                 const details = await fetchAdDetails(adUrl, adId);
                                 
                                 if (details) {
-                                    // 1. Ort und Datum absolut passend ins Design unter Besucher/Gemerkt integrieren
+                                    // 1. Ort in die Statistik-Section einklinken
                                     const statsSection = card.querySelector('section.text-onSurfaceNonessential');
                                     
                                     if (statsSection && !statsSection.querySelector('.custom-ad-extra-info')) {
                                         const infoUl = document.createElement('ul');
-                                        // Nutze exakt die originalen Margin/Flex-Klassen von Kleinanzeigen für den perfekten Look
                                         infoUl.className = 'm-none mb-xxsmall flex min-h-[22px] list-none gap-x-xsmall p-none custom-ad-extra-info';
                                         infoUl.style.flexWrap = 'wrap';
                                         infoUl.style.marginTop = '2px';
@@ -410,19 +409,43 @@
                                                 </span>
                                                 <span>${details.location}</span>
                                             </li>
-                                            <li style="display: flex; align-items: center; gap: 4px;">
-                                                <span class="inline-block-icon" style="display: flex; align-items: center;">
-                                                    <svg viewBox="0 0 24 24" class="shrink-0 fill-current block align-middle w-medium h-medium text-onSurfaceNonessential">
-                                                        <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"></path>
-                                                    </svg>
-                                                </span>
-                                                <span>${details.date}</span>
-                                            </li>
                                         `;
                                         statsSection.appendChild(infoUl);
                                     }
 
-                                    // 2. Versandkosten neben dem Preis platzieren
+                                    // 2. Erstellungsdatum links neben "Endet am" und Text durch Icon ersetzen
+                                    const endDateSpan = card.querySelector('.managead-listitem-enddate');
+                                    if (endDateSpan && !card.querySelector('.custom-date-container')) {
+                                        const endDateText = endDateSpan.textContent;
+                                        const dateContainer = endDateSpan.parentElement; // Container, der "Endet am..." hielt
+                                        
+                                        dateContainer.classList.add('custom-date-container');
+                                        dateContainer.style.display = 'flex';
+                                        dateContainer.style.alignItems = 'center';
+                                        dateContainer.style.gap = '16px';
+                                        dateContainer.style.flexWrap = 'wrap';
+
+                                        dateContainer.innerHTML = `
+                                            <div style="display: flex; align-items: center; gap: 4px;" title="Erstellt am">
+                                                <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                                </svg>
+                                                <span>${details.date}</span>
+                                            </div>
+                                            <div style="display: flex; align-items: center; gap: 4px;" title="Endet am">
+                                                <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <polyline points="12 6 12 12 16 14"></polyline>
+                                                </svg>
+                                                <span class="managead-listitem-enddate">${endDateText}</span>
+                                            </div>
+                                        `;
+                                    }
+
+                                    // 3. Versandkosten neben dem Preis platzieren
                                     if (details.shipping) {
                                         let priceEl = card.querySelector('.text-title3');
                                         

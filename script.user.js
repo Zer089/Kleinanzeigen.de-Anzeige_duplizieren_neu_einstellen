@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.42
+// @version       2.5.43
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -55,12 +55,19 @@
     // ==========================================
     const style = document.createElement('style');
     style.textContent = `
-        /* Werbe- & Upsell-Säuberung */
+        /* Werbe- & Upsell-Säuberung (Banner werden zusätzlich per JS aus dem DOM gelöscht) */
         fieldset:has(#ad-feature-group), span:has(> div.bg-accentContainer), #feature-offer-section,
         .site-base--left-banner, .site-base--right-banner, #vip-billboard, #vip-belly, #vip-middle, #vip-bottom,
         [id^="vip-similar-ads-"], #pvap-featrs, .is-detail-page .icon-info-blue { display: none !important; }
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
+
+        /* Container-Breite anpassen */
+        .site-base--content {
+            width: 1200px !important;
+            max-width: 1200px !important;
+            margin: 0 auto !important;
+        }
 
         /* Basis-Design unserer lila Buttons */
         .custom-purple-btn {
@@ -90,11 +97,11 @@
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
            ---------------------------------------------------- */
         
-        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt (Spalte 2 auf 450px verbreitert) */
+        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt (Spalte 2 auf 470px verbreitert) */
         .custom-ad-grid {
             display: grid !important;
             width: 100% !important;
-            grid-template-columns: 200px 450px auto !important;
+            grid-template-columns: 200px 470px auto !important;
         }
 
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
@@ -244,6 +251,10 @@
     }
 
     const inject = () => {
+        // --- DOM CLEANUP: Banner physisch entfernen ---
+        const banners = document.querySelectorAll('.site-base--left-banner, .site-base--right-banner');
+        banners.forEach(b => b.remove());
+
         if (isOverviewPage || isDetailPage) {
             const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
             editLinks.forEach(link => {
@@ -381,8 +392,8 @@
                                 newFooterDiv.appendChild(footer.firstChild);
                             }
                             
-                            // Neues Grid auf den Haupt-Wrapper anwenden (Spalte 2 auf 450px vergrößert)
-                            mainWrapper.className = "grid w-full grid-cols-[200px_450px_auto] custom-ad-grid";
+                            // Neues Grid auf den Haupt-Wrapper anwenden (Spalte 2 auf 470px vergrößert)
+                            mainWrapper.className = "grid w-full grid-cols-[200px_470px_auto] custom-ad-grid";
                             
                             // Neues DIV als 3. Spalte in den Wrapper verschieben
                             mainWrapper.appendChild(newFooterDiv);

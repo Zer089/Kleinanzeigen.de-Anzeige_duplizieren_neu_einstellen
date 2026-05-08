@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.34
+// @version       2.5.35
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -127,7 +127,7 @@
             width: auto !important;
         }
 
-        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile und setzt exakt 8px Abstand */
+        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile */
         .custom-buttons-wrapper {
             display: flex !important;
             gap: 8px !important;
@@ -138,7 +138,7 @@
             flex-basis: 100% !important; 
         }
 
-        /* Strenge Zwangshöhe für die lila Buttons UND den neuen Verkaufsschild-Button auf der Übersicht */
+        /* Strenge Zwangshöhe für Buttons */
         .is-overview-page .custom-purple-btn,
         .is-overview-page .custom-native-btn {
             height: 32px !important;
@@ -151,27 +151,18 @@
             box-sizing: border-box !important;
         }
 
-        /* Styling für die neuen Metadaten (Datum & Ort) auf der Übersicht */
-        .custom-ad-extra-info {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            font-size: 13px;
-            color: #555;
-            margin-top: 4px;
-            align-items: center;
-        }
-        .custom-ad-extra-info-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        /* Styling für die Versandinfo neben dem Preis */
+        .custom-shipping-info {
+            font-size: 13px !important;
+            color: #757575 !important;
+            font-weight: normal !important;
+            white-space: nowrap;
         }
 
         /* ----------------------------------------------------
            2. DETAILSEITE & BEARBEITEN-SEITE
            ---------------------------------------------------- */
            
-        /* Größere Button-Höhe für Detail- & Bearbeiten-Seite */
         .is-detail-page .custom-purple-btn, 
         .is-edit-page .custom-purple-btn {
             height: 44px !important;
@@ -182,7 +173,6 @@
 
         .is-detail-page #pvap-mngad-stats { width: 150px !important; }
         
-        /* Umstyling der nativen Textlinks auf der Detailseite zu runden Buttons */
         .is-detail-page .manageadbox--actions, .is-detail-page #pvap-mngad-actions {
             display: flex !important; flex-wrap: wrap !important; gap: 8px !important;
             justify-content: flex-end !important; list-style: none !important; margin-top: 15px !important;
@@ -226,7 +216,7 @@
 
     // Holt unsichtbar die Metadaten einer Anzeige und speichert sie lokal zwischen
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V3_${adId}`; // Cache-Key V3 (Erzwingt frischen Ladevorgang nach Update)
+        const cacheKey = `__KL_AD_DETAILS_V4_${adId}`; // Cache-Key V4 für das neue, verbesserte Platzierungs-Layout
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
@@ -399,32 +389,41 @@
                                 const details = await fetchAdDetails(adUrl, adId);
                                 
                                 if (details) {
-                                    // 1. Ort und Datum unter Titel
-                                    const infoDiv = document.createElement('div');
-                                    infoDiv.className = 'custom-ad-extra-info';
-                                    infoDiv.innerHTML = `
-                                        <div class="custom-ad-extra-info-item" title="Ort">
-                                            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                                <circle cx="12" cy="10" r="3"></circle>
-                                            </svg>
-                                            <span>${details.location}</span>
-                                        </div>
-                                        <div class="custom-ad-extra-info-item" title="Erstellt am">
-                                            <svg viewBox="0 0 24 24" fill="none" width="14" height="14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                                            </svg>
-                                            <span>${details.date}</span>
-                                        </div>
-                                    `;
-                                    titleLink.after(infoDiv);
+                                    // 1. Ort und Datum absolut passend ins Design unter Besucher/Gemerkt integrieren
+                                    const statsSection = card.querySelector('section.text-onSurfaceNonessential');
+                                    
+                                    if (statsSection && !statsSection.querySelector('.custom-ad-extra-info')) {
+                                        const infoUl = document.createElement('ul');
+                                        // Nutze exakt die originalen Margin/Flex-Klassen von Kleinanzeigen für den perfekten Look
+                                        infoUl.className = 'm-none mb-xxsmall flex min-h-[22px] list-none gap-x-xsmall p-none custom-ad-extra-info';
+                                        infoUl.style.flexWrap = 'wrap';
+                                        infoUl.style.marginTop = '2px';
+                                        infoUl.style.rowGap = '4px';
+                                        infoUl.style.columnGap = '12px';
+
+                                        infoUl.innerHTML = `
+                                            <li style="display: flex; align-items: center; gap: 4px;">
+                                                <span class="inline-block-icon" style="display: flex; align-items: center;">
+                                                    <svg viewBox="0 0 24 24" class="shrink-0 fill-current block align-middle w-medium h-medium text-onSurfaceNonessential">
+                                                        <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path>
+                                                    </svg>
+                                                </span>
+                                                <span>${details.location}</span>
+                                            </li>
+                                            <li style="display: flex; align-items: center; gap: 4px;">
+                                                <span class="inline-block-icon" style="display: flex; align-items: center;">
+                                                    <svg viewBox="0 0 24 24" class="shrink-0 fill-current block align-middle w-medium h-medium text-onSurfaceNonessential">
+                                                        <path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10z"></path>
+                                                    </svg>
+                                                </span>
+                                                <span>${details.date}</span>
+                                            </li>
+                                        `;
+                                        statsSection.appendChild(infoUl);
+                                    }
 
                                     // 2. Versandkosten neben dem Preis platzieren
                                     if (details.shipping) {
-                                        // Wir suchen nach dem genauen <li> oder einem Fallback-Element mit dem Preis
                                         let priceEl = card.querySelector('.text-title3');
                                         
                                         if (!priceEl) {
@@ -439,20 +438,17 @@
                                             const shipSpan = document.createElement('span');
                                             shipSpan.className = 'custom-shipping-info';
                                             
-                                            // Optische Anpassung für den Versand neben dem dicken Preis
                                             shipSpan.style.fontSize = '12px';
                                             shipSpan.style.fontWeight = 'normal';
                                             shipSpan.style.color = '#757575'; 
                                             shipSpan.style.marginLeft = '4px';
                                             shipSpan.textContent = details.shipping;
                                             
-                                            // Das übergeordnete Element (li) in eine Flexbox umwandeln
                                             priceEl.style.display = 'flex';
-                                            priceEl.style.alignItems = 'baseline'; // Baseline ist wichtig, damit das Euro-Zeichen und das "+ Versand" auf einer Linie bleiben
+                                            priceEl.style.alignItems = 'baseline';
                                             priceEl.style.gap = '4px';
                                             priceEl.style.flexWrap = 'wrap'; 
                                             
-                                            // Direkt als Kind anhängen, dann bleibt es innerhalb des <li>
                                             priceEl.appendChild(shipSpan);
                                         }
                                     }

@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.45
+// @version       2.5.46
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -62,14 +62,16 @@
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
-        /* Container-Breite anpassen und Zentrierung reparieren */
-        .site-base--content,
-        .l-page-wrapper,
-        .l-container,
-        .l-container-row,
-        .l-splitpage,
-        #site-content,
-        main#main {
+        /* Container-Breite anpassen und Zentrierung reparieren - Mit maximaler CSS-Spezifität! */
+        html body .site-base--content,
+        html body .l-page-wrapper,
+        html body .l-container,
+        html body .l-container-row,
+        html body .l-splitpage,
+        html body #site-content,
+        html body main#main,
+        html body #my-ads-frontend,
+        html body [data-testid="site-content"] {
             width: 100% !important;
             max-width: 1200px !important;
             margin-left: auto !important;

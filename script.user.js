@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.61
+// @version       2.5.62
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -123,10 +123,12 @@
 
         /* Profilbox Anpassungen (Breiten & Abstände) */
         .is-overview-page .userbadges--item { padding-left: 0px !important; }
-        .is-overview-page .ownprofile-main .text-title2.text-onSurfaceSubdued { width: 530px !important; }
+        .is-overview-page .ownprofile-main .text-title2.text-onSurfaceSubdued { width: 530px !important; height: 24px !important; }
         .is-overview-page .ownprofile-badges.userbadges { width: 530px !important; }
         .is-overview-page .UserProfile--Info { width: 530px !important; }
-        .is-overview-page .ownprofile-main .mt-xxsmall.flex.flex-col.content-between { row-gap: 5px !important; }
+        .is-overview-page .ownprofile-main .mt-xxsmall.flex.flex-col.content-between { row-gap: 8px !important; margin-top: 0px !important; }
+        .is-overview-page ul[data-testid="user-info"] { row-gap: 15px !important; }
+        .is-overview-page .user--trx-overview { width: 300px !important; padding-left: 0px !important; }
 
         /* ----------------------------------------------------
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
@@ -335,7 +337,8 @@
                         badgesUl.style.flexWrap = 'wrap';
                         badgesUl.style.gap = '8px';
                         badgesUl.style.padding = '0';
-                        badgesUl.style.margin = '4px 0 8px 0';
+                        badgesUl.style.margin = '0px 0 0px 0';
+                        badgesUl.style.height = '24px';
                         badgesUl.style.listStyle = 'none';
                     }
 
@@ -354,7 +357,12 @@
                     if (badgesContainer) {
                         badgesContainer.style.setProperty('height', '70px', 'important');
                         badgesContainer.style.setProperty('margin-left', '-360px', 'important');
+                        badgesContainer.style.setProperty('width', '300px', 'important');
                     }
+
+                    // Info-Icon löschen
+                    const infoIconContainer = profileMain.querySelector('.pl-xsmall.pt-\\[10px\\]');
+                    if (infoIconContainer) infoIconContainer.remove();
 
                     profileMain.dataset.klProfileReordered = 'true';
                 }

@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.43
+// @version       2.5.44
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -62,11 +62,14 @@
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
-        /* Container-Breite anpassen */
-        .site-base--content {
-            width: 1200px !important;
+        /* Container-Breite anpassen und Zentrierung reparieren */
+        .site-base--content,
+        .l-page-wrapper,
+        .l-container {
+            width: 100% !important;
             max-width: 1200px !important;
-            margin: 0 auto !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
 
         /* Basis-Design unserer lila Buttons */

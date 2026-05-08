@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.29
+// @version       2.5.30
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -79,7 +79,7 @@
             text-decoration: none !important;
             transition: all 0.2s ease-in-out;
             box-sizing: border-box !important;
-            margin: 0 !important;
+            margin: 0 !important; /* Verhindert unsichtbare Standard-Abstände */
         }
         .custom-purple-btn:hover { 
             background-color: #D1C4E9 !important; 
@@ -110,7 +110,7 @@
             margin-top: 0 !important;
         }
 
-        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet. */
+        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet. Fixiert exakt 8px Abstand. */
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
@@ -127,7 +127,7 @@
             width: auto !important;
         }
 
-        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile */
+        /* Zwingt unsere lila Buttons auf der Übersicht in eine komplett neue Zeile und setzt exakt 8px Abstand */
         .custom-buttons-wrapper {
             display: flex !important;
             gap: 8px !important;
@@ -138,7 +138,7 @@
             flex-basis: 100% !important; 
         }
 
-        /* Strenge Zwangshöhe für die lila Buttons UND den neuen Verkaufsschild-Button */
+        /* Strenge Zwangshöhe für die lila Buttons UND den neuen Verkaufsschild-Button auf der Übersicht */
         .is-overview-page .custom-purple-btn,
         .is-overview-page .custom-native-btn {
             height: 32px !important;
@@ -247,12 +247,12 @@
                             </div>
                         </div>`;
 
-                    // Geist-Klick-Logik mit Anti-Scroll-Lock Fix
+                    // Geist-Klick-Logik: Identifiziert robust das Menü der korrekten Anzeige
                     printBtn.onclick = (e) => {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        // Verhindert das kurze optische Aufblitzen des Menüs
+                        // Verhindert das optische Aufpoppen des Dropdowns
                         const antiFlashStyle = document.createElement('style');
                         antiFlashStyle.id = 'hide-dropdown-flash';
                         antiFlashStyle.textContent = `
@@ -271,33 +271,40 @@
                         const interval = setInterval(() => {
                             attempts++;
                             
-                            // Alle Verkaufsschild-Buttons in Menüs suchen
+                            // Alle Verkaufsschild-Buttons finden
                             const candidates = Array.from(document.querySelectorAll('button, a, [role="menuitem"]'))
                                 .filter(b => b.textContent.includes('Verkaufsschild') && b !== printBtn);
+
+                            // CSS kurz ausschalten, um zu testen, welches Menü vom Browser ECHT dargestellt wird
+                            antiFlashStyle.disabled = true;
                             
-                            // WICHTIG: Nur den Button nehmen, der in genau diesem Moment sichtbar (geöffnet) wurde!
+                            // Den Button im sichtbar geöffneten Menü isolieren (Ausschluss von unsichtbaren Alt-Resten)
                             const nativePrintBtn = candidates.find(b => {
-                                const rect = b.getBoundingClientRect();
-                                return rect.width > 0 && rect.height > 0;
+                                const isVisuallyRendered = b.offsetParent !== null;
+                                const parentMenu = b.closest('[data-state]');
+                                const isOpenState = parentMenu ? parentMenu.getAttribute('data-state') === 'open' : true;
+                                return isVisuallyRendered && isOpenState;
                             });
+
+                            // CSS sofort wieder einschalten, bevor der Nutzer etwas sieht
+                            antiFlashStyle.disabled = false;
 
                             if (nativePrintBtn) {
                                 clearInterval(interval);
-                                nativePrintBtn.click(); // Download triggern
+                                nativePrintBtn.click(); // Echten Download feuern
                                 
-                                // Scroll-Lock sofort lösen
+                                // Scroll-Sperre (Lock) lösen
                                 setTimeout(() => {
-                                    // Simuliert das Klicken außerhalb des Menüs und drückt Escape
-                                    document.body.click();
                                     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+                                    document.body.click(); 
                                     antiFlashStyle.remove();
-                                }, 100);
+                                }, 150); // 150ms Puffer für den Start des Downloads
                                 
                             } else if (attempts > 30) {
-                                // Fallback bei Timeout
+                                // Timeout Fallback nach ca. 1.5 Sekunden
                                 clearInterval(interval);
-                                document.body.click();
                                 document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+                                document.body.click();
                                 antiFlashStyle.remove();
                             }
                         }, 50);

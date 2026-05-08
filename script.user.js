@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.30
+// @version       2.5.31
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -79,7 +79,7 @@
             text-decoration: none !important;
             transition: all 0.2s ease-in-out;
             box-sizing: border-box !important;
-            margin: 0 !important; /* Verhindert unsichtbare Standard-Abstände */
+            margin: 0 !important; 
         }
         .custom-purple-btn:hover { 
             background-color: #D1C4E9 !important; 
@@ -110,7 +110,7 @@
             margin-top: 0 !important;
         }
 
-        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet. Fixiert exakt 8px Abstand. */
+        /* Die UL-Liste zu einer Flexbox machen, die sich rechts anordnet. */
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
@@ -247,12 +247,16 @@
                             </div>
                         </div>`;
 
-                    // Geist-Klick-Logik: Identifiziert robust das Menü der korrekten Anzeige
-                    printBtn.onclick = (e) => {
+                    // Ghost-Klick-Logik mit strikter DOM-Zuordnung
+                    printBtn.onclick = async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
 
-                        // Verhindert das optische Aufpoppen des Dropdowns
+                        // 1. Sichere Ausgangslage: Alle eventuell offenen Menüs schließen
+                        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+                        document.body.click();
+
+                        // 2. Anti-Flash-Style injizieren, damit das Menü beim Öffnen unsichtbar bleibt
                         const antiFlashStyle = document.createElement('style');
                         antiFlashStyle.id = 'hide-dropdown-flash';
                         antiFlashStyle.textContent = `
@@ -260,48 +264,51 @@
                                 opacity: 0 !important; 
                                 visibility: hidden !important; 
                                 pointer-events: none !important;
+                                transform: scale(0) !important;
                             }
                         `;
                         document.head.appendChild(antiFlashStyle);
 
-                        // Original-Menü triggern
+                        // Kurze Pause, um das Schließen alter Menüs zu garantieren
+                        await new Promise(r => setTimeout(r, 50));
+
+                        // 3. Menü für GENAU DIESE Anzeige öffnen
                         mehrBtn.click(); 
 
                         let attempts = 0;
                         const interval = setInterval(() => {
                             attempts++;
                             
-                            // Alle Verkaufsschild-Buttons finden
-                            const candidates = Array.from(document.querySelectorAll('button, a, [role="menuitem"]'))
-                                .filter(b => b.textContent.includes('Verkaufsschild') && b !== printBtn);
-
-                            // CSS kurz ausschalten, um zu testen, welches Menü vom Browser ECHT dargestellt wird
-                            antiFlashStyle.disabled = true;
+                            // 4. Logische Zuordnung: Das Attribut "aria-controls" verrät uns die exakte ID des neu geöffneten Menüs
+                            const menuId = mehrBtn.getAttribute('aria-controls');
+                            let targetMenu = menuId ? document.getElementById(menuId) : null;
                             
-                            // Den Button im sichtbar geöffneten Menü isolieren (Ausschluss von unsichtbaren Alt-Resten)
-                            const nativePrintBtn = candidates.find(b => {
-                                const isVisuallyRendered = b.offsetParent !== null;
-                                const parentMenu = b.closest('[data-state]');
-                                const isOpenState = parentMenu ? parentMenu.getAttribute('data-state') === 'open' : true;
-                                return isVisuallyRendered && isOpenState;
-                            });
+                            // Fallback, falls aria-controls verspätet ist: Nimm das einzig offene Menü
+                            if (!targetMenu) {
+                                targetMenu = document.querySelector('[data-state="open"]');
+                            }
 
-                            // CSS sofort wieder einschalten, bevor der Nutzer etwas sieht
-                            antiFlashStyle.disabled = false;
+                            if (targetMenu) {
+                                // 5. Suche "Verkaufsschild" AUSSCHLIESSLICH in dem zugeordneten Menü dieser Anzeige
+                                const nativePrintBtn = Array.from(targetMenu.querySelectorAll('button, a, [role="menuitem"]'))
+                                    .find(b => b.textContent.includes('Verkaufsschild') && b !== printBtn);
 
-                            if (nativePrintBtn) {
-                                clearInterval(interval);
-                                nativePrintBtn.click(); // Echten Download feuern
-                                
-                                // Scroll-Sperre (Lock) lösen
-                                setTimeout(() => {
-                                    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-                                    document.body.click(); 
-                                    antiFlashStyle.remove();
-                                }, 150); // 150ms Puffer für den Start des Downloads
-                                
-                            } else if (attempts > 30) {
-                                // Timeout Fallback nach ca. 1.5 Sekunden
+                                if (nativePrintBtn) {
+                                    clearInterval(interval);
+                                    nativePrintBtn.click(); // Echten Download feuern
+                                    
+                                    // 6. Aufräumen und Scroll-Sperre lösen
+                                    setTimeout(() => {
+                                        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+                                        document.body.click(); 
+                                        antiFlashStyle.remove();
+                                    }, 100);
+                                    return; // Erfolgreich beendet
+                                }
+                            }
+                            
+                            // Fallback nach ca. 1.5 Sekunden
+                            if (attempts > 30) {
                                 clearInterval(interval);
                                 document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
                                 document.body.click();

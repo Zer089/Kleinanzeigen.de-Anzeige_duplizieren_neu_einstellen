@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.40
+// @version       2.5.41
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -100,7 +100,7 @@
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
-            justify-content: flex-start !important; /* Buttons linksbündig in der neuen 3. Spalte */
+            justify-content: flex-end !important; /* Buttons rechtsbündig in der neuen 3. Spalte */
             align-content: flex-start !important;
             gap: 8px !important;
             margin: 0 !important;
@@ -115,7 +115,7 @@
         .custom-buttons-wrapper {
             display: flex !important;
             gap: 8px !important;
-            justify-content: flex-start !important;
+            justify-content: flex-end !important; /* Buttons rechtsbündig */
             margin: 0 !important;
         }
         .is-overview-page .custom-buttons-wrapper { flex-basis: 100% !important; } /* Zwingt custom Buttons in eine neue Zeile */
@@ -370,6 +370,9 @@
                             const featureSection = card.querySelector('#feature-offer-section');
                             if (featureSection) featureSection.remove();
                             
+                            // Leeres Wrapper-Div von Kleinanzeigen aufspüren, bevor wir den Footer herausholen
+                            const oldCardFooterWrapper = card.querySelector('.card-footer');
+
                             // Footer anpassen (alte Klasse raus, margin rein)
                             footer.classList.remove('card-footer');
                             footer.classList.add('mt-xsmall');
@@ -379,6 +382,11 @@
                             
                             // Footer als 3. Spalte in den Wrapper verschieben (falls er nicht ohnehin dort ist)
                             mainWrapper.appendChild(footer);
+
+                            // Alten Container löschen, wenn er nach dem Verschieben des footers leer ist
+                            if (oldCardFooterWrapper && oldCardFooterWrapper !== footer) {
+                                oldCardFooterWrapper.remove();
+                            }
                         }
                     }
                 }

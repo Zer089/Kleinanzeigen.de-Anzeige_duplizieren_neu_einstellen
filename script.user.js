@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.41
+// @version       2.5.42
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -90,21 +90,22 @@
            1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
            ---------------------------------------------------- */
         
-        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt */
+        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt (Spalte 2 auf 450px verbreitert) */
         .custom-ad-grid {
             display: grid !important;
             width: 100% !important;
-            grid-template-columns: 200px 330px auto !important;
+            grid-template-columns: 200px 450px auto !important;
         }
 
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
             display: flex !important;
             flex-wrap: wrap !important;
-            justify-content: flex-end !important; /* Buttons rechtsbündig in der neuen 3. Spalte */
+            justify-content: flex-end !important; /* Buttons rechtsbündig in der 3. Spalte */
             align-content: flex-start !important;
             gap: 8px !important;
             margin: 0 !important;
             padding: 0 !important;
+            width: 100% !important; /* Zwingt den Container auf volle Breite, um flex-end zu garantieren */
         }
         
         .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
@@ -356,7 +357,7 @@
                 container.append(wrapper);
                 container.dataset.klInjected = 'true';
 
-                // --- NEU: 3-SPALTEN GRID LAYOUT (Vom User gewünscht) ---
+                // --- NEU: 3-SPALTEN GRID LAYOUT ---
                 if (isOverviewPage) {
                     const card = container.closest('li[data-testid="ad-card"]');
                     if (card) {
@@ -373,18 +374,24 @@
                             // Leeres Wrapper-Div von Kleinanzeigen aufspüren, bevor wir den Footer herausholen
                             const oldCardFooterWrapper = card.querySelector('.card-footer');
 
-                            // Footer anpassen (alte Klasse raus, margin rein)
-                            footer.classList.remove('card-footer');
-                            footer.classList.add('mt-xsmall');
+                            // Footer sicher in ein DIV umbauen, indem wir Nodes verschieben (erhält Klick-Events/React-Listener)
+                            const newFooterDiv = document.createElement('div');
+                            newFooterDiv.className = 'mt-xsmall';
+                            while (footer.firstChild) {
+                                newFooterDiv.appendChild(footer.firstChild);
+                            }
                             
-                            // Neues Grid auf den Haupt-Wrapper anwenden
-                            mainWrapper.className = "grid w-full grid-cols-[200px_330px_auto] custom-ad-grid";
+                            // Neues Grid auf den Haupt-Wrapper anwenden (Spalte 2 auf 450px vergrößert)
+                            mainWrapper.className = "grid w-full grid-cols-[200px_450px_auto] custom-ad-grid";
                             
-                            // Footer als 3. Spalte in den Wrapper verschieben (falls er nicht ohnehin dort ist)
-                            mainWrapper.appendChild(footer);
+                            // Neues DIV als 3. Spalte in den Wrapper verschieben
+                            mainWrapper.appendChild(newFooterDiv);
 
-                            // Alten Container löschen, wenn er nach dem Verschieben des footers leer ist
-                            if (oldCardFooterWrapper && oldCardFooterWrapper !== footer) {
+                            // Den nun leeren, alten <footer> Tag sauber entfernen
+                            footer.remove();
+
+                            // Alten Container löschen, wenn er leer ist
+                            if (oldCardFooterWrapper) {
                                 oldCardFooterWrapper.remove();
                             }
                         }

@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.59
+// @version       2.5.60
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -319,6 +319,7 @@
                 const badgesUl = badgesContainer ? badgesContainer.querySelector('ul.ownprofile-badges.userbadges') : null;
                 const targetDiv = profileMain.querySelector('.mt-xxsmall.flex.flex-col.content-between.gap-small.pl-large');
                 const userInfoUl = profileMain.querySelector('ul[data-testid="user-info"]');
+                const profileHeader = profileMain.querySelector('[data-testid="ownprofile-header"]');
 
                 if (targetDiv) {
                     if (badgesUl) {
@@ -342,8 +343,18 @@
                     // User Info verschieben und Padding anpassen
                     if (userInfoUl) {
                         targetDiv.appendChild(userInfoUl);
-                        userInfoUl.style.setProperty('padding-left', '125px', 'important');
-                        userInfoUl.style.setProperty('padding-top', '10px', 'important');
+                        userInfoUl.style.setProperty('padding-left', '0px', 'important');
+                        userInfoUl.style.setProperty('padding-top', '0px', 'important');
+                    }
+
+                    // Neue Style-Vorgaben für Header und Badges-Container anwenden
+                    if (profileHeader) {
+                        profileHeader.style.setProperty('width', '1000px', 'important');
+                    }
+
+                    if (badgesContainer) {
+                        badgesContainer.style.setProperty('height', '70px', 'important');
+                        badgesContainer.style.setProperty('margin-left', '-360px', 'important');
                     }
 
                     profileMain.dataset.klProfileReordered = 'true';

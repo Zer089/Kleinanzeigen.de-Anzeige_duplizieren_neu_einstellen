@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.92
+// @version       2.5.93
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -211,12 +211,16 @@
         .cpd-usertype-tag svg { width: 14px !important; height: 14px !important; }
         
         .cpd-badges-row { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+        .custom-badge-wrapper { margin: 0 !important; padding: 0 !important; }
         .custom-badge-item {
             background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 11px !important;
             padding: 4px 10px !important; border-radius: 9999px !important; font-weight: 700 !important;
             display: flex !important; align-items: center !important; gap: 4px !important;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; white-space: nowrap;
+            border: none !important; cursor: pointer !important; font-family: inherit !important;
+            transition: background-color 0.2s !important;
         }
+        .custom-badge-item:hover { background-color: #e9d5ff !important; }
         .custom-badge-item svg { width: 14px !important; height: 14px !important; }
 
         .cpd-footer-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 13px !important; color: #757575 !important; margin-top: 4px !important; }
@@ -431,17 +435,6 @@
                     const avatarEl = profileBox.querySelector('.user-profile-badge') || profileBox.querySelector('img[src*="userportrait"]');
                     const avatarClone = avatarEl ? avatarEl.cloneNode(true) : null;
 
-                    // Badges extrahieren
-                    const badges = [];
-                    profileBox.querySelectorAll('.ownprofile-badges.userbadges li').forEach(li => {
-                        const svg = li.querySelector('svg');
-                        const textWrapper = li.querySelector('.ActivityIndicator--Name');
-                        const text = textWrapper ? textWrapper.textContent.trim() : li.textContent.trim();
-                        if (svg && text) {
-                            badges.push({ svg: svg.cloneNode(true), text: text });
-                        }
-                    });
-
                     // User Infos (Typ, Aktiv seit, Antworten, Follower)
                     let userTypeHtml = '', activeSinceHtml = '', replyTimeData = null;
                     let followersA = null, followersSvg = null;
@@ -519,24 +512,58 @@
                     }
                     colInfo.appendChild(rowName);
 
-                    // Badges
-                    const badgesRow = document.createElement('div');
+                    // Badges (Wir übernehmen die React-Nodes!)
+                    const badgesRow = document.createElement('ul');
                     badgesRow.className = 'cpd-badges-row';
                     
-                    badges.forEach(b => {
-                        const badgeSpan = document.createElement('span');
-                        badgeSpan.className = 'custom-badge-item';
-                        badgeSpan.appendChild(b.svg);
-                        badgeSpan.appendChild(document.createTextNode(' ' + b.text));
-                        badgesRow.appendChild(badgeSpan);
+                    const originalBadgeLis = profileBox.querySelectorAll('.ownprofile-badges.userbadges > li');
+                    originalBadgeLis.forEach(li => {
+                        li.className = 'custom-badge-wrapper'; // Neutralisiert Tailwind-Margins des LIs
+                        
+                        const btn = li.querySelector('button[data-testid="user-badge"]');
+                        if (btn) {
+                            btn.className = 'custom-badge-item'; // Überschreibt Button mit unserem Lila Layout
+                            
+                            const innerDiv = btn.querySelector('.ActivityIndicator');
+                            if (innerDiv) {
+                                innerDiv.className = ''; // Löscht die grauen Tailwind-Hintergründe etc.
+                                innerDiv.style.display = 'flex';
+                                innerDiv.style.alignItems = 'center';
+                                innerDiv.style.gap = '4px';
+                            }
+                            
+                            const svg = btn.querySelector('svg');
+                            if (svg) {
+                                svg.classList.remove('w-small', 'h-small', 'text-onAccentContainer');
+                            }
+                            
+                            const textEl = btn.querySelector('.ActivityIndicator--Name');
+                            if (textEl) {
+                                // Zeilenumbruch (z.B. TOP\nZufriedenheit) durch ein Leerzeichen ersetzen
+                                textEl.textContent = textEl.textContent.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+                            }
+                        }
+                        
+                        badgesRow.appendChild(li); // Verschiebt den Node INKLUSIVE Modal (<dialog>) in unser Dashboard!
                     });
                     
                     if (replyTimeData) {
+                        const rtLi = document.createElement('li');
+                        rtLi.className = 'custom-badge-wrapper';
+                        
                         const rtSpan = document.createElement('span');
                         rtSpan.className = 'custom-badge-item'; 
-                        if (replyTimeData.svg) rtSpan.appendChild(replyTimeData.svg);
+                        rtSpan.style.cursor = 'default';
+                        
+                        if (replyTimeData.svg) {
+                            const svgClone = replyTimeData.svg.cloneNode(true);
+                            svgClone.classList.remove('w-medium', 'h-medium');
+                            rtSpan.appendChild(svgClone);
+                        }
+                        
                         rtSpan.appendChild(document.createTextNode(' ' + replyTimeData.text));
-                        badgesRow.appendChild(rtSpan);
+                        rtLi.appendChild(rtSpan);
+                        badgesRow.appendChild(rtLi);
                     }
                     colInfo.appendChild(badgesRow);
 
@@ -609,16 +636,22 @@
 
                     if (infoBtn) {
                         const svg = infoBtn.querySelector('svg');
-                        infoBtn.innerHTML = '';
+                        
+                        const settingsLink = document.createElement('a');
+                        settingsLink.href = 'https://www.kleinanzeigen.de/m-einstellungen.html';
+                        settingsLink.className = 'cpd-action-btn secondary';
+                        settingsLink.target = '_self';
+                        
                         if (svg) {
-                            svg.classList.remove('w-medium', 'h-medium');
-                            infoBtn.appendChild(svg);
+                            const cloneSvg = svg.cloneNode(true);
+                            cloneSvg.classList.remove('w-medium', 'h-medium');
+                            settingsLink.appendChild(cloneSvg);
                         }
                         const textSpan = document.createElement('span');
                         textSpan.textContent = 'Profil-Einstellungen';
-                        infoBtn.appendChild(textSpan);
-                        infoBtn.className = 'cpd-action-btn secondary';
-                        actionsBlock.appendChild(infoBtn); // Verschiebt den Original-Node!
+                        settingsLink.appendChild(textSpan);
+                        
+                        actionsBlock.appendChild(settingsLink); 
                     }
                     
                     colStats.appendChild(actionsBlock);

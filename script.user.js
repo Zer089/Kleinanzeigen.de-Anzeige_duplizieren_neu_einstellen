@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.88
+// @version       2.5.89
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -136,56 +136,11 @@
         }
 
         /* ----------------------------------------------------
-           PROFIL-BOX & HEADER FORMATIERUNGEN
+           PROFIL-BOX CUSTOM FARBEN (Mockup Design)
            ---------------------------------------------------- */
-        [data-testid="ownprofile-header"] { width: 1000px !important; }
-        [data-testid="userbadges-container"] { height: 70px !important; margin-left: -360px !important; width: 300px !important; }
-        
-        .jsx-1176518552.ownprofile-badges.userbadges { 
-            width: 610px !important; 
-            margin-top: 0px !important; 
-            margin-bottom: 0px !important; 
-            height: 24px !important; 
-            display: flex !important;
-            flex-direction: row !important;
-            padding-left: 0px !important;
-            gap: 12px !important; 
-        }
-
-        .jsx-1176518552.userbadges--item {
-            padding-left: 0px !important;
-        }
-        
-        /* Verhindert den Mauszeiger-Wechsel (Hand) nur beim neu erstellten Antwort-Badge */
-        .custom-reply-badge,
-        .custom-reply-badge * { 
-            cursor: default !important;
-        }
-
-        .text-title2.text-onSurfaceSubdued { margin-bottom: 0px !important; }
-        .jsx-3029977195.mb-none.text-title2.text-onSurfaceSubdued { 
-            width: 610px !important; 
-            height: 24px !important; 
-            margin-bottom: 0px !important;
-        }
-
-        .jsx-3029977195.UserProfile--Info { width: 530px !important; }
-        .jsx-1176518552.text-left.text-onInteractiveContainer.user--trx-overview { 
-            width: 300px !important; 
-            padding-left: 0px !important; 
-        }
-
-        .jsx-3029977195.mt-xxsmall.flex.flex-col.content-between.gap-small.pl-large.text-bodyRegular.text-onBackgroundSubdued { 
-            row-gap: 8px !important; 
-            margin-top: 0px !important; 
-            width: 610px !important;
-        }
-
-        .m-none.flex.gap-xxlarge.pl-none.pt-large.text-onBackgroundSubdued { 
-            column-gap: 15px !important; 
-            row-gap: 8px !important; 
-            padding-left: 0px !important;
-            padding-top: 0px !important;
+        .badge-purple {
+            background-color: #f3e8ff !important; 
+            color: #6b21a8 !important; 
         }
 
         /* Basis-Design unserer lila Buttons */
@@ -391,75 +346,173 @@
         `);
         banners.forEach(b => b.remove());
 
-        // --- PROFIL BOX UMBAU ---
+        // --- NEUES PROFIL-LAYOUT INJECTOR ---
         if (isOverviewPage) {
-            const targetContainer = document.querySelector('.jsx-3029977195.mt-xxsmall.flex.flex-col.content-between.gap-small.pl-large.text-bodyRegular.text-onBackgroundSubdued');
-            const badgesUl = document.querySelector('.jsx-1176518552.ownprofile-badges.userbadges');
-            const userInfoUl = document.querySelector('.m-none.flex.gap-xxlarge.pl-none.pt-large.text-onBackgroundSubdued');
-            const infoIconContainer = document.querySelector('.pl-xsmall.pt-\\[10px\\]');
-            
-            // Lösche das Info-Icon komplett
-            if (infoIconContainer) infoIconContainer.remove();
+            // Ermitteln des Original-Wrappers des Profils
+            const headerTestId = document.querySelector('[data-testid="ownprofile-header"]');
+            const profileBox = document.querySelector('.ownprofile-main') || (headerTestId ? headerTestId.parentElement : null);
 
-            if (targetContainer) {
-                // 1. Badges über die UserProfile--Info verschieben anstatt ans Ende!
-                if (badgesUl && !badgesUl.dataset.moved) {
-                    badgesUl.dataset.moved = 'true';
+            if (profileBox && !profileBox.dataset.mockupInjected) {
+                profileBox.dataset.mockupInjected = 'true';
+
+                try {
+                    // 1. DATEN AUS ORIGINAL-DOM EXTRAHIEREN
+                    const name = profileBox.querySelector('h1')?.textContent || '';
+                    const userTypeEl = Array.from(profileBox.querySelectorAll('p, span')).find(el => el.textContent.includes('Privater Nutzer') || el.textContent.includes('Gewerblicher Nutzer'));
+                    const userType = userTypeEl ? userTypeEl.textContent.trim() : 'Privater Nutzer';
                     
-                    const userProfileInfo = targetContainer.querySelector('.UserProfile--Info');
-                    if (userProfileInfo) {
-                        targetContainer.insertBefore(badgesUl, userProfileInfo); // VOR Info-Zeile einfügen!
-                    } else {
-                        targetContainer.appendChild(badgesUl);
+                    const avatarImg = profileBox.querySelector('img[src*="userportrait"]');
+                    let avatarContent = name ? name.charAt(0).toUpperCase() : 'U';
+                    if (avatarImg && avatarImg.src) {
+                        avatarContent = `<img src="${avatarImg.src}" class="w-full h-full object-cover" />`;
                     }
 
-                    if (userInfoUl) {
-                        const replyLi = Array.from(userInfoUl.querySelectorAll('li')).find(li => li.textContent.includes('Antwortet'));
-                        if (replyLi) {
-                            const svgIcon = replyLi.querySelector('svg');
-                            
-                            let timeText = '';
-                            // Suche nach Stunden, Minuten, Tagen, Wochen
-                            const match = replyLi.textContent.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
-                            if (match) {
-                                let val = match[1];
-                                let type = match[2].toLowerCase();
-                                let timeStr = '';
-                                
-                                if (type.includes('stunde')) timeStr = val + 'h';
-                                else if (type.includes('minute')) timeStr = val + 'm';
-                                else if (type.includes('tag')) timeStr = val + (val === '1' ? ' Tag' : ' Tage');
-                                else if (type.includes('woche')) timeStr = val + (val === '1' ? ' Woche' : ' Wochen');
-                                
-                                timeText = `Antwortet innerhalb ${timeStr}`;
-                            } else {
-                                timeText = replyLi.textContent
-                                    .replace(/Antwortet in der Regel innerhalb von/i, 'Antwortet innerhalb')
-                                    .replace(/wenigen Minuten/i, '1m')
-                                    .trim();
-                            }
+                    // Badges extrahieren
+                    const badges = [];
+                    profileBox.querySelectorAll('.ownprofile-badges.userbadges li').forEach(li => {
+                        const svg = li.querySelector('svg')?.outerHTML || '';
+                        const text = li.textContent.trim();
+                        if (text) badges.push({ svg, text });
+                    });
 
-                            const newBadgeLi = document.createElement('li');
-                            newBadgeLi.className = 'jsx-1176518552 userbadges--item custom-reply-badge';
-                            newBadgeLi.innerHTML = `
-                                <button data-testid="user-badge" aria-haspopup="dialog" class="jsx-2505060003 bg-transparent h-auto min-h-none p-none">
-                                    <div class="jsx-464155839 ActivityIndicator text-bodySmall bg-accentContainer text-onAccentContainer rounded-full">
-                                        ${svgIcon ? svgIcon.outerHTML.replace(/w-\w+ h-\w+/, 'w-small h-small text-onAccentContainer') : ''}
-                                        <span class="jsx-464155839 ActivityIndicator--Name">${timeText}</span>
-                                    </div>
-                                </button>
-                            `;
-                            badgesUl.appendChild(newBadgeLi);
-                            replyLi.remove(); 
+                    // Spezielle Logik: "Antwortet..." Text kürzen
+                    let replyBadge = badges.find(b => b.text.includes('Antwortet'));
+                    if (replyBadge) {
+                        const match = replyBadge.text.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
+                        if (match) {
+                            let val = match[1];
+                            let type = match[2].toLowerCase();
+                            let timeStr = '';
+                            if (type.includes('stunde')) timeStr = val + 'h';
+                            else if (type.includes('minute')) timeStr = val + 'm';
+                            else if (type.includes('tag')) timeStr = val + (val === '1' ? ' Tag' : ' Tage');
+                            else if (type.includes('woche')) timeStr = val + (val === '1' ? ' Woche' : ' Wochen');
+                            replyBadge.text = `Antwortet innerhalb ${timeStr}`;
+                        } else {
+                            replyBadge.text = replyBadge.text.replace(/Antwortet in der Regel innerhalb von/i, 'Antwortet innerhalb').replace(/wenigen Minuten/i, '1m').trim();
                         }
-                        
-                        // 2. Info-Ul verschieben (wird nach Badges und UserProfile--Info ans Ende gehängt)
-                        targetContainer.appendChild(userInfoUl);
                     }
+
+                    // Footer Daten (Aktiv seit, Follower) extrahieren
+                    let activeSince = 'Unbekannt';
+                    let followerCount = '0';
+                    profileBox.querySelectorAll('ul.text-onBackgroundSubdued li, .m-none.flex.text-onBackgroundSubdued li').forEach(li => {
+                        if (li.textContent.includes('Aktiv')) activeSince = li.textContent.trim();
+                        if (li.textContent.includes('Follower')) followerCount = li.textContent.replace(/\D/g, ''); 
+                    });
+
+                    // Stats (Online/Gesamt) extrahieren
+                    let onlineCount = "0", totalCount = "0";
+                    const trxEl = profileBox.querySelector('.user--trx-overview');
+                    if (trxEl) {
+                        const m1 = trxEl.textContent.match(/(\d+)\s*Anzeigen online/i);
+                        const m2 = trxEl.textContent.match(/(\d+)\s*gesamt/i);
+                        if (m1) onlineCount = m1[1];
+                        if (m2) totalCount = m2[1];
+                    }
+
+                    // Links extrahieren
+                    const salesLinkHref = profileBox.querySelector('a[href*="m-verkaufsuebersicht"]')?.href || '/m-verkaufsuebersicht.html';
+
+                    // 2. ORIGINAL-INHALTE VERSTECKEN 
+                    // (Wir löschen sie nicht, damit die React-Hintergrundprozesse nicht crashen)
+                    Array.from(profileBox.children).forEach(child => {
+                        child.style.display = 'none';
+                    });
+
+                    // 3. MOCKUP-LAYOUT BAUEN & INJIZIEREN
+                    let badgesHtml = badges.map(b => {
+                        let svgStr = b.svg;
+                        if (svgStr) {
+                            // Ersetzt bestehende Klassen im SVG durch unsere einheitlichen Tailwind-Klassen
+                            svgStr = svgStr.replace(/class="[^"]*"/, 'class="w-3.5 h-3.5 shrink-0 fill-current block align-middle"');
+                            if (!svgStr.includes('class=')) svgStr = svgStr.replace('<svg', '<svg class="w-3.5 h-3.5 shrink-0 fill-current block align-middle"');
+                        }
+                        return `<span class="badge-purple text-[11px] px-2 py-1 rounded-full font-semibold flex items-center gap-1 shadow-sm">${svgStr} ${b.text}</span>`;
+                    }).join('');
+
+                    const mockupDiv = document.createElement('div');
+                    // Fügt die Klassen aus unserem HTML-Mockup hinzu
+                    mockupDiv.className = "bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden mb-6 w-full";
+                    mockupDiv.innerHTML = `
+                        <div class="absolute top-0 left-0 w-full h-1 bg-[#86B817]"></div>
+                        
+                        <div class="flex-shrink-0">
+                            <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-3xl font-bold shadow-inner uppercase overflow-hidden">
+                                ${avatarContent}
+                            </div>
+                        </div>
+
+                        <div class="flex-1 flex flex-col gap-3 min-w-[300px]">
+                            <div class="flex items-center gap-3">
+                                <h1 class="text-2xl font-bold text-gray-900 leading-none m-0 p-0">${name}</h1>
+                                <span class="bg-gray-100 text-gray-600 border border-gray-200 text-xs px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5 shrink-0 fill-current block align-middle text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                                    ${userType}
+                                </span>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2">
+                                ${badgesHtml}
+                            </div>
+
+                            <div class="flex items-center gap-4 text-[13px] text-gray-500 mt-1">
+                                <span class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 shrink-0 fill-current block align-middle text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                                    ${activeSince}
+                                </span>
+                                <span class="text-gray-300">|</span>
+                                <span class="flex items-center gap-1.5 hover:text-gray-800 cursor-pointer transition-colors">
+                                    <svg viewBox="0 0 24 24" fill="none" data-title="followers" stroke="none" role="img" aria-hidden="true" focusable="false" class="w-4 h-4 shrink-0 fill-current block align-middle text-gray-500"><path d="M14 6C14 4.89543 13.1046 4 12 4C10.8955 4 10 4.89543 10 6C10 7.10457 10.8955 8 12 8C13.1046 8 14 7.10457 14 6ZM16 6C16 8.20914 14.2092 10 12 10C9.79089 10 8.00002 8.20914 8.00002 6C8.00002 3.79086 9.79089 2 12 2C14.2092 2 16 3.79086 16 6Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M11.9991 11C13.5893 11 15.0929 11.3718 16.4278 12.0322C16.6155 12.0108 16.8066 12 17 12C19.7614 12.0001 22 14.2386 22 17C22 19.7614 19.7614 21.9999 17 22C14.2386 22 12 19.7614 12 17C12 15.4765 12.6813 14.1124 13.7559 13.1953C13.1906 13.0686 12.6026 13 11.9991 13C8.22844 13.0002 5.06732 15.609 4.22172 19.1201C4.10212 19.6168 3.67788 20 3.16703 20C2.56824 20 2.0964 19.481 2.22172 18.8955C3.18829 14.3834 7.19839 11.0002 11.9991 11ZM19.4756 14.8701C18.7952 14.2082 17.5013 14.4485 17 15.4756C16.5013 14.4485 15.205 14.2083 14.5245 14.8701C13.844 15.5325 13.8262 16.5958 14.4707 17.2793L14.4688 17.2803L17 20L19.5313 17.2803L19.5293 17.2793C20.1738 16.5958 20.1559 15.5325 19.4756 14.8701Z" fill="currentColor"></path></svg>
+                                    <strong class="text-gray-700">${followerCount}</strong> Follower
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center gap-5 md:pl-6 md:border-l border-gray-200">
+                            <div class="flex flex-col items-center">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Anzeigen</span>
+                                <div class="flex gap-4">
+                                    <div class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                        <span class="text-2xl font-black text-[#86B817] leading-none">${onlineCount}</span>
+                                        <span class="text-[11px] text-gray-500 font-medium uppercase tracking-wider mt-1">Online</span>
+                                    </div>
+                                    <div class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                        <span class="text-2xl font-black text-gray-700 leading-none">${totalCount}</span>
+                                        <span class="text-[11px] text-gray-500 font-medium uppercase tracking-wider mt-1">Gesamt</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hidden sm:block w-px h-12 bg-gray-200"></div>
+                            <div class="sm:hidden w-full h-px bg-gray-200"></div>
+
+                            <div class="flex flex-col gap-2">
+                                <a href="${salesLinkHref}" class="flex items-center gap-2 bg-white border-2 border-gray-200 hover:border-[#5A33AE] hover:text-[#5A33AE] text-gray-700 px-4 py-2 rounded-lg text-sm font-bold transition-all group no-underline">
+                                    <svg viewBox="0 0 24 24" fill="none" data-title="transactionsOverview" stroke="none" role="img" aria-hidden="true" focusable="false" class="w-5 h-5 text-gray-400 group-hover:text-[#5A33AE] shrink-0 fill-current block align-middle transition-colors"><path d="M8 8C8.55229 8 9 7.55228 9 7 9 6.44772 8.55229 6 8 6 7.44772 6 7 6.44772 7 7 7 7.55228 7.44772 8 8 8ZM8 12C8.55229 12 9 11.5523 9 11 9 10.4477 8.55229 10 8 10 7.44772 10 7 10.4477 7 11 7 11.5523 7.44772 12 8 12ZM9 15C9 15.5523 8.55229 16 8 16 7.44772 16 7 15.5523 7 15 7 14.4477 7.44772 14 8 14 8.55229 14 9 14.4477 9 15ZM11 6C10.4477 6 10 6.44772 10 7 10 7.55228 10.4477 8 11 8H16C16.5523 8 17 7.55228 17 7 17 6.44772 16.5523 6 16 6H11ZM10 11C10 10.4477 10.4477 10 11 10H16C16.5523 10 17 10.4477 17 11 17 11.5523 16.5523 12 16 12H11C10.4477 12 10 11.5523 10 11ZM11 14C10.4477 14 10 14.4477 10 15 10 15.5523 10.4477 16 11 16H16C16.5523 16 17 15.5523 17 15 17 14.4477 16.5523 14 16 14H11Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M18.7071 21.2929C18.3166 21.6834 17.6834 21.6834 17.2929 21.2929L16 20L14.7071 21.2929L13.2929 21.2929L12 20L10.7071 21.2929H9.29289L8 20L6.7062 21.2938C6.3156 21.6834 5.68312 21.6831 5.29289 21.2929L4.29289 20.2929C4.10536 20.1054 4 19.851 4 19.5858V4C4 2.89543 4.89543 2 6 2H18C19.1046 2 20 2.89543 20 4V19.5858C20 19.851 19.8946 20.1054 19.7071 20.2929L18.7071 21.2929ZM14 19.1716L12 17.1716L10 19.1716L8 17.1716L6 19.1716V4H18V19.1716L16 17.1716L14 19.1716Z" fill="currentColor"></path><path d="M10.7063 21.2937 10.7071 21.2929 13.2929 21.2929 13.2937 21.2937 10.7063 21.2937ZM14.7063 21.2937 14.7071 21.2929 17.2929 21.2929 14.7063 21.2937ZM13.2937 21.2937 14.7063 21.2937C14.316 21.6831 13.684 21.6831 13.2937 21.2937ZM10.7063 21.2937C10.3159 21.6826 9.68382 21.683 9.2937 21.2937L10.7063 21.2937Z" fill="currentColor"></path></svg>
+                                Verkaufsübersicht
+                            </a>
+                            <a href="/m-einstellungen.html" class="flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors no-underline">
+                                <svg class="w-3.5 h-3.5 shrink-0 fill-current block align-middle text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                Profil-Einstellungen
+                            </a>
+                        </div>
+                    </div>
+                `;
+                
+                // Füge den neuen HTML-Block an den versteckten Original-Container an
+                profileBox.appendChild(mockupDiv);
+                
+                // Native Tailwind Margin-Klassen des Original-Wrappers entfernen, damit unser Margin greift
+                profileBox.classList.remove('gap-small'); 
+                
+                } catch(e) {
+                    console.error("Fehler beim Ersetzen der Profil-Box:", e);
                 }
             }
         }
 
+        // --- BEARBEITEN/DUPLIZIEREN BUTTONS BEI ANZEIGEN ---
         if (isOverviewPage || isDetailPage) {
             const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
             editLinks.forEach(link => {

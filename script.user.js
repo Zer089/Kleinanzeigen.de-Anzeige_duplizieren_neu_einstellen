@@ -5,14 +5,11 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.75
+// @version       2.5.76
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
-// @match         https://www.kleinanzeigen.de/p-anzeige-bearbeiten.html*
-// @match         https://www.kleinanzeigen.de/p-anzeige-aufgeben-bestaetigung.html*
-// @match         https://www.kleinanzeigen.de/m-meine-anzeigen.html*
-// @match         https://www.kleinanzeigen.de/s-anzeige/*
+// @match         https://www.kleinanzeigen.de/*
 // @grant         none
 // @run-at        document-start
 // ==/UserScript==
@@ -57,8 +54,14 @@
     style.textContent = `
         /* Werbe- & Upsell-Säuberung (Banner werden zusätzlich per JS aus dem DOM gelöscht) */
         fieldset:has(#ad-feature-group), span:has(> div.bg-accentContainer), #feature-offer-section,
-        .site-base--left-banner, .site-base--right-banner, #vip-billboard, #vip-belly, #vip-middle, #vip-bottom,
-        [id^="vip-similar-ads-"], #pvap-featrs, .is-detail-page .icon-info-blue { display: none !important; }
+        .site-base--left-banner, .site-base--right-banner, .site-base--left-banner--full, .site-base--right-banner--full,
+        #vip-billboard, #vip-belly, #vip-middle, #vip-bottom, #btf-billboard,
+        #my-watchlist-atf, #my-msgbox-atf, #my-atf, .liberty-filled, .j-liberty-wrapper,
+        [id^="vip-similar-ads-"], #pvap-featrs, .is-detail-page .icon-info-blue,
+        .absolute.top-none.right-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.right-small.pt-large,
+        .absolute.top-none.left-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.left-small.pt-large,
+        .ad-module, div[data-testid*="banner"], div[data-testid*="ad-wrapper"],
+        .mb-small:has(> .ad-module), .mb-small:has([id^="dfp-"]), li:has(> .ad-module) { display: none !important; }
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
@@ -338,7 +341,15 @@
 
     const inject = () => {
         // --- DOM CLEANUP: Banner physisch entfernen ---
-        const banners = document.querySelectorAll('.site-base--left-banner, .site-base--right-banner');
+        const banners = document.querySelectorAll(`
+            .site-base--left-banner, .site-base--right-banner, 
+            .site-base--left-banner--full, .site-base--right-banner--full,
+            #btf-billboard, #my-watchlist-atf, #my-msgbox-atf, #my-atf,
+            .absolute.top-none.right-small.bottom-1\\/2, 
+            .absolute.bottom-none.top-1\\/2.right-small.pt-large,
+            .absolute.top-none.left-small.bottom-1\\/2, 
+            .absolute.bottom-none.top-1\\/2.left-small.pt-large
+        `);
         banners.forEach(b => b.remove());
 
         // --- PROFIL BOX UMBAU ---
@@ -760,21 +771,21 @@
                                         }
 
                                         if (priceEl && !priceEl.querySelector('.custom-shipping-info')) {
-                                            const shipSpan = document.createElement('span');
-                                            shipSpan.className = 'custom-shipping-info';
+                                            const span = document.createElement('span');
+                                            span.className = 'custom-shipping-info';
                                             
-                                            shipSpan.style.fontSize = '12px';
-                                            shipSpan.style.fontWeight = 'normal';
-                                            shipSpan.style.color = '#757575'; 
-                                            shipSpan.style.marginLeft = '4px';
-                                            shipSpan.textContent = details.shipping;
+                                            span.style.fontSize = '12px';
+                                            span.style.fontWeight = 'normal';
+                                            span.style.color = '#757575'; 
+                                            span.style.marginLeft = '4px';
+                                            span.textContent = details.shipping;
                                             
                                             priceEl.style.display = 'flex';
                                             priceEl.style.alignItems = 'baseline';
                                             priceEl.style.gap = '4px';
                                             priceEl.style.flexWrap = 'wrap'; 
                                             
-                                            priceEl.appendChild(shipSpan);
+                                            priceEl.appendChild(span);
                                         }
                                     }
                                 }

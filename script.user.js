@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.80
+// @version       2.5.81
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -55,7 +55,7 @@
         /* Werbe- & Upsell-Säuberung (Banner werden zusätzlich per JS aus dem DOM gelöscht) */
         fieldset:has(#ad-feature-group), span:has(> div.bg-accentContainer), #feature-offer-section,
         .site-base--left-banner--full, .site-base--right-banner--full,
-        #vip-billboard, #vip-belly, #vip-middle, #vip-bottom, #btf-billboard,
+        #vip-billboard, #vip-belly, #vip-middle, #vip-bottom, #btf-billboard, #home-billboard,
         #my-watchlist-atf, #my-msgbox-atf, #my-atf, .liberty-filled, .j-liberty-wrapper,
         [id^="vip-similar-ads-"], #pvap-featrs, .is-detail-page .icon-info-blue,
         .absolute.top-none.right-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.right-small.pt-large,
@@ -347,7 +347,7 @@
         // --- DOM CLEANUP: Banner physisch entfernen ---
         const banners = document.querySelectorAll(`
             .site-base--left-banner--full, .site-base--right-banner--full,
-            #btf-billboard, #my-watchlist-atf, #my-msgbox-atf, #my-atf,
+            #btf-billboard, #home-billboard, #my-watchlist-atf, #my-msgbox-atf, #my-atf,
             .absolute.top-none.right-small.bottom-1\\/2, 
             .absolute.bottom-none.top-1\\/2.right-small.pt-large,
             .absolute.top-none.left-small.bottom-1\\/2, 

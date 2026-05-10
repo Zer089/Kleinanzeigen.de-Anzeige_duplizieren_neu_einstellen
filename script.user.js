@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.89
+// @version       2.5.91
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -58,7 +58,7 @@
     // ==========================================
     const style = document.createElement('style');
     style.textContent = `
-        /* Werbe- & Upsell-Säuberung (Banner werden zusätzlich per JS aus dem DOM gelöscht) */
+        /* Werbe- & Upsell-Säuberung */
         fieldset:has(#ad-feature-group), span:has(> div.bg-accentContainer), #feature-offer-section,
         .site-base--left-banner--full, .site-base--right-banner--full,
         #vip-billboard, #vip-belly, #vip-middle, #vip-bottom, #btf-billboard, #home-billboard,
@@ -76,13 +76,13 @@
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
-        /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1100px in der Mitte) */
+        /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1100px) */
         html.is-wide-page body .site-base,
         html.is-wide-page body .grid-cols-\\[1fr_970px_1fr\\] {
             grid-template-columns: 1fr minmax(auto, 1100px) 1fr !important;
         }
 
-        /* Container-Breite anpassen und Zentrierung reparieren - Mit absoluter maximaler CSS-Spezifität! */
+        /* Container-Breite anpassen und zentrieren */
         html.is-wide-page body .site-base--content,
         html.is-wide-page body .l-page-wrapper,
         html.is-wide-page body .l-container,
@@ -92,7 +92,6 @@
         html.is-wide-page body main#main,
         html.is-wide-page body #my-ads-frontend,
         html.is-wide-page body [data-testid="site-content"],
-        html.is-wide-page body .ownprofile-main,
         html.is-wide-page body [aria-labelledby="tabs-all"],
         html.is-wide-page body #tab-panel-all,
         html.is-wide-page body main .max-w-screen-custom {
@@ -103,7 +102,7 @@
             box-sizing: border-box !important;
         }
 
-        /* Feste 970px Container überschreiben (Nur im Inhaltsbereich, schützt den Header!) */
+        /* Feste 970px Container überschreiben (schützt Header!) */
         html.is-wide-page body main .w-\\[970px\\],
         html.is-wide-page body main div[class*="w-[970px]"] {
             width: 100% !important;
@@ -112,7 +111,7 @@
             margin-right: auto !important;
         }
 
-        /* Startseiten-Feed und Suche Flexibilität (Löst den harten Tailwind-Lock wie w-[700px] und w-[728px]) */
+        /* Startseiten-Feed Flexibilität */
         html.is-wide-page body #homepage-main,
         html.is-wide-page body #srchrslt-content,
         html.is-wide-page body main .w-\\[700px\\],
@@ -125,7 +124,6 @@
             flex: 1 1 0% !important;
         }
 
-        /* Verhindert das Ausbrechen der Anzeigenliste (1232px Bug) durch negative Tailwind-Margins */
         html.is-wide-page body ul#my-manageitems-adlist,
         html.is-wide-page body li[data-testid="ad-card"] {
             width: 100% !important;
@@ -135,132 +133,178 @@
             box-sizing: border-box !important;
         }
 
-        /* ----------------------------------------------------
-           PROFIL-BOX CUSTOM FARBEN (Mockup Design)
-           ---------------------------------------------------- */
-        .badge-purple {
-            background-color: #f3e8ff !important; 
-            color: #6b21a8 !important; 
-        }
-
-        /* Basis-Design unserer lila Buttons */
-        .custom-purple-btn {
-            background-color: #5A33AE !important; 
-            border-color: #5A33AE !important; 
-            color: #ffffff !important;
-            border-radius: 9999px !important;
-            font-weight: bold !important; 
-            cursor: pointer !important;
-            display: inline-flex !important; 
-            align-items: center !important; 
-            justify-content: center !important;
-            gap: 6px !important;
-            border: 2px solid #5A33AE !important;
-            text-decoration: none !important;
-            transition: all 0.2s ease-in-out;
-            box-sizing: border-box !important;
-            margin: 0 !important; 
-        }
-        .custom-purple-btn:hover { 
-            background-color: #D1C4E9 !important; 
-            border-color: #D1C4E9 !important; 
-            color: #5A33AE !important; 
-        }
-
-        /* ----------------------------------------------------
-           1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
-           ---------------------------------------------------- */
+        /* ====================================================
+           NEUES PROFIL DASHBOARD (MOCKUP STYLES)
+           ==================================================== */
+        .kl-hidden-original { display: none !important; }
         
-        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt (Spalte 2 auf 570px verbreitert) */
-        .custom-ad-grid {
-            display: grid !important;
-            width: 100% !important;
-            grid-template-columns: 200px 570px auto !important;
-        }
-
-        /* Margin-Korrektur für die 3. Spalte (Footer-Div) */
-        .custom-ad-grid .mt-xsmall {
-            margin-top: 0px !important;
-        }
-
-        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            justify-content: flex-end !important; /* Buttons rechtsbündig in der 3. Spalte */
-            align-content: flex-start !important;
-            gap: 8px !important;
-            margin: 0 !important;
+        .ownprofile-main.custom-replaced {
+            background: transparent !important;
             padding: 0 !important;
-            width: 100% !important; /* Zwingt den Container auf volle Breite, um flex-end zu garantieren */
-        }
-        
-        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
-            margin: 0 !important;
-            width: auto !important;
+            margin-bottom: 24px !important;
+            border: none !important;
+            box-shadow: none !important;
         }
 
-        .custom-buttons-wrapper {
-            display: flex !important;
-            gap: 8px !important;
-            justify-content: flex-end !important; /* Buttons rechtsbündig */
-            margin: 0 !important;
+        .custom-profile-dashboard {
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            align-items: flex-start;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+            width: 100%;
         }
-        .is-overview-page .custom-buttons-wrapper { flex-basis: 100% !important; } /* Zwingt custom Buttons in eine neue Zeile */
-
-        /* Strenge Zwangshöhe für Buttons */
-        .is-overview-page .custom-purple-btn,
-        .is-overview-page .custom-native-btn {
-            height: 32px !important;
-            min-height: 32px !important;
-            max-height: 32px !important;
-            padding: 0 12px !important;
-            font-size: 13px !important;
-            line-height: 1 !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
+        @media (max-width: 800px) {
+            .custom-profile-dashboard { flex-direction: column; gap: 16px; }
         }
-
-        /* Styling für die Versandinfo neben dem Preis */
-        .custom-shipping-info {
-            font-size: 13px !important;
-            color: #757575 !important;
-            font-weight: normal !important;
-            white-space: nowrap;
+        .custom-profile-dashboard::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background-color: #86B817;
         }
 
-        /* Styling für unsere neu verschobenen Statistik-Elemente (Ort, Datum) */
-        .custom-stat-li {
+        /* 1. Avatar Column */
+        .cpd-avatar-col .user-profile-badge {
+            width: 96px !important;
+            height: 96px !important;
+            border-radius: 50% !important;
             display: flex !important;
             align-items: center !important;
-            gap: 4px !important;
-            color: inherit !important; 
-            white-space: nowrap;
+            justify-content: center !important;
+            font-size: 32px !important;
+            font-weight: bold !important;
+            background: #e0e0e0 !important;
+            color: #666 !important;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: normal !important;
         }
-
-        /* ----------------------------------------------------
-           2. DETAILSEITE & BEARBEITEN-SEITE
-           ---------------------------------------------------- */
-           
-        .is-detail-page .custom-purple-btn, 
-        .is-edit-page .custom-purple-btn {
-            height: 44px !important;
-            min-height: 44px !important;
-            padding: 0 16px !important;
-            font-size: 14px !important;
-        }
-
-        .is-detail-page #pvap-mngad-stats { width: 150px !important; }
+        .cpd-avatar-col img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         
+        /* 2. Main Info Column */
+        .cpd-info-col {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            justify-content: center;
+        }
+        .cpd-name-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .cpd-name-row h2 { font-size: 24px !important; font-weight: 700 !important; color: #111 !important; margin: 0 !important; line-height: 1 !important; }
+        
+        .cpd-usertype-tag {
+            background: #f5f5f5 !important; color: #444 !important; border: 1px solid #e0e0e0 !important;
+            font-size: 12px !important; padding: 4px 10px !important; border-radius: 999px !important;
+            font-weight: 600 !important; display: flex !important; align-items: center !important; gap: 6px !important;
+        }
+        .cpd-usertype-tag svg { width: 14px !important; height: 14px !important; }
+        
+        .cpd-badges-row { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+        .custom-badge-item {
+            background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 11px !important;
+            padding: 4px 10px !important; border-radius: 9999px !important; font-weight: 700 !important;
+            display: flex !important; align-items: center !important; gap: 4px !important;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; white-space: nowrap;
+        }
+        .custom-badge-item svg { width: 14px !important; height: 14px !important; }
+
+        .cpd-footer-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 13px !important; color: #757575 !important; margin-top: 4px !important; }
+        .cpd-footer-item { display: flex; align-items: center; gap: 6px; }
+        .cpd-footer-item svg { width: 16px !important; height: 16px !important; }
+        .cpd-footer-item a { color: #111 !important; font-weight: 700 !important; text-decoration: none !important; display: flex; gap: 6px; align-items: center;}
+        .cpd-footer-item a strong { font-weight: 800 !important; }
+        .cpd-footer-item a:hover { text-decoration: underline !important; }
+
+        /* 3. Stats & Actions Column */
+        .cpd-stats-actions-col {
+            display: flex; align-items: center; gap: 24px; border-left: 1px solid #e0e0e0; padding-left: 24px;
+        }
+        @media (max-width: 800px) {
+            .cpd-stats-actions-col { border-left: none; border-top: 1px solid #e0e0e0; padding-left: 0; padding-top: 20px; flex-direction: row; flex-wrap: wrap; width: 100%; }
+            .cpd-divider { display: none !important; }
+        }
+        
+        .cpd-stats-block { display: flex; flex-direction: column; align-items: center; }
+        .cpd-stats-title { font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .cpd-stats-tiles { display: flex; gap: 16px; }
+        .cpd-tile { display: flex; flex-direction: column; align-items: center; padding: 8px 12px; border-radius: 8px; transition: background 0.2s; }
+        .cpd-tile:hover { background: #f9f9f9; }
+        .cpd-tile-val { font-size: 24px; font-weight: 900; line-height: 1; color: #444; }
+        .cpd-tile-val.online { color: #86B817; }
+        .cpd-tile-lbl { font-size: 11px; color: #757575; font-weight: 600; text-transform: uppercase; margin-top: 4px; }
+
+        .cpd-divider { width: 1px; height: 60px; background: #e0e0e0; }
+
+        .cpd-actions-block { display: flex; flex-direction: column; gap: 8px; }
+        .cpd-action-btn {
+            display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important;
+            border-radius: 8px !important; transition: all 0.2s !important; text-decoration: none !important;
+            cursor: pointer !important; box-sizing: border-box !important;
+        }
+        .cpd-action-btn.primary {
+            border: 2px solid #e0e0e0 !important; padding: 8px 16px !important; font-size: 14px !important;
+            font-weight: 700 !important; color: #444 !important; background: #fff !important;
+        }
+        .cpd-action-btn.primary:hover { border-color: #5A33AE !important; color: #5A33AE !important; }
+        .cpd-action-btn.primary svg { width: 20px !important; height: 20px !important; color: #999; transition: color 0.2s; }
+        .cpd-action-btn.primary:hover svg { color: #5A33AE !important; }
+        
+        .cpd-action-btn.secondary { background: transparent !important; border: none !important; font-size: 12px !important; font-weight: 600 !important; color: #999 !important; padding: 4px !important; }
+        .cpd-action-btn.secondary:hover { color: #666 !important; }
+        .cpd-action-btn.secondary svg { width: 14px !important; height: 14px !important; }
+
+        /* ====================================================
+           LILA BUTTONS BEI ANZEIGEN (Bearbeiten/Duplizieren)
+           ==================================================== */
+        .custom-purple-btn {
+            background-color: #5A33AE !important; border-color: #5A33AE !important; color: #ffffff !important;
+            border-radius: 9999px !important; font-weight: bold !important; cursor: pointer !important;
+            display: inline-flex !important; align-items: center !important; justify-content: center !important;
+            gap: 6px !important; border: 2px solid #5A33AE !important; text-decoration: none !important;
+            transition: all 0.2s ease-in-out; box-sizing: border-box !important; margin: 0 !important; 
+        }
+        .custom-purple-btn:hover { background-color: #D1C4E9 !important; border-color: #D1C4E9 !important; color: #5A33AE !important; }
+
+        .custom-ad-grid { display: grid !important; width: 100% !important; grid-template-columns: 200px 570px auto !important; }
+        .custom-ad-grid .mt-xsmall { margin-top: 0px !important; }
+
+        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
+            display: flex !important; flex-wrap: wrap !important; justify-content: flex-end !important;
+            align-content: flex-start !important; gap: 8px !important; margin: 0 !important; padding: 0 !important; width: 100% !important; 
+        }
+        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li { margin: 0 !important; width: auto !important; }
+
+        .custom-buttons-wrapper { display: flex !important; gap: 8px !important; justify-content: flex-end !important; margin: 0 !important; }
+        .is-overview-page .custom-buttons-wrapper { flex-basis: 100% !important; }
+
+        .is-overview-page .custom-purple-btn, .is-overview-page .custom-native-btn {
+            height: 32px !important; min-height: 32px !important; max-height: 32px !important;
+            padding: 0 12px !important; font-size: 13px !important; line-height: 1 !important; margin: 0 !important; box-sizing: border-box !important;
+        }
+
+        .custom-shipping-info { font-size: 13px !important; color: #757575 !important; font-weight: normal !important; white-space: nowrap; }
+        .custom-stat-li { display: flex !important; align-items: center !important; gap: 4px !important; color: inherit !important; white-space: nowrap; }
+
+        .is-detail-page .custom-purple-btn, .is-edit-page .custom-purple-btn { height: 44px !important; min-height: 44px !important; padding: 0 16px !important; font-size: 14px !important; }
+        .is-detail-page #pvap-mngad-stats { width: 150px !important; }
         .is-detail-page .manageadbox--actions, .is-detail-page #pvap-mngad-actions {
-            display: flex !important; flex-wrap: wrap !important; gap: 8px !important;
-            justify-content: flex-end !important; list-style: none !important; margin-top: 15px !important;
+            display: flex !important; flex-wrap: wrap !important; gap: 8px !important; justify-content: flex-end !important; list-style: none !important; margin-top: 15px !important;
         }
         .is-detail-page .manageadbox--actions a, .is-detail-page .manageadbox--actions button,
         .is-detail-page #pvap-mngad-actions a, .is-detail-page #pvap-mngad-actions button {
-            display: inline-flex !important; align-items: center !important; height: 44px !important;
-            padding: 0 16px !important; border-radius: 9999px !important; border: 2px solid #dcdcdc !important;
-            background: transparent !important; color: #222 !important; font-weight: bold !important; text-decoration: none !important;
-            box-sizing: border-box !important;
+            display: inline-flex !important; align-items: center !important; height: 44px !important; padding: 0 16px !important; border-radius: 9999px !important;
+            border: 2px solid #dcdcdc !important; background: transparent !important; color: #222 !important; font-weight: bold !important; text-decoration: none !important; box-sizing: border-box !important;
         }
     `;
     document.head ? document.head.appendChild(style) : document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
@@ -346,168 +390,236 @@
         `);
         banners.forEach(b => b.remove());
 
-        // --- NEUES PROFIL-LAYOUT INJECTOR ---
+        // --- MOCKUP PROFIL REDESIGN INJECTOR ---
         if (isOverviewPage) {
-            // Ermitteln des Original-Wrappers des Profils
-            const headerTestId = document.querySelector('[data-testid="ownprofile-header"]');
-            const profileBox = document.querySelector('.ownprofile-main') || (headerTestId ? headerTestId.parentElement : null);
-
-            if (profileBox && !profileBox.dataset.mockupInjected) {
-                profileBox.dataset.mockupInjected = 'true';
+            const profileBox = document.querySelector('.ownprofile-main');
+            
+            if (profileBox && !profileBox.dataset.redesignInjected) {
+                profileBox.dataset.redesignInjected = 'true';
 
                 try {
-                    // 1. DATEN AUS ORIGINAL-DOM EXTRAHIEREN
-                    const name = profileBox.querySelector('h1')?.textContent || '';
-                    const userTypeEl = Array.from(profileBox.querySelectorAll('p, span')).find(el => el.textContent.includes('Privater Nutzer') || el.textContent.includes('Gewerblicher Nutzer'));
-                    const userType = userTypeEl ? userTypeEl.textContent.trim() : 'Privater Nutzer';
+                    // 1. Verstecke die originale Struktur (um React nicht zu stören)
+                    Array.from(profileBox.children).forEach(child => {
+                        child.style.display = 'none';
+                        child.classList.add('kl-hidden-original');
+                    });
+
+                    // 2. Extrahieren der Original-Daten und Nodes
                     
-                    const avatarImg = profileBox.querySelector('img[src*="userportrait"]');
-                    let avatarContent = name ? name.charAt(0).toUpperCase() : 'U';
-                    if (avatarImg && avatarImg.src) {
-                        avatarContent = `<img src="${avatarImg.src}" class="w-full h-full object-cover" />`;
+                    // Avatar
+                    const avatarEl = profileBox.querySelector('.user-profile-badge') || profileBox.querySelector('img[src*="userportrait"]');
+                    const avatarClone = avatarEl ? avatarEl.cloneNode(true) : null;
+
+                    // Name
+                    const nameEl = profileBox.querySelector('h2');
+                    let nameText = '';
+                    if (nameEl) {
+                        // Verstecke das SR-Only "Profil von" im Clone
+                        const srOnly = nameEl.querySelector('.sr-only');
+                        if (srOnly) srOnly.style.display = 'none';
+                        nameText = nameEl.textContent.replace('Profil von', '').trim();
                     }
 
                     // Badges extrahieren
                     const badges = [];
                     profileBox.querySelectorAll('.ownprofile-badges.userbadges li').forEach(li => {
-                        const svg = li.querySelector('svg')?.outerHTML || '';
-                        const text = li.textContent.trim();
-                        if (text) badges.push({ svg, text });
-                    });
-
-                    // Spezielle Logik: "Antwortet..." Text kürzen
-                    let replyBadge = badges.find(b => b.text.includes('Antwortet'));
-                    if (replyBadge) {
-                        const match = replyBadge.text.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
-                        if (match) {
-                            let val = match[1];
-                            let type = match[2].toLowerCase();
-                            let timeStr = '';
-                            if (type.includes('stunde')) timeStr = val + 'h';
-                            else if (type.includes('minute')) timeStr = val + 'm';
-                            else if (type.includes('tag')) timeStr = val + (val === '1' ? ' Tag' : ' Tage');
-                            else if (type.includes('woche')) timeStr = val + (val === '1' ? ' Woche' : ' Wochen');
-                            replyBadge.text = `Antwortet innerhalb ${timeStr}`;
-                        } else {
-                            replyBadge.text = replyBadge.text.replace(/Antwortet in der Regel innerhalb von/i, 'Antwortet innerhalb').replace(/wenigen Minuten/i, '1m').trim();
+                        const svg = li.querySelector('svg');
+                        const textWrapper = li.querySelector('.ActivityIndicator--Name');
+                        const text = textWrapper ? textWrapper.textContent.trim() : li.textContent.trim();
+                        if (svg && text) {
+                            badges.push({ svg: svg.cloneNode(true), text: text });
                         }
-                    }
-
-                    // Footer Daten (Aktiv seit, Follower) extrahieren
-                    let activeSince = 'Unbekannt';
-                    let followerCount = '0';
-                    profileBox.querySelectorAll('ul.text-onBackgroundSubdued li, .m-none.flex.text-onBackgroundSubdued li').forEach(li => {
-                        if (li.textContent.includes('Aktiv')) activeSince = li.textContent.trim();
-                        if (li.textContent.includes('Follower')) followerCount = li.textContent.replace(/\D/g, ''); 
                     });
 
-                    // Stats (Online/Gesamt) extrahieren
+                    // User Infos (Typ, Aktiv seit, Antworten, Follower)
+                    let userTypeHtml = '', activeSinceHtml = '', replyTimeData = null;
+                    let followersA = null, followersSvg = null;
+
+                    profileBox.querySelectorAll('[data-testid="user-info"] li').forEach(li => {
+                        const txt = li.textContent.toLowerCase();
+                        const svg = li.querySelector('svg');
+                        
+                        if (txt.includes('nutzer')) {
+                            userTypeHtml = li.innerHTML; 
+                        } else if (txt.includes('aktiv seit')) {
+                            activeSinceHtml = li.innerHTML;
+                        } else if (txt.includes('antwortet')) {
+                            replyTimeData = {
+                                svg: svg ? svg.cloneNode(true) : null,
+                                text: li.textContent.replace(/Antwortet in der Regel innerhalb von/i, 'Antwortet innerhalb').trim()
+                            };
+                            const match = replyTimeData.text.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
+                            if (match) {
+                                let val = match[1]; let type = match[2].toLowerCase();
+                                let timeStr = type.includes('stunde') ? val + 'h' : type.includes('minute') ? val + 'm' : val + (val === '1' ? ' Tag' : ' Tage');
+                                replyTimeData.text = `Antwortet innerhalb ${timeStr}`;
+                            }
+                        } else if (txt.includes('follower')) {
+                            followersSvg = svg ? svg.cloneNode(true) : null;
+                            followersA = li.querySelector('a'); // Diesen Node VERSCHIEBEN wir später für die Funktionalität!
+                        }
+                    });
+
+                    // Statistiken
+                    const statsEl = profileBox.querySelector('[data-testid="posted-ads"]');
                     let onlineCount = "0", totalCount = "0";
-                    const trxEl = profileBox.querySelector('.user--trx-overview');
-                    if (trxEl) {
-                        const m1 = trxEl.textContent.match(/(\d+)\s*Anzeigen online/i);
-                        const m2 = trxEl.textContent.match(/(\d+)\s*gesamt/i);
+                    if (statsEl) {
+                        const m1 = statsEl.textContent.match(/(\d+)\s*Anzeigen/i);
+                        const m2 = statsEl.textContent.match(/(\d+)\s*gesamt/i);
                         if (m1) onlineCount = m1[1];
                         if (m2) totalCount = m2[1];
                     }
 
-                    // Links extrahieren
-                    const salesLinkHref = profileBox.querySelector('a[href*="m-verkaufsuebersicht"]')?.href || '/m-verkaufsuebersicht.html';
+                    // Original Buttons (Werden verschoben, um Event-Listener zu erhalten)
+                    const walletLink = profileBox.querySelector('a[href*="wallet.html"]'); 
+                    const infoBtn = profileBox.querySelector('button[aria-label="Profilinformationen öffnen"]');
 
-                    // 2. ORIGINAL-INHALTE VERSTECKEN 
-                    // (Wir löschen sie nicht, damit die React-Hintergrundprozesse nicht crashen)
-                    Array.from(profileBox.children).forEach(child => {
-                        child.style.display = 'none';
+                    // ==========================================
+                    // 3. Aufbau des neuen Dashboards
+                    // ==========================================
+                    const dashboard = document.createElement('div');
+                    dashboard.className = 'custom-profile-dashboard';
+                    
+                    // --- Avatar Spalte ---
+                    const colAvatar = document.createElement('div');
+                    colAvatar.className = 'cpd-avatar-col';
+                    if (avatarClone) {
+                        // Originale Klassen bereinigen, damit unsere Custom CSS greift
+                        avatarClone.className = 'user-profile-badge'; 
+                        colAvatar.appendChild(avatarClone);
+                    }
+                    dashboard.appendChild(colAvatar);
+
+                    // --- Hauptinfos Spalte ---
+                    const colInfo = document.createElement('div');
+                    colInfo.className = 'cpd-info-col';
+                    
+                    // Name & Typ
+                    const rowName = document.createElement('div');
+                    rowName.className = 'cpd-name-row';
+                    const nameH2 = document.createElement('h2');
+                    nameH2.textContent = nameText;
+                    rowName.appendChild(nameH2);
+                    
+                    if (userTypeHtml) {
+                        const typeSpan = document.createElement('span');
+                        typeSpan.className = 'cpd-usertype-tag';
+                        typeSpan.innerHTML = userTypeHtml;
+                        rowName.appendChild(typeSpan);
+                    }
+                    colInfo.appendChild(rowName);
+
+                    // Badges
+                    const badgesRow = document.createElement('div');
+                    badgesRow.className = 'cpd-badges-row';
+                    
+                    badges.forEach(b => {
+                        const badgeSpan = document.createElement('span');
+                        badgeSpan.className = 'custom-badge-item';
+                        badgeSpan.appendChild(b.svg);
+                        badgeSpan.appendChild(document.createTextNode(' ' + b.text));
+                        badgesRow.appendChild(badgeSpan);
                     });
+                    
+                    if (replyTimeData) {
+                        const rtSpan = document.createElement('span');
+                        rtSpan.className = 'custom-badge-item'; 
+                        if (replyTimeData.svg) rtSpan.appendChild(replyTimeData.svg);
+                        rtSpan.appendChild(document.createTextNode(' ' + replyTimeData.text));
+                        badgesRow.appendChild(rtSpan);
+                    }
+                    colInfo.appendChild(badgesRow);
 
-                    // 3. MOCKUP-LAYOUT BAUEN & INJIZIEREN
-                    let badgesHtml = badges.map(b => {
-                        let svgStr = b.svg;
-                        if (svgStr) {
-                            // Ersetzt bestehende Klassen im SVG durch unsere einheitlichen Tailwind-Klassen
-                            svgStr = svgStr.replace(/class="[^"]*"/, 'class="w-3.5 h-3.5 shrink-0 fill-current block align-middle"');
-                            if (!svgStr.includes('class=')) svgStr = svgStr.replace('<svg', '<svg class="w-3.5 h-3.5 shrink-0 fill-current block align-middle"');
-                        }
-                        return `<span class="badge-purple text-[11px] px-2 py-1 rounded-full font-semibold flex items-center gap-1 shadow-sm">${svgStr} ${b.text}</span>`;
-                    }).join('');
-
-                    const mockupDiv = document.createElement('div');
-                    // Fügt die Klassen aus unserem HTML-Mockup hinzu
-                    mockupDiv.className = "bg-white rounded-xl shadow-sm border border-gray-200 p-6 flex flex-col md:flex-row items-center md:items-start gap-6 relative overflow-hidden mb-6 w-full";
-                    mockupDiv.innerHTML = `
-                        <div class="absolute top-0 left-0 w-full h-1 bg-[#86B817]"></div>
+                    // Footer Links (Aktiv, Follower)
+                    const rowFooter = document.createElement('div');
+                    rowFooter.className = 'cpd-footer-row';
+                    
+                    if (activeSinceHtml) {
+                        const asSpan = document.createElement('span');
+                        asSpan.className = 'cpd-footer-item';
+                        asSpan.innerHTML = activeSinceHtml;
+                        rowFooter.appendChild(asSpan);
+                    }
+                    
+                    if (followersA) {
+                        const folSpan = document.createElement('span');
+                        folSpan.className = 'cpd-footer-item hoverable';
+                        if (followersSvg) folSpan.appendChild(followersSvg);
                         
-                        <div class="flex-shrink-0">
-                            <div class="w-24 h-24 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-3xl font-bold shadow-inner uppercase overflow-hidden">
-                                ${avatarContent}
-                            </div>
-                        </div>
+                        // Original A-Tag nehmen, Style-Klassen löschen und Zahl fett machen
+                        followersA.className = ''; 
+                        const numMatch = followersA.textContent.match(/(\d+)/);
+                        if (numMatch) {
+                            followersA.innerHTML = `<strong>${numMatch[1]}</strong> Follower`;
+                        }
+                        folSpan.appendChild(followersA); // Verschiebt den Original-Node!
+                        rowFooter.appendChild(folSpan);
+                    }
+                    colInfo.appendChild(rowFooter);
+                    
+                    dashboard.appendChild(colInfo);
 
-                        <div class="flex-1 flex flex-col gap-3 min-w-[300px]">
-                            <div class="flex items-center gap-3">
-                                <h1 class="text-2xl font-bold text-gray-900 leading-none m-0 p-0">${name}</h1>
-                                <span class="bg-gray-100 text-gray-600 border border-gray-200 text-xs px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5">
-                                    <svg class="w-3.5 h-3.5 shrink-0 fill-current block align-middle text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                                    ${userType}
-                                </span>
-                            </div>
-
-                            <div class="flex flex-wrap gap-2">
-                                ${badgesHtml}
-                            </div>
-
-                            <div class="flex items-center gap-4 text-[13px] text-gray-500 mt-1">
-                                <span class="flex items-center gap-1.5">
-                                    <svg class="w-4 h-4 shrink-0 fill-current block align-middle text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                                    ${activeSince}
-                                </span>
-                                <span class="text-gray-300">|</span>
-                                <span class="flex items-center gap-1.5 hover:text-gray-800 cursor-pointer transition-colors">
-                                    <svg viewBox="0 0 24 24" fill="none" data-title="followers" stroke="none" role="img" aria-hidden="true" focusable="false" class="w-4 h-4 shrink-0 fill-current block align-middle text-gray-500"><path d="M14 6C14 4.89543 13.1046 4 12 4C10.8955 4 10 4.89543 10 6C10 7.10457 10.8955 8 12 8C13.1046 8 14 7.10457 14 6ZM16 6C16 8.20914 14.2092 10 12 10C9.79089 10 8.00002 8.20914 8.00002 6C8.00002 3.79086 9.79089 2 12 2C14.2092 2 16 3.79086 16 6Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M11.9991 11C13.5893 11 15.0929 11.3718 16.4278 12.0322C16.6155 12.0108 16.8066 12 17 12C19.7614 12.0001 22 14.2386 22 17C22 19.7614 19.7614 21.9999 17 22C14.2386 22 12 19.7614 12 17C12 15.4765 12.6813 14.1124 13.7559 13.1953C13.1906 13.0686 12.6026 13 11.9991 13C8.22844 13.0002 5.06732 15.609 4.22172 19.1201C4.10212 19.6168 3.67788 20 3.16703 20C2.56824 20 2.0964 19.481 2.22172 18.8955C3.18829 14.3834 7.19839 11.0002 11.9991 11ZM19.4756 14.8701C18.7952 14.2082 17.5013 14.4485 17 15.4756C16.5013 14.4485 15.205 14.2083 14.5245 14.8701C13.844 15.5325 13.8262 16.5958 14.4707 17.2793L14.4688 17.2803L17 20L19.5313 17.2803L19.5293 17.2793C20.1738 16.5958 20.1559 15.5325 19.4756 14.8701Z" fill="currentColor"></path></svg>
-                                    <strong class="text-gray-700">${followerCount}</strong> Follower
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row items-center gap-5 md:pl-6 md:border-l border-gray-200">
-                            <div class="flex flex-col items-center">
-                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Anzeigen</span>
-                                <div class="flex gap-4">
-                                    <div class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                        <span class="text-2xl font-black text-[#86B817] leading-none">${onlineCount}</span>
-                                        <span class="text-[11px] text-gray-500 font-medium uppercase tracking-wider mt-1">Online</span>
-                                    </div>
-                                    <div class="flex flex-col items-center justify-center p-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                        <span class="text-2xl font-black text-gray-700 leading-none">${totalCount}</span>
-                                        <span class="text-[11px] text-gray-500 font-medium uppercase tracking-wider mt-1">Gesamt</span>
-                                    </div>
+                    // --- Stats & Actions Spalte ---
+                    const colStats = document.createElement('div');
+                    colStats.className = 'cpd-stats-actions-col';
+                    
+                    colStats.innerHTML = `
+                        <div class="cpd-stats-block">
+                            <span class="cpd-stats-title">Anzeigen</span>
+                            <div class="cpd-stats-tiles">
+                                <div class="cpd-tile">
+                                    <span class="cpd-tile-val online">${onlineCount}</span>
+                                    <span class="cpd-tile-lbl">Online</span>
+                                </div>
+                                <div class="cpd-tile">
+                                    <span class="cpd-tile-val">${totalCount}</span>
+                                    <span class="cpd-tile-lbl">Gesamt</span>
                                 </div>
                             </div>
-
-                            <div class="hidden sm:block w-px h-12 bg-gray-200"></div>
-                            <div class="sm:hidden w-full h-px bg-gray-200"></div>
-
-                            <div class="flex flex-col gap-2">
-                                <a href="${salesLinkHref}" class="flex items-center gap-2 bg-white border-2 border-gray-200 hover:border-[#5A33AE] hover:text-[#5A33AE] text-gray-700 px-4 py-2 rounded-lg text-sm font-bold transition-all group no-underline">
-                                    <svg viewBox="0 0 24 24" fill="none" data-title="transactionsOverview" stroke="none" role="img" aria-hidden="true" focusable="false" class="w-5 h-5 text-gray-400 group-hover:text-[#5A33AE] shrink-0 fill-current block align-middle transition-colors"><path d="M8 8C8.55229 8 9 7.55228 9 7 9 6.44772 8.55229 6 8 6 7.44772 6 7 6.44772 7 7 7 7.55228 7.44772 8 8 8ZM8 12C8.55229 12 9 11.5523 9 11 9 10.4477 8.55229 10 8 10 7.44772 10 7 10.4477 7 11 7 11.5523 7.44772 12 8 12ZM9 15C9 15.5523 8.55229 16 8 16 7.44772 16 7 15.5523 7 15 7 14.4477 7.44772 14 8 14 8.55229 14 9 14.4477 9 15ZM11 6C10.4477 6 10 6.44772 10 7 10 7.55228 10.4477 8 11 8H16C16.5523 8 17 7.55228 17 7 17 6.44772 16.5523 6 16 6H11ZM10 11C10 10.4477 10.4477 10 11 10H16C16.5523 10 17 10.4477 17 11 17 11.5523 16.5523 12 16 12H11C10.4477 12 10 11.5523 10 11ZM11 14C10.4477 14 10 14.4477 10 15 10 15.5523 10.4477 16 11 16H16C16.5523 16 17 15.5523 17 15 17 14.4477 16.5523 14 16 14H11Z" fill="currentColor"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M18.7071 21.2929C18.3166 21.6834 17.6834 21.6834 17.2929 21.2929L16 20L14.7071 21.2929L13.2929 21.2929L12 20L10.7071 21.2929H9.29289L8 20L6.7062 21.2938C6.3156 21.6834 5.68312 21.6831 5.29289 21.2929L4.29289 20.2929C4.10536 20.1054 4 19.851 4 19.5858V4C4 2.89543 4.89543 2 6 2H18C19.1046 2 20 2.89543 20 4V19.5858C20 19.851 19.8946 20.1054 19.7071 20.2929L18.7071 21.2929ZM14 19.1716L12 17.1716L10 19.1716L8 17.1716L6 19.1716V4H18V19.1716L16 17.1716L14 19.1716Z" fill="currentColor"></path><path d="M10.7063 21.2937 10.7071 21.2929 13.2929 21.2929 13.2937 21.2937 10.7063 21.2937ZM14.7063 21.2937 14.7071 21.2929 17.2929 21.2929 14.7063 21.2937ZM13.2937 21.2937 14.7063 21.2937C14.316 21.6831 13.684 21.6831 13.2937 21.2937ZM10.7063 21.2937C10.3159 21.6826 9.68382 21.683 9.2937 21.2937L10.7063 21.2937Z" fill="currentColor"></path></svg>
-                                Verkaufsübersicht
-                            </a>
-                            <a href="/m-einstellungen.html" class="flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors no-underline">
-                                <svg class="w-3.5 h-3.5 shrink-0 fill-current block align-middle text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                Profil-Einstellungen
-                            </a>
                         </div>
-                    </div>
-                `;
-                
-                // Füge den neuen HTML-Block an den versteckten Original-Container an
-                profileBox.appendChild(mockupDiv);
-                
-                // Native Tailwind Margin-Klassen des Original-Wrappers entfernen, damit unser Margin greift
-                profileBox.classList.remove('gap-small'); 
-                
+                        <div class="cpd-divider"></div>
+                    `;
+
+                    const actionsBlock = document.createElement('div');
+                    actionsBlock.className = 'cpd-actions-block';
+                    
+                    if (walletLink) {
+                        const svg = walletLink.querySelector('svg');
+                        walletLink.innerHTML = ''; // Originalen Ballast leeren
+                        if (svg) {
+                            svg.classList.remove('w-large', 'h-large');
+                            walletLink.appendChild(svg);
+                        }
+                        const textSpan = document.createElement('span');
+                        textSpan.textContent = 'Verkaufsübersicht';
+                        walletLink.appendChild(textSpan);
+                        walletLink.className = 'cpd-action-btn primary';
+                        actionsBlock.appendChild(walletLink); // Verschiebt den Original-Node!
+                    }
+
+                    if (infoBtn) {
+                        const svg = infoBtn.querySelector('svg');
+                        infoBtn.innerHTML = '';
+                        if (svg) {
+                            svg.classList.remove('w-medium', 'h-medium');
+                            infoBtn.appendChild(svg);
+                        }
+                        const textSpan = document.createElement('span');
+                        textSpan.textContent = 'Profil-Einstellungen';
+                        infoBtn.appendChild(textSpan);
+                        infoBtn.className = 'cpd-action-btn secondary';
+                        actionsBlock.appendChild(infoBtn); // Verschiebt den Original-Node!
+                    }
+                    
+                    colStats.appendChild(actionsBlock);
+                    dashboard.appendChild(colStats);
+
+                    // 4. Das fertige Dashboard in die Original-Box kleben
+                    profileBox.classList.add('custom-replaced');
+                    profileBox.appendChild(dashboard);
+
                 } catch(e) {
-                    console.error("Fehler beim Ersetzen der Profil-Box:", e);
+                    console.error("Fehler beim Erstellen des Dashboards:", e);
                 }
             }
         }

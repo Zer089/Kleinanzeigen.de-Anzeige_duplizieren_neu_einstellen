@@ -249,11 +249,11 @@
         }
         
         .cpd-stats-block { display: flex; flex-direction: column; align-items: center; }
-        .cpd-stats-title { font-size: 10px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+        .cpd-stats-title { font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
         .cpd-stats-tiles { display: flex; gap: 16px; }
         .cpd-tile { display: flex; flex-direction: column; align-items: center; padding: 8px 12px; border-radius: 8px; transition: background 0.2s; }
         .cpd-tile:hover { background: #f9f9f9; }
-        .cpd-tile-val { font-size: 24px; font-weight: 900; line-height: 1; color: #444; }
+        .cpd-tile-val { font-size: 18px; font-weight: 900; line-height: 1; color: #444; }
         .cpd-tile-val.online { color: #86B817; }
         .cpd-tile-lbl { font-size: 11px; color: #757575; font-weight: 600; text-transform: uppercase; margin-top: 4px; }
 
@@ -267,7 +267,7 @@
         }
         .cpd-action-btn.primary {
             border: 2px solid #e0e0e0 !important; padding: 8px 16px !important; font-size: 14px !important;
-            font-weight: 700 !important; color: #444 !important; background: #fff !important;
+            font-weight: 700 !important; color: #444 !important; background: #fff !important; height: 60px;
         }
         .cpd-action-btn.primary:hover { border-color: #5A33AE !important; color: #5A33AE !important; }
         .cpd-action-btn.primary svg { width: 20px !important; height: 20px !important; color: #999; transition: color 0.2s; }

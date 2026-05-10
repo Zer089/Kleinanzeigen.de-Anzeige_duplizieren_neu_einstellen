@@ -1,951 +1,200 @@
 // ==UserScript==
-// @name          Kleinanzeigen - Anzeige duplizieren / neu einstellen
-// @namespace     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
-// @description   Bietet eine "Anzeige duplizieren / neu einstellen" Funktion beim Bearbeiten einer vorhandenen Anzeige in Kleinanzeigen.
-// @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
-// @copyright     2026, Andi (Zer089)
-// @license       MIT
-// @version       2.5.74
-// @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
-// @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
-// @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
-// @match         https://www.kleinanzeigen.de/p-anzeige-bearbeiten.html*
-// @match         https://www.kleinanzeigen.de/p-anzeige-aufgeben-bestaetigung.html*
-// @match         https://www.kleinanzeigen.de/m-meine-anzeigen.html*
-// @match         https://www.kleinanzeigen.de/s-anzeige/*
-// @grant         none
-// @run-at        document-start
+// @name         Kleinanzeigen UI Tweaks & Adblocker
+// @namespace    http://tampermonkey.net/
+// @version      2.5.74
+// @description  Globale Werbeblockierung, Profilbox-Redesign und UI-Anpassungen
+// @author       Andi
+// @match        https://www.kleinanzeigen.de/*
+// @icon         https://www.google.com/s2/favicons?sz=64&domain=kleinanzeigen.de
+// @grant        GM_addStyle
 // ==/UserScript==
 
-(function () {
+(function() {
     'use strict';
 
-    // Seitenerkennung
-    const isOverviewPage = window.location.href.includes('m-meine-anzeigen.html');
-    const isEditPage = window.location.href.includes('p-anzeige-bearbeiten.html');
-    const isConfirmPage = window.location.href.includes('bestaetigung.html');
-    const isDetailPage = window.location.href.includes('/s-anzeige/');
-
-    if (isOverviewPage) document.documentElement.classList.add('is-overview-page');
-    if (isDetailPage) document.documentElement.classList.add('is-detail-page');
-    if (isEditPage) document.documentElement.classList.add('is-edit-page');
-
-    // ==========================================
-    // TRACKING-BLOCKER
-    // ==========================================
-    const blockedKeywords = ['liberty', 'kameleoon', 'pubads', 'gpt.js', 'conversion.js', 'ads.js', 'prebid', 'casalemedia', 'criteo'];
-    const originalCreateElement = document.createElement;
-    document.createElement = function(tagName) {
-        const element = originalCreateElement.call(document, tagName);
-        if (typeof tagName === 'string' && tagName.toLowerCase() === 'script') {
-            Object.defineProperty(element, 'src', {
-                set: function(url) {
-                    const urlString = url ? String(url) : '';
-                    if (blockedKeywords.some(keyword => urlString.includes(keyword))) return; 
-                    this.setAttribute('src', url);
-                },
-                get: function() { return this.getAttribute('src'); }
-            });
-        }
-        return element;
-    };
-
-    // ==========================================
-    // CSS INJECTION (Design & Layout)
-    // ==========================================
-    const style = document.createElement('style');
-    style.textContent = `
-        /* Werbe- & Upsell-Säuberung (Banner werden zusätzlich per JS aus dem DOM gelöscht) */
-        fieldset:has(#ad-feature-group), span:has(> div.bg-accentContainer), #feature-offer-section,
-        .site-base--left-banner, .site-base--right-banner, #vip-billboard, #vip-belly, #vip-middle, #vip-bottom,
-        [id^="vip-similar-ads-"], #pvap-featrs, .is-detail-page .icon-info-blue { display: none !important; }
-
-        section[data-testid="page-container"] { margin-bottom: 0px !important; }
-
-        /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1100px in der Mitte) */
-        html.is-overview-page body .site-base {
-            grid-template-columns: 1fr minmax(auto, 1100px) 1fr !important;
-        }
-
-        /* Container-Breite anpassen und Zentrierung reparieren - Mit absoluter maximaler CSS-Spezifität! */
-        html.is-overview-page body .site-base--content,
-        html.is-overview-page body .l-page-wrapper,
-        html.is-overview-page body .l-container,
-        html.is-overview-page body .l-container-row,
-        html.is-overview-page body .l-splitpage,
-        html.is-overview-page body #site-content,
-        html.is-overview-page body main#main,
-        html.is-overview-page body #my-ads-frontend,
-        html.is-overview-page body [data-testid="site-content"],
-        html.is-overview-page body .ownprofile-main,
-        html.is-overview-page body [aria-labelledby="tabs-all"],
-        html.is-overview-page body #tab-panel-all {
-            width: 100% !important;
-            max-width: 1100px !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-            box-sizing: border-box !important;
-        }
-
-        /* Verhindert das Ausbrechen der Anzeigenliste (1232px Bug) durch negative Tailwind-Margins */
-        html.is-overview-page body ul#my-manageitems-adlist,
-        html.is-overview-page body li[data-testid="ad-card"] {
-            width: 100% !important;
-            max-width: 1100px !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            box-sizing: border-box !important;
-        }
-
-        /* ----------------------------------------------------
-           PROFIL-BOX & HEADER FORMATIERUNGEN
-           ---------------------------------------------------- */
-        [data-testid="ownprofile-header"] { width: 1000px !important; }
-        [data-testid="userbadges-container"] { height: 70px !important; margin-left: -360px !important; width: 300px !important; }
-        
-        .jsx-1176518552.ownprofile-badges.userbadges { 
-            width: 610px !important; 
-            margin-top: 0px !important; 
-            margin-bottom: 0px !important; 
-            height: 24px !important; 
-            display: flex !important;
-            flex-direction: row !important;
-            padding-left: 0px !important;
-            gap: 12px !important; 
-        }
-
-        .jsx-1176518552.userbadges--item {
-            padding-left: 0px !important;
-        }
-        
-        /* Verhindert den Mauszeiger-Wechsel (Hand) nur beim neu erstellten Antwort-Badge */
-        .custom-reply-badge,
-        .custom-reply-badge * { 
-            cursor: default !important;
-        }
-
-        .text-title2.text-onSurfaceSubdued { margin-bottom: 0px !important; }
-        .jsx-3029977195.mb-none.text-title2.text-onSurfaceSubdued { 
-            width: 610px !important; 
-            height: 24px !important; 
-            margin-bottom: 0px !important;
-        }
-
-        .jsx-3029977195.UserProfile--Info { width: 530px !important; }
-        .jsx-1176518552.text-left.text-onInteractiveContainer.user--trx-overview { 
-            width: 300px !important; 
-            padding-left: 0px !important; 
-        }
-
-        .jsx-3029977195.mt-xxsmall.flex.flex-col.content-between.gap-small.pl-large.text-bodyRegular.text-onBackgroundSubdued { 
-            row-gap: 8px !important; 
-            margin-top: 0px !important; 
-            width: 610px !important;
-        }
-
-        .m-none.flex.gap-xxlarge.pl-none.pt-large.text-onBackgroundSubdued { 
-            column-gap: 15px !important; 
-            row-gap: 8px !important; 
-            padding-left: 0px !important;
-            padding-top: 0px !important;
-        }
-
-        /* Basis-Design unserer lila Buttons */
-        .custom-purple-btn {
-            background-color: #5A33AE !important; 
-            border-color: #5A33AE !important; 
-            color: #ffffff !important;
-            border-radius: 9999px !important;
-            font-weight: bold !important; 
-            cursor: pointer !important;
-            display: inline-flex !important; 
-            align-items: center !important; 
-            justify-content: center !important;
-            gap: 6px !important;
-            border: 2px solid #5A33AE !important;
-            text-decoration: none !important;
-            transition: all 0.2s ease-in-out;
-            box-sizing: border-box !important;
-            margin: 0 !important; 
-        }
-        .custom-purple-btn:hover { 
-            background-color: #D1C4E9 !important; 
-            border-color: #D1C4E9 !important; 
-            color: #5A33AE !important; 
-        }
-
-        /* ----------------------------------------------------
-           1. ÜBERSICHTSSEITE ("Meine Anzeigen") 
-           ---------------------------------------------------- */
-        
-        /* Grid Layout vom User erzwungen, falls Tailwind-Klasse bei Kleinanzeigen fehlt (Spalte 2 auf 570px verbreitert) */
-        .custom-ad-grid {
-            display: grid !important;
-            width: 100% !important;
-            grid-template-columns: 200px 570px auto !important;
-        }
-
-        /* Margin-Korrektur für die 3. Spalte (Footer-Div) */
-        .custom-ad-grid .mt-xsmall {
-            margin-top: 0px !important;
-        }
-
-        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) {
-            display: flex !important;
-            flex-wrap: wrap !important;
-            justify-content: flex-end !important; /* Buttons rechtsbündig in der 3. Spalte */
-            align-content: flex-start !important;
-            gap: 8px !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            width: 100% !important; /* Zwingt den Container auf volle Breite, um flex-end zu garantieren */
-        }
-        
-        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li {
-            margin: 0 !important;
-            width: auto !important;
-        }
-
-        .custom-buttons-wrapper {
-            display: flex !important;
-            gap: 8px !important;
-            justify-content: flex-end !important; /* Buttons rechtsbündig */
-            margin: 0 !important;
-        }
-        .is-overview-page .custom-buttons-wrapper { flex-basis: 100% !important; } /* Zwingt custom Buttons in eine neue Zeile */
-
-        /* Strenge Zwangshöhe für Buttons */
-        .is-overview-page .custom-purple-btn,
-        .is-overview-page .custom-native-btn {
-            height: 32px !important;
-            min-height: 32px !important;
-            max-height: 32px !important;
-            padding: 0 12px !important;
-            font-size: 13px !important;
-            line-height: 1 !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
-        }
-
-        /* Styling für die Versandinfo neben dem Preis */
-        .custom-shipping-info {
-            font-size: 13px !important;
-            color: #757575 !important;
-            font-weight: normal !important;
-            white-space: nowrap;
-        }
-
-        /* Styling für unsere neu verschobenen Statistik-Elemente (Ort, Datum) */
-        .custom-stat-li {
-            display: flex !important;
-            align-items: center !important;
-            gap: 4px !important;
-            color: inherit !important; 
-            white-space: nowrap;
-        }
-
-        /* ----------------------------------------------------
-           2. DETAILSEITE & BEARBEITEN-SEITE
-           ---------------------------------------------------- */
-           
-        .is-detail-page .custom-purple-btn, 
-        .is-edit-page .custom-purple-btn {
-            height: 44px !important;
-            min-height: 44px !important;
-            padding: 0 16px !important;
-            font-size: 14px !important;
-        }
-
-        .is-detail-page #pvap-mngad-stats { width: 150px !important; }
-        
-        .is-detail-page .manageadbox--actions, .is-detail-page #pvap-mngad-actions {
-            display: flex !important; flex-wrap: wrap !important; gap: 8px !important;
-            justify-content: flex-end !important; list-style: none !important; margin-top: 15px !important;
-        }
-        .is-detail-page .manageadbox--actions a, .is-detail-page .manageadbox--actions button,
-        .is-detail-page #pvap-mngad-actions a, .is-detail-page #pvap-mngad-actions button {
-            display: inline-flex !important; align-items: center !important; height: 44px !important;
-            padding: 0 16px !important; border-radius: 9999px !important; border: 2px solid #dcdcdc !important;
-            background: transparent !important; color: #222 !important; font-weight: bold !important; text-decoration: none !important;
-            box-sizing: border-box !important;
-        }
-    `;
-    document.head ? document.head.appendChild(style) : document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
-
-    // ==========================================
-    // UI FEEDBACK (Ladebildschirm)
-    // ==========================================
-    function showLoading() {
-        if (document.getElementById('custom-loading-overlay')) return;
-        const spinnerContainer = document.createElement("div");
-        spinnerContainer.id = "custom-loading-overlay";
-        Object.assign(spinnerContainer.style, {
-            height: '100%', width: '100%', position: 'fixed', top: '0', left: '0',
-            backdropFilter: 'blur(5px)', zIndex: '999999', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(255, 255, 255, 0.8)'
-        });
-        spinnerContainer.innerHTML = '<div style="font-size: 20px; font-weight: bold; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: #86B817; text-align: center;">Aktion wird ausgeführt...<br><span style="font-size: 14px; color: #666; font-weight: normal; margin-top: 10px; display: block;">Bitte klicke nichts an. Die Seite lädt gleich neu.</span></div>';
-        document.body.appendChild(spinnerContainer);
-    }
-
-    // ==========================================
-    // BUTTON LOGIK & METADATEN FETCHING
-    // ==========================================
-    function createBtn(text, icon, click) {
-        const b = document.createElement('button');
-        b.className = 'custom-purple-btn';
-        b.innerHTML = `<span>${icon}</span> <span>${text}</span>`;
-        b.onclick = click;
-        return b;
-    }
-
-    async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V10_${adId}`; 
-        const cached = sessionStorage.getItem(cacheKey);
-        if (cached) return JSON.parse(cached);
-
-        try {
-            const response = await fetch(adUrl);
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-
-            const locationEl = doc.querySelector('#viewad-locality');
-            const dateIcon = doc.querySelector('.icon-calendar-gray-simple');
-            const shippingEl = doc.querySelector('.boxedarticle--details--shipping');
-            
-            let location = locationEl ? locationEl.textContent.replace(/\s+/g, ' ').trim() : 'Unbekannt';
-            
-            let date = 'Unbekannt';
-            if (dateIcon && dateIcon.nextElementSibling) {
-                date = dateIcon.nextElementSibling.textContent.trim();
-            } else if (dateIcon && dateIcon.parentElement.textContent) {
-                date = dateIcon.parentElement.textContent.replace(/\s+/g, ' ').trim();
+    // =========================================================================
+    // 1. GLOBALER WERBEBLOCKER (Wird sofort ausgeführt)
+    // =========================================================================
+    function injectGlobalAdBlocker() {
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        style.innerHTML = `
+            /* Oben / Header (Startseite, Suche, Merkliste, Nachrichten) */
+            .liberty-filled, .j-liberty-wrapper, .banner.l-container, [id*="-atf"], [id^="dfp-"],
+            /* Unten / Footer */
+            [id*="btf-billboard"], [id*="billboard"],
+            /* Seitenränder Klassisch */
+            .site-base--left-banner--full, .site-base--right-banner--full, .site-base--left-banner, .site-base--right-banner,
+            /* Seitenränder neues Tailwind-Design */
+            .absolute.top-none.right-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.right-small.pt-large,
+            .absolute.top-none.left-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.left-small.pt-large,
+            /* Container in den Suchergebnissen */
+            div[data-testid*="banner"], div[data-testid*="ad-wrapper"], .ad-module {
+                display: none !important;
+                width: 0 !important;
+                height: 0 !important;
+                pointer-events: none !important;
+                visibility: hidden !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
-
-            let shipping = shippingEl ? shippingEl.textContent.trim() : '';
-
-            const result = { location, date, shipping };
-            sessionStorage.setItem(cacheKey, JSON.stringify(result));
-            return result;
-        } catch (e) {
-            console.error('Fehler beim Abrufen der Inseratsdetails:', e);
-            return null;
-        }
+        `;
+        document.head.appendChild(style);
     }
+    injectGlobalAdBlocker();
 
-    const inject = () => {
-        // --- DOM CLEANUP: Banner physisch entfernen ---
-        const banners = document.querySelectorAll('.site-base--left-banner, .site-base--right-banner');
-        banners.forEach(b => b.remove());
+    // =========================================================================
+    // 2. CSS STYLING FÜR PROFILBOX & LAYOUT
+    // =========================================================================
+    GM_addStyle(`
+        /* Profil Container Breiten */
+        .ownprofile-header { width: 1000px !important; }
+        .jsx-3029977195.mt-xxsmall.flex.flex-col { width: 610px !important; margin-top: 0px !important; row-gap: 8px !important; }
+        h2.jsx-3029977195.text-title2 { width: 610px !important; height: 24px !important; margin-bottom: 0px !important; }
+        .UserProfile--Info { width: 610px !important; }
+        
+        /* Badges Liste */
+        .ownprofile-badges { 
+            width: 610px !important; 
+            padding-left: 0px !important; 
+            margin: 0px !important; 
+            height: 24px !important; 
+            gap: 12px !important; 
+            display: flex !important; 
+            flex-direction: row !important; 
+        }
+        .userbadges--item { padding-left: 0px !important; }
+        
+        /* Kein Pointer-Cursor NUR für das neue Antwortzeit-Badge */
+        .custom-reply-badge, .custom-reply-badge * { cursor: default !important; }
 
-        // --- PROFIL BOX UMBAU ---
-        if (isOverviewPage) {
-            const targetContainer = document.querySelector('.jsx-3029977195.mt-xxsmall.flex.flex-col.content-between.gap-small.pl-large.text-bodyRegular.text-onBackgroundSubdued');
-            const badgesUl = document.querySelector('.jsx-1176518552.ownprofile-badges.userbadges');
-            const userInfoUl = document.querySelector('.m-none.flex.gap-xxlarge.pl-none.pt-large.text-onBackgroundSubdued');
+        /* Benutzer-Info Liste (Aktiv seit, etc.) */
+        ul[data-testid="user-info"] { column-gap: 15px !important; row-gap: 8px !important; }
+
+        /* Header & Paginierung ("Meine Anzeigen") */
+        .flex.flex-row.justify-between:has(h2#my-ads-header) { 
+            height: 40px !important; 
+            align-items: center !important; 
+            position: relative !important; 
+        }
+        #custom-top-pagination { 
+            position: absolute; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            z-index: 10; 
+            display: flex; 
+            align-items: center; 
+        }
+        h2#my-ads-header { margin-bottom: 0px !important; width: 200px !important; }
+    `);
+
+    // =========================================================================
+    // 3. DOM MANIPULATION (Profilbox umbauen & Paginierung klonen)
+    // =========================================================================
+    function modifyUI() {
+        // --- A. Profilbox umbauen ---
+        const mainContainer = document.querySelector('.jsx-3029977195.mt-xxsmall.flex.flex-col');
+        const badgesContainer = document.querySelector('.ownprofile-badges');
+        const userInfoList = document.querySelector('ul[data-testid="user-info"]');
+        const infoZeile = document.querySelector('.UserProfile--Info');
+        
+        if (mainContainer) {
+            // 1. Info-Icon löschen
             const infoIconContainer = document.querySelector('.pl-xsmall.pt-\\[10px\\]');
-            
-            // Lösche das Info-Icon komplett
             if (infoIconContainer) infoIconContainer.remove();
 
-            if (targetContainer) {
-                // 1. Badges über die UserProfile--Info verschieben anstatt ans Ende!
-                if (badgesUl && !badgesUl.dataset.moved) {
-                    badgesUl.dataset.moved = 'true';
+            // 2. Antwortzeit aus Nutzerinfo extrahieren & als Badge umbauen
+            if (userInfoList && badgesContainer) {
+                const listItems = userInfoList.querySelectorAll('li.flex.gap-xxsmall');
+                listItems.forEach(item => {
+                    const text = item.textContent.trim();
+                    // Sucht flexibel nach Stunden, Tagen oder Wochen
+                    const match = text.match(/Antwortet.*innerhalb\s*(?:von\s*)?(\d+)\s*(Stunden?|Tagen?|Wochen?)/i) || text.match(/Antwortet.*innerhalb\s*(?:von\s*)?(.*?)$/i);
                     
-                    const userProfileInfo = targetContainer.querySelector('.UserProfile--Info');
-                    if (userProfileInfo) {
-                        targetContainer.insertBefore(badgesUl, userProfileInfo); // VOR Info-Zeile einfügen!
-                    } else {
-                        targetContainer.appendChild(badgesUl);
-                    }
-
-                    if (userInfoUl) {
-                        const replyLi = Array.from(userInfoUl.querySelectorAll('li')).find(li => li.textContent.includes('Antwortet'));
-                        if (replyLi) {
-                            const svgIcon = replyLi.querySelector('svg');
-                            
-                            let timeText = '';
-                            // Suche nach Stunden, Minuten, Tagen, Wochen
-                            const match = replyLi.textContent.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
-                            if (match) {
-                                let val = match[1];
-                                let type = match[2].toLowerCase();
-                                let timeStr = '';
-                                
-                                if (type.includes('stunde')) timeStr = val + 'h';
-                                else if (type.includes('minute')) timeStr = val + 'm';
-                                else if (type.includes('tag')) timeStr = val + (val === '1' ? ' Tag' : ' Tage');
-                                else if (type.includes('woche')) timeStr = val + (val === '1' ? ' Woche' : ' Wochen');
-                                
-                                timeText = `Antwortet innerhalb ${timeStr}`;
-                            } else {
-                                timeText = replyLi.textContent
-                                    .replace(/Antwortet in der Regel innerhalb von/i, 'Antwortet innerhalb')
-                                    .replace(/wenigen Minuten/i, '1m')
-                                    .trim();
-                            }
-
-                            const newBadgeLi = document.createElement('li');
-                            newBadgeLi.className = 'jsx-1176518552 userbadges--item custom-reply-badge';
-                            newBadgeLi.innerHTML = `
-                                <button data-testid="user-badge" aria-haspopup="dialog" class="jsx-2505060003 bg-transparent h-auto min-h-none p-none">
-                                    <div class="jsx-464155839 ActivityIndicator text-bodySmall bg-accentContainer text-onAccentContainer rounded-full">
-                                        ${svgIcon ? svgIcon.outerHTML.replace(/w-\w+ h-\w+/, 'w-small h-small text-onAccentContainer') : ''}
-                                        <span class="jsx-464155839 ActivityIndicator--Name">${timeText}</span>
-                                    </div>
-                                </button>
-                            `;
-                            badgesUl.appendChild(newBadgeLi);
-                            replyLi.remove(); 
+                    if (match && !document.querySelector('.custom-reply-badge')) {
+                        let formattedTime = "";
+                        if (match[1] && match[2]) {
+                            const unit = match[2].toLowerCase();
+                            if (unit.includes('stunde')) formattedTime = `${match[1]}h`;
+                            else if (unit.includes('tag')) formattedTime = `${match[1]}T`;
+                            else if (unit.includes('woche')) formattedTime = `${match[1]}W`;
+                        } else if (text.includes('Minuten')) {
+                            const minMatch = text.match(/(\d+)\s*Min/i);
+                            if (minMatch) formattedTime = `${minMatch[1]}m`;
                         }
+                        if (!formattedTime) formattedTime = match[1] || "kurzer Zeit"; // Fallback
+
+                        const newText = `Antwortet innerhalb ${formattedTime}`;
                         
-                        // 2. Info-Ul verschieben (wird nach Badges und UserProfile--Info ans Ende gehängt)
-                        targetContainer.appendChild(userInfoUl);
-                    }
-                }
-            }
-        }
-
-        if (isOverviewPage || isDetailPage) {
-            const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
-            editLinks.forEach(link => {
-                const container = link.closest('ul') || link.parentElement;
-                if (!container || container.dataset.klInjected) return;
-                
-                const match = link.getAttribute('href').match(/adId=(\d+)/);
-                if (!match) return;
-                const adId = match[1];
-
-                // --- DROP DOWN "MEHR" HACK & VERKAUFSSCHILD EINFÜGEN ---
-                const mehrBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent.includes('Mehr'));
-                if (mehrBtn) {
-                    const mehrLi = mehrBtn.closest('li');
-                    if (mehrLi) {
-                        mehrLi.style.position = 'absolute';
-                        mehrLi.style.opacity = '0';
-                        mehrLi.style.pointerEvents = 'none';
-                    }
-
-                    const printLi = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                    printLi.style.margin = '0';
-
-                    const printBtn = document.createElement('button');
-                    printBtn.type = 'button';
-                    printBtn.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn";
-                    printBtn.innerHTML = `
-                        <div class="relative flex items-center justify-center">
-                            <div class="flex items-center justify-center gap-xsmall">
-                                <svg viewBox="0 0 24 24" fill="none" class="shrink-0 fill-current block align-middle w-medium h-medium">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17 7V4H7V7H4C2.89543 7 2 7.89543 2 9V15H6V20H18V15H22V9C22 7.89543 21.1046 7 20 7H17ZM9 6H15V7H9V6ZM16 15V18H8V15H16ZM16 13H8C6.89543 13 6 12.1046 6 11C6 9.89543 6.89543 9 8 9H16C17.1046 9 18 9.89543 18 11C18 12.1046 17.1046 13 16 13ZM15 10H17V12H15V10Z" fill="currentColor"></path>
-                                </svg>
-                                <span>Verkaufsschild</span>
-                            </div>
-                        </div>`;
-
-                    printBtn.onclick = async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-                        document.body.click();
-
-                        const antiFlashStyle = document.createElement('style');
-                        antiFlashStyle.id = 'hide-dropdown-flash';
-                        antiFlashStyle.textContent = `
-                            [role="menu"], [data-testid*="menu"], [id^="radix-"] { 
-                                opacity: 0 !important; 
-                                visibility: hidden !important; 
-                                pointer-events: none !important;
-                                transform: scale(0) !important;
-                            }
-                        `;
-                        document.head.appendChild(antiFlashStyle);
-
-                        await new Promise(r => setTimeout(r, 50));
-                        mehrBtn.click(); 
-
-                        let attempts = 0;
-                        const interval = setInterval(() => {
-                            attempts++;
-                            
-                            const menuId = mehrBtn.getAttribute('aria-controls');
-                            let targetMenu = menuId ? document.getElementById(menuId) : null;
-                            
-                            if (!targetMenu) targetMenu = document.querySelector('[data-state="open"]');
-
-                            if (targetMenu) {
-                                const nativePrintBtn = Array.from(targetMenu.querySelectorAll('button, a, [role="menuitem"]'))
-                                    .find(b => b.textContent.includes('Verkaufsschild') && b !== printBtn);
-
-                                if (nativePrintBtn) {
-                                    clearInterval(interval);
-                                    nativePrintBtn.click(); 
-                                    
-                                    setTimeout(() => {
-                                        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-                                        document.body.click(); 
-                                        antiFlashStyle.remove();
-                                    }, 100);
-                                    return; 
-                                }
-                            }
-                            
-                            if (attempts > 30) {
-                                clearInterval(interval);
-                                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-                                document.body.click();
-                                antiFlashStyle.remove();
-                            }
-                        }, 50);
-                    };
-
-                    printLi.appendChild(printBtn);
-                    container.append(printLi);
-                }
-
-                // --- LILA CUSTOM BUTTONS ---
-                const doAction = (e, type) => {
-                    e.preventDefault();
-                    localStorage.setItem('__KL_AUTO_ACTION', JSON.stringify({action: type, adId}));
-                    window.location.href = link.href;
-                };
-
-                const wrapper = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                wrapper.className = 'custom-buttons-wrapper';
-                
-                wrapper.appendChild(createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate')));
-                wrapper.appendChild(createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist')));
-
-                container.append(wrapper);
-                container.dataset.klInjected = 'true';
-
-                // --- NEU: 3-SPALTEN GRID LAYOUT ---
-                if (isOverviewPage) {
-                    const card = container.closest('li[data-testid="ad-card"]');
-                    if (card) {
-                        const footer = card.querySelector('footer');
-                        const infoCol = card.querySelector('.pl-medium.align-top');
-                        
-                        if (footer && infoCol) {
-                            const mainWrapper = infoCol.parentElement;
-                            
-                            // Unnötige Werbesektion löschen
-                            const featureSection = card.querySelector('#feature-offer-section');
-                            if (featureSection) featureSection.remove();
-                            
-                            // Leeres Wrapper-Div von Kleinanzeigen aufspüren, bevor wir den Footer herausholen
-                            const oldCardFooterWrapper = card.querySelector('.card-footer');
-
-                            // Footer sicher in ein DIV umbauen, indem wir Nodes verschieben (erhält Klick-Events/React-Listener)
-                            const newFooterDiv = document.createElement('div');
-                            newFooterDiv.className = 'mt-xsmall';
-                            while (footer.firstChild) {
-                                newFooterDiv.appendChild(footer.firstChild);
-                            }
-                            
-                            // Neues Grid auf den Haupt-Wrapper anwenden (Spalte 2 auf 570px vergrößert)
-                            mainWrapper.className = "grid w-full grid-cols-[200px_570px_auto] custom-ad-grid";
-                            
-                            // Neues DIV als 3. Spalte in den Wrapper verschieben
-                            mainWrapper.appendChild(newFooterDiv);
-
-                            // Den nun leeren, alten <footer> Tag sauber entfernen
-                            footer.remove();
-
-                            // Alten Container löschen, wenn er leer ist
-                            if (oldCardFooterWrapper) {
-                                oldCardFooterWrapper.remove();
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        // --- BACKGROUND FETCH FÜR DATUM, ORT & VERSAND AUF ÜBERSICHTSSEITE ---
-        if (isOverviewPage && !window.__KL_FETCHING_ADS) {
-            const pendingCards = document.querySelectorAll('li[data-testid="ad-card"]:not([data-kl-details-injected])');
-            if (pendingCards.length > 0) {
-                window.__KL_FETCHING_ADS = true; 
-                
-                (async () => {
-                    await new Promise(r => setTimeout(r, 800)); // Initiale Pause
-
-                    for (const card of pendingCards) {
-                        card.dataset.klDetailsInjected = 'pending'; 
-                        
-                        const titleLink = card.querySelector('a[href*="/s-anzeige/"]');
-                        const editLink = card.querySelector('a[href*="adId="]');
-                        
-                        if (titleLink && editLink) {
-                            const adUrl = titleLink.href;
-                            const match = editLink.href.match(/adId=(\d+)/);
-                            
-                            if (match) {
-                                const adId = match[1];
-                                const details = await fetchAdDetails(adUrl, adId);
-                                
-                                if (details) {
-                                    // 1. Hole die untere Statistik-Box ("Besucher" etc.)
-                                    const statsSection = card.querySelector('section.text-onSurfaceNonessential');
-                                    
-                                    if (statsSection) {
-                                        // Originale Liste (Besucher/Gemerkt)
-                                        let statsUl = statsSection.querySelector('ul');
-                                        if (!statsUl) {
-                                            statsUl = document.createElement('ul');
-                                            statsUl.className = 'm-none mb-xxsmall flex min-h-[22px] list-none gap-x-xsmall p-none';
-                                            statsSection.appendChild(statsUl);
-                                        }
-
-                                        // Optische Ausrichtung der Besucher/Gemerkt Zeile
-                                        statsUl.style.flexWrap = 'wrap';
-                                        statsUl.style.rowGap = '4px';
-                                        statsUl.style.columnGap = '12px';
-                                        statsUl.style.marginBottom = '4px'; 
-
-                                        Array.from(statsUl.querySelectorAll('li')).forEach(li => {
-                                            li.style.display = 'flex';
-                                            li.style.alignItems = 'center';
-                                            li.style.gap = '4px';
-                                        });
-
-                                        // 2. Extrahiere "Endet am" aus dem Preis-Block oben und LÖSCHE es dort
-                                        let endDateStr = "Unbekannt";
-                                        const oldEndDateSpan = card.querySelector('.managead-listitem-enddate');
-                                        if (oldEndDateSpan) {
-                                            endDateStr = oldEndDateSpan.textContent.trim();
-                                            const oldLi = oldEndDateSpan.closest('li');
-                                            if (oldLi) oldLi.remove(); // Das alte <li> restlos löschen!
-                                        }
-
-                                        // Berechne Tage online
-                                        let daysOnline = 1;
-                                        if (details.date && details.date !== "Unbekannt") {
-                                            const parts = details.date.split('.');
-                                            if (parts.length === 3) {
-                                                const createdDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                                                const today = new Date();
-                                                const diffTime = Math.abs(today - createdDate);
-                                                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                                                if(diffDays > 0) daysOnline = diffDays;
-                                            }
-                                        }
-
-                                        // Berechne Durchschnitte
-                                        let visitors = 0;
-                                        let watchers = 0;
-                                        const statItems = statsUl.querySelectorAll('li');
-                                        statItems.forEach(li => {
-                                            if(li.textContent.includes('Besucher')) {
-                                                visitors = parseInt(li.textContent.replace(/\D/g, '')) || 0;
-                                            }
-                                            if(li.textContent.includes('gemerkt')) {
-                                                watchers = parseInt(li.textContent.replace(/\D/g, '')) || 0;
-                                            }
-                                        });
-                                    
-                                        const avgVisitors = (visitors / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
-                                        const avgWatchers = (watchers / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
-
-                                        // Einheitliche Icon-Klasse ohne das fehlerhafte 'fill-current'
-                                        const svgClass = "shrink-0 block align-middle w-medium h-medium text-onSurfaceNonessential";
-
-                                        // 3. NEUE ZEILE 1 (Erstellt & Endet) erzeugen und VOR die Besucher-Liste setzen
-                                        if (!statsSection.querySelector('.custom-dates-ul')) {
-                                            const datesUl = document.createElement('ul');
-                                            datesUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-dates-ul';
-                                            datesUl.style.flexWrap = 'wrap';
-                                            datesUl.style.rowGap = '4px';
-                                            datesUl.style.columnGap = '12px';
-                                            datesUl.style.marginBottom = '4px'; // Abstand zur nächsten Zeile
-
-                                            if (details.date) {
-                                                datesUl.innerHTML += `
-                                                    <li class="custom-stat-li" title="Erstellt am">
-                                                        <span class="inline-block-icon" style="display: flex; align-items: center;">
-                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                                                            </svg>
-                                                        </span>
-                                                        <span>${details.date}</span>
-                                                    </li>
-                                                `;
-                                            }
-
-                                            if (endDateStr !== "Unbekannt") {
-                                                datesUl.innerHTML += `
-                                                    <li class="custom-stat-li" title="Endet am">
-                                                        <span class="inline-block-icon" style="display: flex; align-items: center;">
-                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                                <circle cx="12" cy="12" r="10"></circle>
-                                                                <polyline points="12 6 12 12 16 14"></polyline>
-                                                            </svg>
-                                                        </span>
-                                                        <span class="managead-listitem-enddate">${endDateStr}</span>
-                                                        <span style="margin-left: 8px; display: inline-flex; align-items: center; gap: 4px; color: #757575;">
-                                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-small h-small"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                                            ${daysOnline} Tage
-                                                        </span>
-                                                    </li>
-                                                `;
-                                            }
-                                            
-                                            // VOR die originale Besucher-Statistik einfügen
-                                            statsSection.insertBefore(datesUl, statsUl);
-                                        }
-
-                                        // 4. Durchschnitte anfügen an Besucher-Statistik
-                                        if (!statsSection.querySelector('.custom-avg-li')) {
-                                            const avgLi = document.createElement('li');
-                                            avgLi.className = 'custom-avg-li';
-                                            avgLi.title = 'Besucher / Gemerkt pro Tag';
-                                            avgLi.style.display = 'flex';
-                                            avgLi.style.alignItems = 'center';
-                                            avgLi.style.gap = '4px';
-                                            avgLi.innerHTML = `
-                                                <span class="inline-block-icon" style="display: flex; align-items: center;">
-                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-                                                        <polyline points="17 6 23 6 23 12"></polyline>
-                                                    </svg>
-                                                </span>
-                                                <span>${avgVisitors} / ${avgWatchers}</span>
-                                            `;
-                                            statsUl.appendChild(avgLi);
-                                        }
-
-                                        // 5. NEUE ZEILE 3 (Ort) erzeugen und NACH der Besucher-Liste setzen
-                                        if (details.location && !statsSection.querySelector('.custom-loc-ul')) {
-                                            const locUl = document.createElement('ul');
-                                            locUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-loc-ul';
-                                            locUl.style.flexWrap = 'wrap';
-                                            locUl.style.rowGap = '4px';
-                                            locUl.style.columnGap = '12px';
-
-                                            locUl.innerHTML = `
-                                                <li class="custom-stat-li" title="Ort">
-                                                    <span class="inline-block-icon" style="display: flex; align-items: center;">
-                                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                                            <circle cx="12" cy="10" r="3"></circle>
-                                                        </svg>
-                                                    </span>
-                                                    <span>${details.location}</span>
-                                                </li>
-                                            `;
-                                            
-                                            // HINTER die originale Besucher-Statistik einfügen
-                                            statsSection.appendChild(locUl);
-                                        }
-                                    }
-
-                                    // 6. Versandkosten neben dem Preis platzieren
-                                    if (details.shipping) {
-                                        let priceEl = card.querySelector('.text-title3');
-                                        
-                                        if (!priceEl) {
-                                            priceEl = Array.from(card.querySelectorAll('li, p, span, div')).find(el => 
-                                                (el.textContent.includes('€') || el.textContent.includes('VB')) &&
-                                                !el.classList.contains('custom-shipping-info') &&
-                                                el.children.length === 0
-                                            );
-                                        }
-
-                                        if (priceEl && !priceEl.querySelector('.custom-shipping-info')) {
-                                            const shipSpan = document.createElement('span');
-                                            shipSpan.className = 'custom-shipping-info';
-                                            
-                                            shipSpan.style.fontSize = '12px';
-                                            shipSpan.style.fontWeight = 'normal';
-                                            shipSpan.style.color = '#757575'; 
-                                            shipSpan.style.marginLeft = '4px';
-                                            shipSpan.textContent = details.shipping;
-                                            
-                                            priceEl.style.display = 'flex';
-                                            priceEl.style.alignItems = 'baseline';
-                                            priceEl.style.gap = '4px';
-                                            priceEl.style.flexWrap = 'wrap'; 
-                                            
-                                            priceEl.appendChild(shipSpan);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        await new Promise(r => setTimeout(r, 400)); 
-                    }
-                    window.__KL_FETCHING_ADS = false;
-                })();
-            }
-        }
-
-        // --- LOGIK FÜR DIE BEARBEITEN-SEITE ---
-        if (isEditPage) {
-            const saveBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Anzeige speichern'));
-            if (!saveBtn) return;
-            
-            const container = saveBtn.closest('.flex.gap-small') || saveBtn.parentElement;
-            if (!container || container.dataset.klInjected) return;
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentAdId = urlParams.get('adId');
-            if (!currentAdId) return;
-
-            const doAction = (e, type) => {
-                e.preventDefault(); e.stopPropagation();
-                window.__KL_ACTION = type;
-                window.__KL_OLD_AD_ID = currentAdId;
-                showLoading();
-                saveBtn.click();
-                
-                setInterval(() => {
-                    const skip = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Ohne Hochschieben weiter'));
-                    if (skip) skip.click();
-                }, 200);
-            };
-
-            const btnDup = createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate'));
-            const btnRelist = createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist'));
-
-            saveBtn.after(btnDup, btnRelist);
-            container.dataset.klInjected = 'true';
-        }
-    };
-    
-    setInterval(inject, 500);
-
-    // ==========================================
-    // PAGINIERUNG (Übersicht) SYNC & ZENTRIERUNG
-    // ==========================================
-    if (isOverviewPage) {
-        
-        function getBottomNavContainer() {
-            const navs = Array.from(document.querySelectorAll('nav'));
-            for (const nav of navs) {
-                const span = nav.querySelector('span.sr-only');
-                if (span && span.textContent.includes('Seiten-Navigation')) {
-                    if (!nav.closest('#custom-top-pagination')) {
-                        return nav.parentElement; 
-                    }
-                }
-            }
-            return null;
-        }
-
-        setInterval(() => {
-            const bottomContainer = getBottomNavContainer();
-            if (!bottomContainer) return;
-
-            const currentHTML = bottomContainer.innerHTML;
-            let topContainer = document.getElementById('custom-top-pagination');
-
-            if (!topContainer) {
-                topContainer = document.createElement('div');
-                topContainer.id = 'custom-top-pagination';
-                
-                topContainer.style.position = 'absolute';
-                topContainer.style.left = '50%';
-                topContainer.style.top = '50%';
-                topContainer.style.transform = 'translate(-50%, -50%)';
-                topContainer.style.zIndex = '10';
-
-                const header = document.getElementById('my-ads-header');
-                if (header) {
-                    const headerFlexBox = header.closest('.flex.flex-row.justify-between') || header.parentElement;
-                    headerFlexBox.style.display = 'flex';
-                    headerFlexBox.style.alignItems = 'center';
-                    headerFlexBox.style.position = 'relative'; 
-                    headerFlexBox.style.height = '40px';
-                    
-                    header.style.marginBottom = '0px';
-                    header.after(topContainer);
-                }
-
-                topContainer.addEventListener('click', (e) => {
-                    const btn = e.target.closest('button');
-                    if (btn) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const cloneButtons = Array.from(topContainer.querySelectorAll('button'));
-                        const idx = cloneButtons.indexOf(btn);
-                        
-                        const realNavContainer = getBottomNavContainer();
-                        if (realNavContainer) {
-                            const realButtons = Array.from(realNavContainer.querySelectorAll('button'));
-                            if (realButtons[idx]) {
-                                realButtons[idx].click();
-                            }
-                        }
+                        // Neues Badge erstellen und Klasse 'custom-reply-badge' vergeben
+                        const li = document.createElement('li');
+                        li.className = 'jsx-1176518552 userbadges--item custom-reply-badge';
+                        li.innerHTML = `
+                            <div class="jsx-2505060003 bg-transparent h-auto min-h-none p-none" style="display:inline-block;">
+                                <div class="jsx-464155839 ActivityIndicator text-bodySmall bg-accentContainer text-onAccentContainer rounded-full">
+                                    <svg viewBox="0 0 24 24" fill="none" class="shrink-0 fill-current block align-middle w-small h-small text-onAccentContainer">
+                                        <path d="M13 7C13 6.44772 12.5523 6 12 6C11.4477 6 11 6.44772 11 7V11.5858L9.29289 13.2929C8.90237 13.6834 8.90237 14.3166 9.29289 14.7071C9.68342 15.0976 10.3166 15.0976 10.7071 14.7071L12.6485 12.7657C12.8736 12.5406 13 12.2354 13 11.9172V7Z" fill="currentColor"></path>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12ZM20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z" fill="currentColor"></path>
+                                    </svg>
+                                    <span class="jsx-464155839 ActivityIndicator--Name">${newText}</span>
+                                </div>
+                            </div>`;
+                        badgesContainer.appendChild(li);
+                        item.remove(); // Originales Info-Item löschen
                     }
                 });
             }
 
-            if (topContainer.dataset.sourceHtml !== currentHTML) {
-                topContainer.dataset.sourceHtml = currentHTML;
-                topContainer.innerHTML = currentHTML;
-                topContainer.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+            // 3. Badges ÜBER die Infozeile verschieben
+            if (badgesContainer && infoZeile) {
+                mainContainer.insertBefore(badgesContainer, infoZeile);
             }
 
-        }, 500);
-    }
-
-    // ==========================================
-    // AUTO-SAVE VERARBEITUNG
-    // ==========================================
-    if (isEditPage) {
-        const config = JSON.parse(localStorage.getItem('__KL_AUTO_ACTION') || '{}');
-        const currentId = new URLSearchParams(window.location.search).get('adId');
-        if (config.adId === currentId) {
-            localStorage.removeItem('__KL_AUTO_ACTION');
-            window.addEventListener('load', () => {
-                showLoading();
-                setTimeout(() => {
-                    const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Anzeige speichern'));
-                    if (btn) {
-                        window.__KL_ACTION = config.action;
-                        window.__KL_OLD_AD_ID = currentId;
-                        btn.click();
-                        setInterval(() => {
-                            const skip = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Ohne Hochschieben weiter'));
-                            if (skip) skip.click();
-                        }, 200);
-                    }
-                }, 800);
-            });
-        }
-    }
-
-    // ==========================================
-    // LÖSCHEN & NETWORK INTERCEPTOR
-    // ==========================================
-    if (isConfirmPage) {
-        const delId = localStorage.getItem('__KL_PENDING_DELETE');
-        if (delId) {
-            const token = document.querySelector('meta[name="_csrf"]')?.content;
-            fetch(`/m-anzeigen-loeschen.json?ids=${delId}`, { method: 'POST', headers: { 'x-csrf-token': token }})
-            .then(() => localStorage.removeItem('__KL_PENDING_DELETE'));
-        }
-    }
-
-    const originalFetch = window.fetch;
-    window.fetch = async function(...args) {
-        if (window.__KL_ACTION) {
-            if (typeof args[0] === 'string') args[0] = args[0].replace('bearbeiten', 'aufgeben').replace(/adId=\d+/, '');
-            if (args[1]?.body) {
-                if (typeof args[1].body === 'string') args[1].body = args[1].body.replace(/adId=\d+/, '').replace(/"adId":\d+/, '');
-                else if (args[1].body instanceof FormData) { args[1].body.delete('adId'); args[1].body.delete('id'); }
+            // 4. Nutzerinfo in den Main Container verschieben
+            if (userInfoList) {
+                mainContainer.appendChild(userInfoList);
             }
-            if (window.__KL_ACTION === 'relist') localStorage.setItem('__KL_PENDING_DELETE', window.__KL_OLD_AD_ID);
         }
-        return originalFetch.apply(this, args);
-    };
+
+        // --- B. Paginierung klonen & Header anpassen ---
+        const originalNav = document.querySelector('nav[aria-labelledby*="-label"]');
+        const headerContainer = document.querySelector('.flex.flex-row.justify-between:has(h2#my-ads-header)');
+        
+        if (originalNav && headerContainer && !document.getElementById('custom-top-pagination')) {
+            const paginationWrapper = document.createElement('div');
+            paginationWrapper.id = 'custom-top-pagination';
+            paginationWrapper.innerHTML = originalNav.outerHTML;
+            // Direkt an den bestehenden Header-Container hängen (erhält dadurch absolute Positionierung zur Zeile)
+            headerContainer.appendChild(paginationWrapper);
+        }
+    }
+
+    // =========================================================================
+    // 4. STATISTIK TOOLTIP (Mouse-Over für Fetch-Ergebnisse)
+    // =========================================================================
+    function addStatsTooltip() {
+        // Sucht generisch nach deinen eingefügten Durchschnittswerten und fügt den title-Tag hinzu
+        const allListItems = document.querySelectorAll('li');
+        allListItems.forEach(li => {
+            if (li.textContent.includes('Ø') && !li.hasAttribute('title')) {
+                // Prüft ob es wie deine Statistik aussieht (enthält Zahlen und ein Durchschnittszeichen)
+                li.setAttribute('title', 'Besucher / Gemerkt pro Tag');
+            }
+        });
+    }
+
+    // =========================================================================
+    // INITIALISIERUNG & OBSERVER (für dynamisch ladende Inhalte)
+    // =========================================================================
+    const observer = new MutationObserver(() => {
+        modifyUI();
+        addStatsTooltip();
+    });
+    
+    // Überwache den gesamten Body auf Änderungen (wichtig bei React-Seiten wie Kleinanzeigen)
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Führe es auch einmal direkt aus
+    modifyUI();
 
 })();

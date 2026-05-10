@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.87
+// @version       2.5.88
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -95,8 +95,7 @@
         html.is-wide-page body .ownprofile-main,
         html.is-wide-page body [aria-labelledby="tabs-all"],
         html.is-wide-page body #tab-panel-all,
-        html.is-wide-page body .max-w-screen-custom,
-        html.is-wide-page body main > div.max-w-screen-custom {
+        html.is-wide-page body main .max-w-screen-custom {
             width: 100% !important;
             max-width: 1100px !important;
             margin-left: auto !important;
@@ -104,10 +103,10 @@
             box-sizing: border-box !important;
         }
 
-        /* Feste 970px Container überschreiben (z.B. auf der Suchergebnisseite) */
-        html.is-wide-page body .w-\\[970px\\],
-        html.is-wide-page body div[class*="w-[970px]"] {
-            width: 1100px !important;
+        /* Feste 970px Container überschreiben (Nur im Inhaltsbereich, schützt den Header!) */
+        html.is-wide-page body main .w-\\[970px\\],
+        html.is-wide-page body main div[class*="w-[970px]"] {
+            width: 100% !important;
             max-width: 1100px !important;
             margin-left: auto !important;
             margin-right: auto !important;
@@ -116,10 +115,10 @@
         /* Startseiten-Feed und Suche Flexibilität (Löst den harten Tailwind-Lock wie w-[700px] und w-[728px]) */
         html.is-wide-page body #homepage-main,
         html.is-wide-page body #srchrslt-content,
-        html.is-wide-page body .w-\\[700px\\],
-        html.is-wide-page body .w-\\[728px\\],
-        html.is-wide-page body div[class*="w-[700px]"],
-        html.is-wide-page body main[class*="w-[728px]"],
+        html.is-wide-page body main .w-\\[700px\\],
+        html.is-wide-page body main .w-\\[728px\\],
+        html.is-wide-page body main div[class*="w-[700px]"],
+        html.is-wide-page body main main[class*="w-[728px]"],
         html.is-wide-page body #main > div:nth-child(2) {
             width: 100% !important;
             max-width: none !important;

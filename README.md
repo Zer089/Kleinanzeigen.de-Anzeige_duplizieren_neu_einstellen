@@ -26,7 +26,6 @@ Die meisten Userscripte für Kleinanzeigen funktionieren nach den letzten große
 ## 📸 Screenshots
 
 ![Screenshot der Buttons](https://raw.githubusercontent.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/refs/heads/main/Buttons.png)
-![Screenshot der Buttons](https://raw.githubusercontent.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/refs/heads/main/Vergleich.png)
 
 ---
 

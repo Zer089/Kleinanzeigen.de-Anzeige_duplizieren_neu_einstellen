@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.93
+// @version       2.5.94
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -212,16 +212,25 @@
         
         .cpd-badges-row { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
         .custom-badge-wrapper { margin: 0 !important; padding: 0 !important; }
+        
+        /* Einheitliches Layout für ALLE Badges (Button & Span) */
         .custom-badge-item {
             background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 11px !important;
-            padding: 4px 10px !important; border-radius: 9999px !important; font-weight: 700 !important;
-            display: flex !important; align-items: center !important; gap: 4px !important;
+            padding: 0 10px !important; border-radius: 9999px !important; font-weight: 700 !important;
+            display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 4px !important;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; white-space: nowrap;
-            border: none !important; cursor: pointer !important; font-family: inherit !important;
+            border: none !important; font-family: inherit !important;
+            height: 28px !important; min-height: 28px !important; line-height: 1 !important; box-sizing: border-box !important;
             transition: background-color 0.2s !important;
         }
-        .custom-badge-item:hover { background-color: #e9d5ff !important; }
-        .custom-badge-item svg { width: 14px !important; height: 14px !important; }
+        .custom-badge-item svg { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
+        
+        /* Spezifische Button-Klassen (Klickbar) */
+        button.custom-badge-item { cursor: pointer !important; }
+        button.custom-badge-item:hover { background-color: #e9d5ff !important; }
+        
+        /* Spezifische Span-Klassen (Nur Info) */
+        span.custom-badge-item { cursor: default !important; }
 
         .cpd-footer-row { display: flex; align-items: center; flex-wrap: wrap; gap: 16px; font-size: 13px !important; color: #757575 !important; margin-top: 4px !important; }
         .cpd-footer-item { display: flex; align-items: center; gap: 6px; }
@@ -529,6 +538,7 @@
                                 innerDiv.className = ''; // Löscht die grauen Tailwind-Hintergründe etc.
                                 innerDiv.style.display = 'flex';
                                 innerDiv.style.alignItems = 'center';
+                                innerDiv.style.justifyContent = 'center';
                                 innerDiv.style.gap = '4px';
                             }
                             
@@ -553,7 +563,6 @@
                         
                         const rtSpan = document.createElement('span');
                         rtSpan.className = 'custom-badge-item'; 
-                        rtSpan.style.cursor = 'default';
                         
                         if (replyTimeData.svg) {
                             const svgClone = replyTimeData.svg.cloneNode(true);

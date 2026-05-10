@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.95
+// @version       2.5.96
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -457,7 +457,21 @@
                         } else if (txt.includes('aktiv seit')) {
                             activeSinceHtml = li.innerHTML;
                         } else if (txt.includes('antwortet')) {
-                            replyTimeHtml = li.innerHTML;
+                            let text = li.textContent.trim();
+                            text = text.replace(/Antwortet in der Regel innerhalb von/i, 'Antwortet innerhalb');
+                            text = text.replace(/Antwortet in der Regel nach/i, 'Antwortet nach');
+                            
+                            const match = text.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
+                            if (match) {
+                                let val = match[1]; 
+                                let type = match[2].toLowerCase();
+                                let timeStr = type.includes('stunde') ? val + 'h' : type.includes('minute') ? val + 'min' : val + (val === '1' ? ' Tag' : ' Tage');
+                                text = text.replace(match[0], timeStr);
+                            }
+                            
+                            replyTimeHtml = '';
+                            if (svg) replyTimeHtml += svg.outerHTML;
+                            replyTimeHtml += ' ' + text;
                         } else if (txt.includes('follower')) {
                             followersSvg = svg ? svg.cloneNode(true) : null;
                             followersA = li.querySelector('a'); // Diesen Node VERSCHIEBEN wir später für die Funktionalität!

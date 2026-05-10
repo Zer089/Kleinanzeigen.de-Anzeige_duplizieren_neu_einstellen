@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.94
+// @version       2.5.95
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -216,11 +216,11 @@
         /* Einheitliches Layout für ALLE Badges (Button & Span) */
         .custom-badge-item {
             background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 11px !important;
-            padding: 0 10px !important; border-radius: 9999px !important; font-weight: 700 !important;
+            padding: 0 8px !important; border-radius: 9999px !important; font-weight: 700 !important;
             display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 4px !important;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; white-space: nowrap;
             border: none !important; font-family: inherit !important;
-            height: 28px !important; min-height: 28px !important; line-height: 1 !important; box-sizing: border-box !important;
+            height: 24px !important; min-height: 24px !important; line-height: 1 !important; box-sizing: border-box !important;
             transition: background-color 0.2s !important;
         }
         .custom-badge-item svg { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
@@ -445,7 +445,7 @@
                     const avatarClone = avatarEl ? avatarEl.cloneNode(true) : null;
 
                     // User Infos (Typ, Aktiv seit, Antworten, Follower)
-                    let userTypeHtml = '', activeSinceHtml = '', replyTimeData = null;
+                    let userTypeHtml = '', activeSinceHtml = '', replyTimeHtml = '';
                     let followersA = null, followersSvg = null;
 
                     profileBox.querySelectorAll('[data-testid="user-info"] li').forEach(li => {
@@ -457,16 +457,7 @@
                         } else if (txt.includes('aktiv seit')) {
                             activeSinceHtml = li.innerHTML;
                         } else if (txt.includes('antwortet')) {
-                            replyTimeData = {
-                                svg: svg ? svg.cloneNode(true) : null,
-                                text: li.textContent.replace(/Antwortet in der Regel innerhalb von/i, 'Antwortet innerhalb').trim()
-                            };
-                            const match = replyTimeData.text.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
-                            if (match) {
-                                let val = match[1]; let type = match[2].toLowerCase();
-                                let timeStr = type.includes('stunde') ? val + 'h' : type.includes('minute') ? val + 'm' : val + (val === '1' ? ' Tag' : ' Tage');
-                                replyTimeData.text = `Antwortet innerhalb ${timeStr}`;
-                            }
+                            replyTimeHtml = li.innerHTML;
                         } else if (txt.includes('follower')) {
                             followersSvg = svg ? svg.cloneNode(true) : null;
                             followersA = li.querySelector('a'); // Diesen Node VERSCHIEBEN wir später für die Funktionalität!
@@ -557,26 +548,9 @@
                         badgesRow.appendChild(li); // Verschiebt den Node INKLUSIVE Modal (<dialog>) in unser Dashboard!
                     });
                     
-                    if (replyTimeData) {
-                        const rtLi = document.createElement('li');
-                        rtLi.className = 'custom-badge-wrapper';
-                        
-                        const rtSpan = document.createElement('span');
-                        rtSpan.className = 'custom-badge-item'; 
-                        
-                        if (replyTimeData.svg) {
-                            const svgClone = replyTimeData.svg.cloneNode(true);
-                            svgClone.classList.remove('w-medium', 'h-medium');
-                            rtSpan.appendChild(svgClone);
-                        }
-                        
-                        rtSpan.appendChild(document.createTextNode(' ' + replyTimeData.text));
-                        rtLi.appendChild(rtSpan);
-                        badgesRow.appendChild(rtLi);
-                    }
                     colInfo.appendChild(badgesRow);
 
-                    // Footer Links (Aktiv, Follower)
+                    // Footer Links (Aktiv, Antwortet, Follower)
                     const rowFooter = document.createElement('div');
                     rowFooter.className = 'cpd-footer-row';
                     
@@ -585,6 +559,13 @@
                         asSpan.className = 'cpd-footer-item';
                         asSpan.innerHTML = activeSinceHtml;
                         rowFooter.appendChild(asSpan);
+                    }
+                    
+                    if (replyTimeHtml) {
+                        const rtSpan = document.createElement('span');
+                        rtSpan.className = 'cpd-footer-item';
+                        rtSpan.innerHTML = replyTimeHtml;
+                        rowFooter.appendChild(rtSpan);
                     }
                     
                     if (followersA) {

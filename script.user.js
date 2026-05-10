@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.82
+// @version       2.5.83
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -22,10 +22,16 @@
     const isEditPage = window.location.href.includes('p-anzeige-bearbeiten.html');
     const isConfirmPage = window.location.href.includes('bestaetigung.html');
     const isDetailPage = window.location.href.includes('/s-anzeige/');
+    const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
+    const isSearchPage = window.location.pathname.startsWith('/s-') && !isDetailPage;
+    const isMessagesPage = window.location.href.includes('m-nachrichten.html');
+
+    const isWidePage = isOverviewPage || isHomePage || isSearchPage || isMessagesPage;
 
     if (isOverviewPage) document.documentElement.classList.add('is-overview-page');
     if (isDetailPage) document.documentElement.classList.add('is-detail-page');
     if (isEditPage) document.documentElement.classList.add('is-edit-page');
+    if (isWidePage) document.documentElement.classList.add('is-wide-page');
 
     // ==========================================
     // TRACKING-BLOCKER
@@ -71,23 +77,23 @@
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
         /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1100px in der Mitte) */
-        html.is-overview-page body .site-base {
+        html.is-wide-page body .site-base {
             grid-template-columns: 1fr minmax(auto, 1100px) 1fr !important;
         }
 
         /* Container-Breite anpassen und Zentrierung reparieren - Mit absoluter maximaler CSS-Spezifität! */
-        html.is-overview-page body .site-base--content,
-        html.is-overview-page body .l-page-wrapper,
-        html.is-overview-page body .l-container,
-        html.is-overview-page body .l-container-row,
-        html.is-overview-page body .l-splitpage,
-        html.is-overview-page body #site-content,
-        html.is-overview-page body main#main,
-        html.is-overview-page body #my-ads-frontend,
-        html.is-overview-page body [data-testid="site-content"],
-        html.is-overview-page body .ownprofile-main,
-        html.is-overview-page body [aria-labelledby="tabs-all"],
-        html.is-overview-page body #tab-panel-all {
+        html.is-wide-page body .site-base--content,
+        html.is-wide-page body .l-page-wrapper,
+        html.is-wide-page body .l-container,
+        html.is-wide-page body .l-container-row,
+        html.is-wide-page body .l-splitpage,
+        html.is-wide-page body #site-content,
+        html.is-wide-page body main#main,
+        html.is-wide-page body #my-ads-frontend,
+        html.is-wide-page body [data-testid="site-content"],
+        html.is-wide-page body .ownprofile-main,
+        html.is-wide-page body [aria-labelledby="tabs-all"],
+        html.is-wide-page body #tab-panel-all {
             width: 100% !important;
             max-width: 1100px !important;
             margin-left: auto !important;
@@ -96,8 +102,8 @@
         }
 
         /* Verhindert das Ausbrechen der Anzeigenliste (1232px Bug) durch negative Tailwind-Margins */
-        html.is-overview-page body ul#my-manageitems-adlist,
-        html.is-overview-page body li[data-testid="ad-card"] {
+        html.is-wide-page body ul#my-manageitems-adlist,
+        html.is-wide-page body li[data-testid="ad-card"] {
             width: 100% !important;
             max-width: 1100px !important;
             margin-left: 0 !important;

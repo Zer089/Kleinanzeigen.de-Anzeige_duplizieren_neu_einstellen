@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.86
+// @version       2.5.87
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -77,7 +77,8 @@
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
         /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1100px in der Mitte) */
-        html.is-wide-page body .site-base {
+        html.is-wide-page body .site-base,
+        html.is-wide-page body .grid-cols-\\[1fr_970px_1fr\\] {
             grid-template-columns: 1fr minmax(auto, 1100px) 1fr !important;
         }
 
@@ -95,14 +96,21 @@
         html.is-wide-page body [aria-labelledby="tabs-all"],
         html.is-wide-page body #tab-panel-all,
         html.is-wide-page body .max-w-screen-custom,
-        html.is-wide-page body main > div.max-w-screen-custom,
-        html.is-wide-page body .w-\\[970px\\],
-        html.is-wide-page body div[class*="w-[970px]"] {
+        html.is-wide-page body main > div.max-w-screen-custom {
             width: 100% !important;
             max-width: 1100px !important;
             margin-left: auto !important;
             margin-right: auto !important;
             box-sizing: border-box !important;
+        }
+
+        /* Feste 970px Container überschreiben (z.B. auf der Suchergebnisseite) */
+        html.is-wide-page body .w-\\[970px\\],
+        html.is-wide-page body div[class*="w-[970px]"] {
+            width: 1100px !important;
+            max-width: 1100px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
         }
 
         /* Startseiten-Feed und Suche Flexibilität (Löst den harten Tailwind-Lock wie w-[700px] und w-[728px]) */

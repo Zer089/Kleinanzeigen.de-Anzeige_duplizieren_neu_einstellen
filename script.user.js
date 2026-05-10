@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.79
+// @version       2.5.80
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -62,7 +62,10 @@
         .absolute.top-none.left-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.left-small.pt-large,
         .ad-module, div[data-testid*="banner"], div[data-testid*="ad-wrapper"],
         .mb-small:has(> .ad-module), .mb-small:has([id^="dfp-"]), li:has(> .ad-module),
-        .mb-small:has([data-liberty-position-name]), .mb-small:has([id^="srps-result-list"]) { display: none !important; }
+        ul#srchrslt-adtable > li:has([data-liberty-position-name]), 
+        ul#srchrslt-adtable > li:has([id^="srps-result-list"]),
+        div.mx-auto.mb-small:has([data-liberty-position-name]):not(:has(#srchrslt-adtable)),
+        div.mx-auto.mb-small:has([id^="srps-result-list"]):not(:has(#srchrslt-adtable)) { display: none !important; }
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
@@ -349,8 +352,10 @@
             .absolute.bottom-none.top-1\\/2.right-small.pt-large,
             .absolute.top-none.left-small.bottom-1\\/2, 
             .absolute.bottom-none.top-1\\/2.left-small.pt-large,
-            .mb-small:has([data-liberty-position-name]), 
-            .mb-small:has([id^="srps-result-list"])
+            ul#srchrslt-adtable > li:has([data-liberty-position-name]), 
+            ul#srchrslt-adtable > li:has([id^="srps-result-list"]),
+            div.mx-auto.mb-small:has([data-liberty-position-name]):not(:has(#srchrslt-adtable)),
+            div.mx-auto.mb-small:has([id^="srps-result-list"]):not(:has(#srchrslt-adtable))
         `);
         banners.forEach(b => b.remove());
 

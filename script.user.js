@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.91
+// @version       2.5.92
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -395,30 +395,41 @@
             const profileBox = document.querySelector('.ownprofile-main');
             
             if (profileBox && !profileBox.dataset.redesignInjected) {
+                
+                // 1. ASYNCHRONES LADEN VON REACT ABWARTEN
+                const nameEl = profileBox.querySelector('h2');
+                const statsEl = profileBox.querySelector('[data-testid="posted-ads"]');
+                const userInfoUl = profileBox.querySelector('[data-testid="user-info"]');
+
+                // Name sicher auslesen (ohne das Original-DOM zu zerstören)
+                let nameText = '';
+                if (nameEl) {
+                    const clone = nameEl.cloneNode(true);
+                    const srOnly = clone.querySelector('.sr-only');
+                    if (srOnly) srOnly.remove();
+                    nameText = clone.textContent.trim();
+                }
+
+                // WAIT CONDITION: Breche Inject ab und warte auf den nächsten Interval-Tick, falls React noch lädt
+                if (nameText.length === 0 || !statsEl || !userInfoUl) {
+                    return; 
+                }
+
+                // Jetzt sind die Daten da -> wir legen los!
                 profileBox.dataset.redesignInjected = 'true';
 
                 try {
-                    // 1. Verstecke die originale Struktur (um React nicht zu stören)
+                    // 2. Verstecke die originale Struktur (um React nicht zu stören)
                     Array.from(profileBox.children).forEach(child => {
                         child.style.display = 'none';
                         child.classList.add('kl-hidden-original');
                     });
 
-                    // 2. Extrahieren der Original-Daten und Nodes
+                    // 3. Extrahieren der Original-Daten und Nodes
                     
                     // Avatar
                     const avatarEl = profileBox.querySelector('.user-profile-badge') || profileBox.querySelector('img[src*="userportrait"]');
                     const avatarClone = avatarEl ? avatarEl.cloneNode(true) : null;
-
-                    // Name
-                    const nameEl = profileBox.querySelector('h2');
-                    let nameText = '';
-                    if (nameEl) {
-                        // Verstecke das SR-Only "Profil von" im Clone
-                        const srOnly = nameEl.querySelector('.sr-only');
-                        if (srOnly) srOnly.style.display = 'none';
-                        nameText = nameEl.textContent.replace('Profil von', '').trim();
-                    }
 
                     // Badges extrahieren
                     const badges = [];
@@ -461,7 +472,6 @@
                     });
 
                     // Statistiken
-                    const statsEl = profileBox.querySelector('[data-testid="posted-ads"]');
                     let onlineCount = "0", totalCount = "0";
                     if (statsEl) {
                         const m1 = statsEl.textContent.match(/(\d+)\s*Anzeigen/i);
@@ -475,7 +485,7 @@
                     const infoBtn = profileBox.querySelector('button[aria-label="Profilinformationen öffnen"]');
 
                     // ==========================================
-                    // 3. Aufbau des neuen Dashboards
+                    // 4. Aufbau des neuen Dashboards
                     // ==========================================
                     const dashboard = document.createElement('div');
                     dashboard.className = 'custom-profile-dashboard';
@@ -614,7 +624,7 @@
                     colStats.appendChild(actionsBlock);
                     dashboard.appendChild(colStats);
 
-                    // 4. Das fertige Dashboard in die Original-Box kleben
+                    // 5. Das fertige Dashboard in die Original-Box kleben
                     profileBox.classList.add('custom-replaced');
                     profileBox.appendChild(dashboard);
 

@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.5.78
+// @version       2.5.79
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -62,7 +62,7 @@
         .absolute.top-none.left-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.left-small.pt-large,
         .ad-module, div[data-testid*="banner"], div[data-testid*="ad-wrapper"],
         .mb-small:has(> .ad-module), .mb-small:has([id^="dfp-"]), li:has(> .ad-module),
-        li.mb-small:has([data-liberty-position-name]), li.mb-small:has([id^="srps-result-list"]) { display: none !important; }
+        .mb-small:has([data-liberty-position-name]), .mb-small:has([id^="srps-result-list"]) { display: none !important; }
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
 
@@ -349,8 +349,8 @@
             .absolute.bottom-none.top-1\\/2.right-small.pt-large,
             .absolute.top-none.left-small.bottom-1\\/2, 
             .absolute.bottom-none.top-1\\/2.left-small.pt-large,
-            li.mb-small:has([data-liberty-position-name]), 
-            li.mb-small:has([id^="srps-result-list"])
+            .mb-small:has([data-liberty-position-name]), 
+            .mb-small:has([id^="srps-result-list"])
         `);
         banners.forEach(b => b.remove());
 

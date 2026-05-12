@@ -8,7 +8,7 @@ Das Userscript, das dir auf **Kleinanzeigen.de** viel Zeit und Nerven spart. Es 
 
 Die meisten Userscripte für Kleinanzeigen funktionieren nach den letzten großen Architektur-Updates der Plattform nicht mehr. Dieses Tool wurde von Grund auf neu entwickelt, um das aktuelle React-Frontend und die neuen JSON-Schnittstellen von Kleinanzeigen.de zu unterstützen. Es fängt Datenpakete direkt im Netzwerkverkehr ab, überspringt unsichtbare Werbe-Popups und bietet eine 100%ige "Zero-Data-Loss"-Garantie.
 
-<img width="2912" height="1440" alt="Kleinanzeigen-Social_Preview" src="https://github.com/user-attachments/assets/11e33dab-8d34-4047-a66a-67742ba2193a" />
+![Screenshot der Buttons](https://raw.githubusercontent.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/refs/heads/main/Social Preview.png)
 
 ---
 

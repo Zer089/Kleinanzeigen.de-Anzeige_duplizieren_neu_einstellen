@@ -17,6 +17,11 @@ Die meisten Userscripte für Kleinanzeigen funktionieren nach den letzten große
 * 🔄 **Neu einstellen (1-Klick):** Löscht deine alte Anzeige im Hintergrund und stellt sie exakt gleich als nagelneue Anzeige wieder ein (pusht sie wieder auf Seite 1).
 * 👯‍♂️ **Duplizieren:** Erstellt eine exakte Kopie deiner Anzeige, ohne das Original zu löschen.
 * 🛡️ **Zero-Data-Loss Garantie:** Dank moderner Netzwerk-Interceptoren wird die alte Anzeige **erst dann gelöscht**, wenn der Server die Erstellung der neuen Anzeige zu 100 % bestätigt hat. Kein Datenverlust bei Verbindungsabbrüchen!
+* 📊 **Erweiterte Anzeigenanalyse (NEU):** Holt im Hintergrund Daten wie das genaue Erstelldatum, Ablaufdatum, Online-Tage sowie die durchschnittlichen Klicks/Gemerkt pro Tag und zeigt sie dir direkt übersichtlich auf der Startseite an.
+* 🎨 **Komplettes Profil-Redesign (NEU):** Die Profilbox auf der Übersichtsseite wurde komplett modernisiert. Das neue "Custom Dashboard" bietet dir alle wichtigen Statistiken, Badges und Buttons auf einen Blick im eleganten Grid-Design.
+* 🔍 **Kategorie- & Ranking-Check (NEU):** Die Kategorie einer Anzeige ist jetzt auf der Übersichtsseite klickbar. So springst du direkt in das exakte Suchergebnis für deinen Ort und deine Kategorie, um dein aktuelles Ranking zu prüfen.
+* 🏷️ **Verkaufsschild Direktzugriff (NEU):** Der versteckte "Verkaufsschild" Button wurde aus dem Dropdown-Menü befreit und ist jetzt direkt mit einem Klick in der Anzeigenübersicht erreichbar.
+* 📐 **Widescreen & Layout-Fixes (NEU):** Das harte 970px-Grid von Kleinanzeigen wird intelligent auf bis zu 1100px erweitert, was den Platz viel besser nutzt.
 * 🚫 **Popup- & Upsell-Blocker:** * Überspringt automatisch das nervige "Effektiver verkaufen" / "Hochschieben" Werbe-Popup beim Speichern.
     * Blendet störende kostenpflichtige Optionen (Highlight, Galerie, etc.) direkt auf der Bearbeiten-Seite aus.
 * 🎨 **Natives Design:** Die neuen Buttons fügen sich nahtlos in das moderne Design von Kleinanzeigen ein (inklusive schickem Hover-Effekt im originalen Lila-Ton).

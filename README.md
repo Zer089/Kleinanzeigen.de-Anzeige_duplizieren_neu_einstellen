@@ -4,7 +4,7 @@
 [![Version](https://img.shields.io/badge/Version-2.6.15-blue.svg)]()
 [![Plattform](https://img.shields.io/badge/Plattform-Kleinanzeigen.de-green.svg)]()
 
-Das Userscript, das dir auf **Kleinanzeigen.de** viel Zeit und Nerven spart. Es fügt der "Anzeige bearbeiten"-Seite zwei neue Buttons hinzu, mit denen du deine Anzeigen mit nur einem Klick duplizieren oder löschen und direkt wieder ganz oben neu einstellen kannst.
+Das Userscript, das dir auf **Kleinanzeigen.de** viel Zeit und Nerven spart. Es verwandelt deine "Meine Anzeigen"-Übersicht in ein smartes Dashboard: Ohne eine Anzeige erst öffnen oder auf "Bearbeiten" klicken zu müssen, hast du direkt in der Übersicht Zugriff auf zwei neue Buttons, mit denen du deine Anzeigen mit nur einem Klick duplizieren oder löschen und direkt wieder ganz oben neu einstellen kannst. Gleichzeitig zeigt dir das Dashboard alle wichtigen Infos (wie das Einstelldatum und Ablaufdatum deiner Anzeige sowie der errechneten Onlinezeit in Tagen, Ort, Anzeige-ID und Versand) auf einen Blick, für die du sonst ins Inserat klicken müsstest!
 
 Die meisten Userscripte für Kleinanzeigen funktionieren nach den letzten großen Architektur-Updates der Plattform nicht mehr. Dieses Tool wurde von Grund auf neu entwickelt, um das aktuelle React-Frontend und die neuen JSON-Schnittstellen von Kleinanzeigen.de zu unterstützen. Es fängt Datenpakete direkt im Netzwerkverkehr ab, überspringt unsichtbare Werbe-Popups und bietet eine 100%ige "Zero-Data-Loss"-Garantie.
 
@@ -15,15 +15,16 @@ Die meisten Userscripte für Kleinanzeigen funktionieren nach den letzten große
 ## ✨ Features
 
 * 🔄 **Neu einstellen (1-Klick):** Löscht deine alte Anzeige im Hintergrund und stellt sie exakt gleich als nagelneue Anzeige wieder ein (pusht sie wieder auf Seite 1).
-* 👯‍♂️ **Duplizieren:** Erstellt eine exakte Kopie deiner Anzeige, ohne das Original zu löschen.
+* 👯‍♂️ **Duplizieren:** Erstellt eine exakte Kopie deiner Anzeige, ohne das Original zu löschen. Die beiden Button findest du direkt in der Übersichtseite deiner Anzeigen. So musst du weder auf deine Anzeige klicken noch auf "ändern". Alles auis einem Dashboard heraus. Alternativ sind die Button jedoch auch in der Leseansicht der anzeige als auch unter "ändern" bedienbar.
 * 🛡️ **Zero-Data-Loss Garantie:** Dank moderner Netzwerk-Interceptoren wird die alte Anzeige **erst dann gelöscht**, wenn der Server die Erstellung der neuen Anzeige zu 100 % bestätigt hat. Kein Datenverlust bei Verbindungsabbrüchen!
 * 📊 **Erweiterte Anzeigenanalyse (NEU):** Holt im Hintergrund Daten wie das genaue Erstelldatum, Ablaufdatum, Online-Tage sowie die durchschnittlichen Klicks/Gemerkt pro Tag und zeigt sie dir direkt übersichtlich auf der Startseite an.
 * 🎨 **Komplettes Profil-Redesign (NEU):** Die Profilbox auf der Übersichtsseite wurde komplett modernisiert. Das neue "Custom Dashboard" bietet dir alle wichtigen Statistiken, Badges und Buttons auf einen Blick im eleganten Grid-Design.
 * 🔍 **Kategorie- & Ranking-Check (NEU):** Die Kategorie einer Anzeige ist jetzt auf der Übersichtsseite klickbar. So springst du direkt in das exakte Suchergebnis für deinen Ort und deine Kategorie, um dein aktuelles Ranking zu prüfen.
 * 🏷️ **Verkaufsschild Direktzugriff (NEU):** Der versteckte "Verkaufsschild" Button wurde aus dem Dropdown-Menü befreit und ist jetzt direkt mit einem Klick in der Anzeigenübersicht erreichbar.
-* 📐 **Widescreen & Layout-Fixes (NEU):** Das harte 970px-Grid von Kleinanzeigen wird intelligent auf bis zu 1100px erweitert, was den Platz viel besser nutzt.
+* 📐 **Widescreen & Layout-Fixes (NEU):** Das starre Layout von Kleinanzeigen wird intelligent in der Breite aufgebrochen. Der  Platz wird nun effektiv und überichtlich genutzt.
 * 🚫 **Popup- & Upsell-Blocker:** * Überspringt automatisch das nervige "Effektiver verkaufen" / "Hochschieben" Werbe-Popup beim Speichern.
     * Blendet störende kostenpflichtige Optionen (Highlight, Galerie, etc.) direkt auf der Bearbeiten-Seite aus.
+    * Blendet jegliche Bannerwerbung aus! Egal ob Seitenbanner, als oberer Werbe-Karussell-Banner oder direkt innerhalb der Anzeigeergebnisse - Das Skript bockiert alles weg.
 * 🎨 **Natives Design:** Die neuen Buttons fügen sich nahtlos in das moderne Design von Kleinanzeigen ein (inklusive schickem Hover-Effekt im originalen Lila-Ton).
 
 ---

@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.6.15
+// @version       2.6.42
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -32,6 +32,11 @@
     if (isDetailPage) document.documentElement.classList.add('is-detail-page');
     if (isEditPage) document.documentElement.classList.add('is-edit-page');
     if (isWidePage) document.documentElement.classList.add('is-wide-page');
+
+    // Original Kleinanzeigen Icons (Nachgezeichnet für Robustheit)
+    const klPrinterSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>`;
+    const klFlagSvg = `<svg viewBox="0 0 24 24" fill="none" data-title="reservedOutline" stroke="none" role="img" aria-hidden="true" focusable="false" class="shrink-0 fill-current block align-middle" style="width: 14px; height: 14px;"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.97961 2H18.187C18.5696 2 18.9172 2.22734 19.077 2.58214C19.2369 2.93694 19.1798 3.35428 18.9308 3.65079L15.4081 7.84615L18.9308 12.0415C19.1798 12.338 19.2369 12.7554 19.077 13.1102C18.9172 13.465 18.5696 13.6923 18.187 13.6923H5.95922V21C5.95922 21.5523 5.52063 22 4.97961 22C4.43859 22 4 21.5523 4 21V3C4 2.44772 4.43859 2 4.97961 2ZM5.95922 11.6923H16.0572L13.3741 8.49694C13.0597 8.12245 13.0597 7.56985 13.3741 7.19536L16.0572 4H5.95922V11.6923Z" fill="currentColor"></path></svg>`;
+    const klReactivateSvg = `<svg viewBox="0 0 24 24" fill="none" data-title="reactivate" stroke="none" role="img" aria-hidden="true" focusable="false" class="shrink-0 fill-current block align-middle" style="width: 14px; height: 14px;"><path d="M14.7071 5.70711C14.9032 5.51106 15.0008 5.25386 15 4.99691C14.9993 4.74196 14.9016 4.48723 14.7071 4.29271L14.6954 4.28122L12.7071 2.29289C12.3166 1.90237 11.6834 1.90237 11.2929 2.29289C10.9024 2.68342 10.9024 3.31658 11.2929 3.70711L11.5947 4.00896C6.81226 4.22089 3 8.16524 3 13C3 17.9706 7.02944 22 12 22C16.2413 22 19.7973 19.0663 20.7495 15.1174C20.8914 14.5288 20.4158 14 19.8103 14C19.3047 14 18.8838 14.3748 18.7495 14.8624C17.9341 17.8243 15.2211 20 12 20C8.13401 20 5 16.866 5 13C5 9.27746 7.90573 6.2336 11.5728 6.01282L11.2929 6.29271C10.9024 6.68323 10.9024 7.3164 11.2929 7.70692C11.6834 8.09745 12.3166 8.09745 12.7071 7.70692L14.6954 5.71862L14.7071 5.70711Z" fill="currentColor"></path></svg>`;
 
     // ==========================================
     // TRACKING-BLOCKER
@@ -75,7 +80,7 @@
         li[id^="home-teaser-ads-"] { display: none !important; }
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
-        
+
         /* Allgemeine Abstands-Korrekturen nach Nutzer-Wunsch */
         .relative.mb-small.box-border.min-h-\\[10px\\].rounded-xsmall.text-onSurfaceSubdued { margin-bottom: 0px !important; }
         #tab-panel-all, [aria-labelledby="tabs-all"] { margin-top: 6px !important; }
@@ -176,6 +181,13 @@
         }
         .custom-category-link:hover {
             color: #5A33AE !important;
+        }
+
+        /* Galerie-Breite auf Detailseite anpassen (max 970px) */
+        .is-detail-page .vip-image-gallery.galleryimage-large {
+            max-width: 970px !important;
+            width: 100% !important;
+            margin-left: 0 !important; /* Gewährleistet linksbündige Ausrichtung im neuen 100% Grid */
         }
 
         /* ====================================================
@@ -341,7 +353,11 @@
             line-height: 1 !important;
         }
         .cpd-action-btn.secondary:hover { color: #666 !important; }
-        .cpd-action-btn.secondary svg { width: 14px !important; height: 14px !important; display: block; }
+        .cpd-action-btn.secondary svg { 
+            display: block !important; 
+            flex-shrink: 0 !important; 
+            overflow: visible !important; 
+        }
 
         /* ====================================================
            LILA BUTTONS BEI ANZEIGEN (Bearbeiten/Duplizieren)
@@ -392,41 +408,140 @@
             margin: 0 !important; width: auto !important; 
         }
 
-        /* EINHEITLICHE GRÖSSE FÜR ALLE BUTTONS IN SPALTE 6 (Native und Custom) */
+        /* ====================================================
+           CUSTOM LILA TOOLTIP (Deaktivierter Button)
+           ==================================================== */
+        [data-custom-tooltip] {
+            position: relative;
+        }
+        [data-custom-tooltip]::after {
+            content: attr(data-custom-tooltip);
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #5A33AE;
+            color: #ffffff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: pre; /* Erlaubt Zeilenumbrüche via \n */
+            text-align: center; /* Zentriert den mehrzeiligen Text */
+            line-height: 1.4;
+            z-index: 1000;
+            pointer-events: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-weight: normal;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+        [data-custom-tooltip]::before {
+            content: '';
+            position: absolute;
+            bottom: calc(100% + 2px);
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 6px;
+            border-style: solid;
+            border-color: #5A33AE transparent transparent transparent;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+        [data-custom-tooltip]:hover::after,
+        [data-custom-tooltip]:hover::before {
+            opacity: 1 !important;
+            visibility: visible;
+        }
+
+        /* EINHEITLICHE GRÖSSE FÜR ALLE BUTTONS IN SPALTE 6 UND AUF DER DETAIL-SEITE */
         .is-overview-page .custom-action-area a,
         .is-overview-page .custom-action-area button,
         .is-overview-page .custom-purple-btn, 
-        .is-overview-page .custom-native-btn {
+        .is-overview-page .custom-native-btn,
+        .is-detail-page .custom-purple-btn,
+        .is-detail-page .custom-native-btn-detail {
             height: 28px !important; min-height: 28px !important; max-height: 28px !important;
             padding: 0 12px !important; font-size: 12px !important; line-height: 1 !important; margin: 0 !important; 
-            box-sizing: border-box !important; border-width: 2px !important;
+            box-sizing: border-box !important; border-width: 2px !important; border-radius: 9999px !important;
             display: inline-flex !important; align-items: center !important; justify-content: center !important;
         }
+
+        /* Native Buttons auf der Detailseite nachrüsten und an den Overview-Grün-Ton angleichen */
+        .is-detail-page .custom-native-btn-detail {
+            border: 2px solid #95958E !important; 
+            background: transparent !important; 
+            color: #326916 !important; 
+            font-weight: 700 !important; 
+            text-decoration: none !important; 
+            transition: all 0.2s !important; 
+            gap: 6px !important;
+        }
         
-        /* Icon Skalierung für native Buttons auf 28px Höhe */
+        /* Einheitlicher grüner Hover-Effekt wie auf der Übersichtsseite */
+        .is-detail-page .custom-native-btn-detail:not([disabled]):not([aria-disabled="true"]):not(.is-disabled):hover {
+            background-color: #D3F28D !important; 
+            border-color: #1D4B00 !important; 
+            color: #1D4B00 !important; 
+        }
+        
+        /* Deaktivierte Buttons auf der Detailseite (z.B. Verlängern) schützen */
+        .is-detail-page .custom-native-btn-detail[disabled],
+        .is-detail-page .custom-native-btn-detail[aria-disabled="true"],
+        .is-detail-page .custom-native-btn-detail.is-disabled {
+            color: rgba(50, 105, 22, 0.5) !important; 
+            border-color: rgba(149, 149, 142, 0.5) !important;
+            cursor: not-allowed !important;
+            background: transparent !important;
+            pointer-events: auto !important; 
+        }
+        
+        /* Zwingend sicherstellen, dass inaktive Status-Buttons auf der Detailseite (Reservieren/Aktivieren Toggle) absolut versteckt bleiben */
+        .is-detail-page .custom-native-btn-detail.is-hidden,
+        .is-detail-page .custom-native-btn-detail.hidden,
+        .is-detail-page .custom-native-btn-detail.hide,
+        .is-detail-page li.is-hidden .custom-native-btn-detail,
+        .is-detail-page li.hidden .custom-native-btn-detail {
+            display: none !important;
+        }
+        
+        /* Abstände für den Button-Container auf der Detailseite (pvap-mngad-actns) */
+        #pvap-mngad-actns.list, #pvap-mngad-actns {
+            margin-top: 12px !important;
+            margin-bottom: 6px !important;
+        }
+        
+        /* Allgemeine Fallback-Sicherheit für versteckte Elemente */
+        .is-hidden, .hide, [style*="display: none"], [style*="display:none"] {
+            display: none !important;
+        }
+        
+        /* Icon Skalierung für SVGs in Action Area und Detail Buttons */
         .is-overview-page .custom-action-area a svg,
-        .is-overview-page .custom-action-area button svg {
-            width: 14px !important; height: 14px !important;
+        .is-overview-page .custom-action-area button svg,
+        .is-detail-page .custom-native-btn-detail svg {
+            width: 14px !important; height: 14px !important; flex-shrink: 0 !important; margin: 0 !important;
+        }
+        
+        /* Schützt native Kleinanzeigen CSS-Sprites (i-Tags) davor zerschossen zu werden */
+        .is-detail-page .custom-native-btn-detail i {
+            margin: 0 !important; 
         }
 
         /* Erzwinge Schriftgröße 12px für alle Text-Elemente innerhalb der Action Area Buttons */
-        .custom-action-area button *, .custom-action-area a * {
+        .custom-action-area button span, .custom-action-area a span,
+        .is-detail-page .custom-native-btn-detail span, .is-detail-page .custom-purple-btn span {
             font-size: 12px !important;
         }
 
-        .custom-shipping-info { font-size: 13px !important; color: #757575 !important; font-weight: normal !important; white-space: nowrap; }
+        .custom-shipping-info { font-size: 13px !important; color: #757575 !important; font-weight: normal !important; white-space: nowrap; border: none !important; }
         .custom-stat-li { display: flex !important; align-items: center !important; gap: 4px !important; color: inherit !important; white-space: nowrap; }
 
-        .is-detail-page .custom-purple-btn, .is-edit-page .custom-purple-btn { height: 44px !important; min-height: 44px !important; padding: 0 16px !important; font-size: 14px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; border-width: 2px !important; border-style: solid !important; }
-        .is-detail-page #pvap-mngad-stats { width: 150px !important; }
-        .is-detail-page .manageadbox--actions, .is-detail-page #pvap-mngad-actions {
-            display: flex !important; flex-wrap: wrap !important; gap: 8px !important; justify-content: flex-end !important; list-style: none !important; margin-top: 15px !important;
-        }
-        .is-detail-page .manageadbox--actions a, .is-detail-page .manageadbox--actions button,
-        .is-detail-page #pvap-mngad-actions a, .is-detail-page #pvap-mngad-actions button {
-            display: inline-flex !important; align-items: center !important; height: 44px !important; padding: 0 16px !important; border-radius: 9999px !important;
-            border: 2px solid #dcdcdc !important; background: transparent !important; color: #222 !important; font-weight: bold !important; text-decoration: none !important; box-sizing: border-box !important;
-        }
+        /* BEARBEITEN-SEITE: Hier bleiben die Buttons groß (44px) */
+        .is-edit-page .custom-purple-btn { height: 44px !important; min-height: 44px !important; padding: 0 16px !important; font-size: 14px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; border-width: 2px !important; border-style: solid !important; }
     `;
     document.head ? document.head.appendChild(style) : document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
 
@@ -458,7 +573,7 @@
     }
 
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V11_${adId}`; // Aktualisierter CacheKey wegen neuer Felder
+        const cacheKey = `__KL_AD_DETAILS_V11_${adId}`; 
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
@@ -485,16 +600,14 @@
 
             let shipping = shippingEl ? shippingEl.textContent.trim() : '';
             
-            // --- NEU: Extrahieren des präzisen Kategorie-Slugs aus der Breadcrumb Navigation ---
             let catSlug = '';
             const breadcrumbLinks = doc.querySelectorAll('#viewad-breadcrumb a[href*="/s-"]');
             if (breadcrumbLinks.length > 0) {
-                // Suche vom letzten Element rückwärts nach dem Link, der auf /c[Zahl] endet
                 for (let i = breadcrumbLinks.length - 1; i >= 0; i--) {
                     const href = breadcrumbLinks[i].getAttribute('href');
                     const match = href.match(/\/s-([^/]+)\/c\d+/);
                     if (match) {
-                        catSlug = match[1]; // e.g. "handy-telekom"
+                        catSlug = match[1]; 
                         break;
                     }
                 }
@@ -526,10 +639,236 @@
         `);
         banners.forEach(b => b.remove());
 
+        // --- SIDEBAR ENTFERNEN UND CONTENT STRECKEN (DETAILSEITE) ---
+        // Dies muss passieren, BEVOR andere Skriptelemente nach Elementen in der Sidebar suchen!
+        if (isDetailPage) {
+            const sidebar = document.getElementById('viewad-sidebar');
+            if (sidebar && !sidebar.dataset.removedSafely) {
+                
+                // 1a. Teilen-Button und das Modal retten, bevor die Sidebar gelöscht wird!
+                const shareBtnOriginal = sidebar.querySelector('.j-share-ad, [href="#viewad-share-ad"], [data-mfp-src="#viewad-share-ad"]');
+                if (shareBtnOriginal) {
+                    shareBtnOriginal.id = 'custom-rescued-share-btn';
+                    shareBtnOriginal.style.display = 'none';
+                    document.body.appendChild(shareBtnOriginal);
+                }
+                const shareModal = sidebar.querySelector('#viewad-share-ad');
+                if (shareModal) document.body.appendChild(shareModal);
+                
+                // 1b. Anzeigen-ID Box retten
+                const adIdBoxOriginal = sidebar.querySelector('#viewad-ad-id-box');
+                if (adIdBoxOriginal) {
+                    adIdBoxOriginal.id = 'custom-rescued-ad-id-box';
+                    adIdBoxOriginal.style.display = 'none';
+                    document.body.appendChild(adIdBoxOriginal);
+                }
+
+                // 2. Sidebar sicher löschen
+                sidebar.dataset.removedSafely = 'true';
+                sidebar.remove();
+                
+                // 3. Content-Container auf volle Breite (a-span-24) aufziehen
+                const mainCol = document.querySelector('#viewad-cntnt .a-span-16');
+                if (mainCol) {
+                    mainCol.classList.remove('a-span-16');
+                    mainCol.classList.add('a-span-24'); // Kleinanzeigen Full-Width Layout-Klasse
+                    mainCol.style.setProperty('width', '100%', 'important');
+                    mainCol.style.setProperty('max-width', '100%', 'important');
+                }
+            }
+        }
+
+        // --- VISUAL FIXES FÜR DIE DETAILSEITE ---
+        if (isDetailPage) {
+            // 1. Datum Icon tauschen (Megafon) mit korrekter Farbe (#A6A6A6) und Abstand (6px)
+            const calIcon = document.querySelector('.icon-calendar-gray-simple');
+            if (calIcon && !calIcon.dataset.replaced) {
+                calIcon.dataset.replaced = 'true';
+                calIcon.outerHTML = `<span title="Erstellt am" style="display: inline-flex; align-items: center;"><svg viewBox="0 0 24 24" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 16px !important; height: 16px !important; margin-right: 6px;"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg></span>`;
+            }
+
+            // Tooltip für Standort-Icon sicherstellen
+            const locIcons = document.querySelectorAll('.icon-location-pin-filled, .icon-pin-gray-simple');
+            locIcons.forEach(icon => {
+                const parent = icon.parentElement;
+                if (parent && !parent.title) parent.title = "Ort";
+            });
+
+            // 2. Besucher Counter anpassen (mit statischem grauen Icon)
+            const cntrParent = document.getElementById('viewad-cntr');
+            const cntrNum = document.getElementById('viewad-cntr-num');
+            if (cntrParent && cntrNum && !cntrParent.dataset.styled) {
+                cntrParent.dataset.styled = 'true';
+                
+                cntrNum.removeAttribute('title');
+                
+                cntrParent.classList.remove('textcounter');
+                cntrParent.style.backgroundImage = 'none';
+                cntrParent.style.paddingLeft = '0';
+                cntrParent.style.display = 'inline-flex';
+                cntrParent.style.alignItems = 'center';
+                cntrParent.style.gap = '6px';
+                
+                const eyeSvg = document.createElement('span');
+                eyeSvg.title = "Besucher";
+                eyeSvg.style.display = 'inline-flex';
+                eyeSvg.style.alignItems = 'center';
+                eyeSvg.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+                cntrParent.insertBefore(eyeSvg, cntrNum);
+                
+                if (!document.getElementById('custom-besucher-text')) {
+                    const txtSpan = document.createElement('span');
+                    txtSpan.id = 'custom-besucher-text';
+                    txtSpan.innerText = ' Besucher';
+                    cntrNum.after(txtSpan);
+                }
+            }
+
+            // 3. Info-Bereiche exakt nach Nutzer-HTML umbauen
+            const dlStats = document.getElementById('pvap-mngad-stats');
+            const extraInfo = document.getElementById('viewad-extra-info');
+
+            if (dlStats && extraInfo && !dlStats.dataset.klStyledLayout) {
+                dlStats.dataset.klStyledLayout = 'true';
+
+                // Boxedarticle anordnen: dlStats soll *vor* extraInfo in einer eigenen Zeile stehen
+                extraInfo.parentNode.insertBefore(dlStats, extraInfo);
+
+                // Styling für die erste Zeile (Erstellt am & Endet am)
+                dlStats.className = 'm-none p-none text-bodySmall text-onSurfaceNonessential';
+                dlStats.style.display = 'flex';
+                dlStats.style.flexWrap = 'wrap';
+                dlStats.style.alignItems = 'center';
+                dlStats.style.gap = '16px';
+                dlStats.style.marginTop = '6px';
+                dlStats.style.marginBottom = '0px';
+                dlStats.style.padding = '0px';
+                dlStats.style.width = '100%';
+
+                // Styling für die zweite Zeile (Besucher & Merkliste)
+                extraInfo.style.display = 'flex';
+                extraInfo.style.flexWrap = 'wrap';
+                extraInfo.style.alignItems = 'center';
+                extraInfo.style.gap = '8px 16px';
+
+                // Hilfsfunktion zum Finden bestimmter <dt> Knoten
+                const getDtByText = (text) => Array.from(dlStats.querySelectorAll('dt')).find(dt => dt.textContent.includes(text));
+
+                // A. "Besuche:" aus dlStats komplett ausblenden
+                const dtVisits = getDtByText('Besuche');
+                if (dtVisits) {
+                    dtVisits.style.display = 'none';
+                    if (dtVisits.nextElementSibling) dtVisits.nextElementSibling.style.display = 'none';
+                }
+
+                // B. "Erstellt am" Container in dlStats verschieben und vertikal zentrieren
+                const erstelltAmSpan = document.querySelector('span[title="Erstellt am"]');
+                if (erstelltAmSpan) {
+                    const erstelltAmDiv = erstelltAmSpan.closest('div');
+                    if (erstelltAmDiv) {
+                        erstelltAmDiv.style.display = 'flex';
+                        erstelltAmDiv.style.alignItems = 'center';
+                        dlStats.appendChild(erstelltAmDiv);
+                    }
+                }
+
+                // C. "Endet am" Container in dlStats belassen/formatieren
+                const dtEnd = getDtByText('Endet am');
+                if (dtEnd) {
+                    const ddEnd = dtEnd.nextElementSibling;
+                    if (ddEnd) {
+                        const svgClock = `<svg viewBox="0 0 24 24" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+                        dtEnd.innerHTML = `<span title="Endet am" style="display: flex; align-items: center; margin-right: 4px;">${svgClock}</span>`;
+                        dtEnd.style.display = 'inline-flex';
+
+                        ddEnd.style.display = 'inline-flex';
+                        ddEnd.style.marginLeft = '0px';
+
+                        const wrapper = document.createElement('div');
+                        wrapper.style.display = 'flex'; wrapper.style.alignItems = 'center';
+                        dlStats.appendChild(wrapper);
+                        wrapper.appendChild(dtEnd);
+                        wrapper.appendChild(ddEnd);
+                    }
+                }
+
+                // D. "Besucher" wieder sauber in die zweite Zeile (extraInfo) hängen
+                if (cntrParent) extraInfo.appendChild(cntrParent);
+
+                // E. "Merkliste" aus dlStats in extraInfo verschieben und formatieren
+                const dtMerk = getDtByText('Merkliste');
+                if (dtMerk) {
+                    const ddMerk = dtMerk.nextElementSibling;
+                    if (ddMerk) {
+                        const svgHeart = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+                        dtMerk.innerHTML = `<span title="Merkliste" style="display: flex; align-items: center;">${svgHeart}</span>`;
+                        dtMerk.style.display = 'inline-flex';
+                        dtMerk.style.marginRight = '4px';
+
+                        ddMerk.style.display = 'inline-flex';
+                        ddMerk.style.marginLeft = '0px';
+                        if (!ddMerk.innerText.includes('gemerkt')) {
+                            ddMerk.innerText = ddMerk.innerText.trim() + ' mal gemerkt';
+                        }
+
+                        const wrapper = document.createElement('div');
+                        wrapper.style.display = 'flex'; wrapper.style.alignItems = 'center';
+                        extraInfo.appendChild(wrapper);
+                        wrapper.appendChild(dtMerk);
+                        wrapper.appendChild(ddMerk);
+                    }
+                }
+                
+                // 4. Eigene Anzeige Check & "Zur Merkliste hinzufügen" entfernen
+                const isOwnAd = document.getElementById('pvap-mngad-actns') !== null || document.querySelector('a[href*="/p-anzeige-bearbeiten.html"]') !== null;
+                if (isOwnAd) {
+                    const watchlistBox = document.getElementById('viewad-action-watchlist');
+                    if (watchlistBox) watchlistBox.style.setProperty('display', 'none', 'important');
+                }
+
+                // 5. Anzeigen-ID (aus der geretteten Box abgreifen) exakt einbauen - IN EIGENER ZEILE
+                const adIdBox = document.getElementById('custom-rescued-ad-id-box') || document.getElementById('viewad-ad-id-box');
+                if (adIdBox && extraInfo && !document.getElementById('custom-ad-id-row')) {
+                    const idListItems = adIdBox.querySelectorAll('li');
+                    if (idListItems.length >= 2) {
+                        const idLabel = idListItems[0].textContent.trim();
+                        const idValue = idListItems[1].textContent.trim();
+                        
+                        // Neuen, unabhängigen Container für die ID nach extraInfo erstellen
+                        const wrapper = document.createElement('div');
+                        wrapper.id = 'custom-ad-id-row';
+                        wrapper.className = 'text-bodySmall text-onSurfaceNonessential';
+                        wrapper.style.display = 'flex';
+                        wrapper.style.alignItems = 'center';
+                        wrapper.style.width = '100%'; 
+                        wrapper.style.marginTop = '6px'; // Deutlich abgesetzt als eigene Zeile
+                        
+                        const svgHash = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="margin-right: 4px;"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>`;
+                        
+                        wrapper.innerHTML = `
+                            <span title="${idLabel}" style="display: flex; align-items: center;">${svgHash}</span>
+                            <span style="color: #757575; margin-right: 8px;">${idLabel}:</span> 
+                            <span style="font-weight: normal; color: #757575;">${idValue}</span>
+                        `;
+                        
+                        // Direkt als nächstes Geschwisterelement von extraInfo einfügen (eigenständige Zeile!)
+                        extraInfo.parentNode.insertBefore(wrapper, extraInfo.nextSibling);
+                    }
+                }
+            }
+        }
+
         // --- MOCKUP PROFIL REDESIGN INJECTOR ---
         if (isOverviewPage) {
             const profileBox = document.querySelector('.ownprofile-main');
             
+            // --- REACT OVERWRITE SCHUTZ (AUTO-HEALING) ---
+            // Prüft, ob unser Dashboard verschwunden ist, obwohl das Script meint, es sei noch da.
+            if (profileBox && profileBox.dataset.redesignInjected && !profileBox.querySelector('.custom-profile-dashboard')) {
+                delete profileBox.dataset.redesignInjected; // Setzt den Inject-Status zurück, um Neuaufbau zu erzwingen
+                profileBox.classList.remove('custom-replaced');
+            }
+
             if (profileBox && !profileBox.dataset.redesignInjected) {
                 
                 // 1. ASYNCHRONES LADEN VON REACT ABWARTEN
@@ -546,12 +885,8 @@
                     nameText = clone.textContent.trim();
                 }
 
-                // WAIT CONDITION: Breche Inject ab und warte auf den nächsten Interval-Tick, falls React noch lädt
-                if (nameText.length === 0 || !statsEl || !userInfoUl) {
-                    return; 
-                }
+                if (nameText.length === 0 || !statsEl || !userInfoUl) return; 
 
-                // Jetzt sind die Daten da -> wir legen los!
                 profileBox.dataset.redesignInjected = 'true';
 
                 try {
@@ -562,12 +897,9 @@
                     });
 
                     // 3. Extrahieren der Original-Daten und Nodes
-                    
-                    // Avatar
                     const avatarEl = profileBox.querySelector('.user-profile-badge') || profileBox.querySelector('img[src*="userportrait"]');
                     const avatarClone = avatarEl ? avatarEl.cloneNode(true) : null;
 
-                    // User Infos (Typ, Aktiv seit, Antworten, Follower)
                     let userTypeHtml = '', activeSinceHtml = '', replyTimeHtml = '';
                     let followersA = null, followersSvg = null;
 
@@ -578,7 +910,6 @@
                         if (txt.includes('nutzer')) {
                             userTypeHtml = li.innerHTML; 
                         } else if (txt.includes('aktiv seit')) {
-                            // Text und SVG trennen für perfekte Flex-Zentrierung
                             const text = li.textContent.trim();
                             activeSinceHtml = '';
                             if (svg) activeSinceHtml += svg.outerHTML;
@@ -596,17 +927,15 @@
                                 text = text.replace(match[0], timeStr);
                             }
                             
-                            // Text und SVG trennen für perfekte Flex-Zentrierung
                             replyTimeHtml = '';
                             if (svg) replyTimeHtml += svg.outerHTML;
                             replyTimeHtml += `<span class="cpd-footer-item-text">${text}</span>`;
                         } else if (txt.includes('follower')) {
                             followersSvg = svg ? svg.cloneNode(true) : null;
-                            followersA = li.querySelector('a'); // Diesen Node VERSCHIEBEN wir später für die Funktionalität!
+                            followersA = li.querySelector('a'); 
                         }
                     });
 
-                    // Statistiken
                     let onlineCount = "0", totalCount = "0";
                     if (statsEl) {
                         const m1 = statsEl.textContent.match(/(\d+)\s*Anzeigen/i);
@@ -615,31 +944,24 @@
                         if (m2) totalCount = m2[1];
                     }
 
-                    // Original Buttons (Werden verschoben, um Event-Listener zu erhalten)
                     const walletLink = profileBox.querySelector('a[href*="wallet.html"]'); 
                     const infoBtn = profileBox.querySelector('button[aria-label="Profilinformationen öffnen"]');
 
-                    // ==========================================
                     // 4. Aufbau des neuen Dashboards
-                    // ==========================================
                     const dashboard = document.createElement('div');
                     dashboard.className = 'custom-profile-dashboard';
                     
-                    // --- Avatar Spalte ---
                     const colAvatar = document.createElement('div');
                     colAvatar.className = 'cpd-avatar-col';
                     if (avatarClone) {
-                        // Originale Klassen bereinigen, damit unsere Custom CSS greift
                         avatarClone.className = 'user-profile-badge'; 
                         colAvatar.appendChild(avatarClone);
                     }
                     dashboard.appendChild(colAvatar);
 
-                    // --- Hauptinfos Spalte ---
                     const colInfo = document.createElement('div');
                     colInfo.className = 'cpd-info-col';
                     
-                    // Name & Typ
                     const rowName = document.createElement('div');
                     rowName.className = 'cpd-name-row';
                     const nameH2 = document.createElement('h2');
@@ -654,21 +976,20 @@
                     }
                     colInfo.appendChild(rowName);
 
-                    // Badges (Wir übernehmen die React-Nodes!)
                     const badgesRow = document.createElement('ul');
                     badgesRow.className = 'cpd-badges-row';
                     
                     const originalBadgeLis = profileBox.querySelectorAll('.ownprofile-badges.userbadges > li');
                     originalBadgeLis.forEach(li => {
-                        li.className = 'custom-badge-wrapper'; // Neutralisiert Tailwind-Margins des LIs
+                        li.className = 'custom-badge-wrapper'; 
                         
                         const btn = li.querySelector('button[data-testid="user-badge"]');
                         if (btn) {
-                            btn.className = 'custom-badge-item'; // Überschreibt Button mit unserem Lila Layout
+                            btn.className = 'custom-badge-item'; 
                             
                             const innerDiv = btn.querySelector('.ActivityIndicator');
                             if (innerDiv) {
-                                innerDiv.className = ''; // Löscht die grauen Tailwind-Hintergründe etc.
+                                innerDiv.className = ''; 
                                 innerDiv.style.display = 'flex';
                                 innerDiv.style.alignItems = 'center';
                                 innerDiv.style.justifyContent = 'center';
@@ -676,23 +997,18 @@
                             }
                             
                             const svg = btn.querySelector('svg');
-                            if (svg) {
-                                svg.classList.remove('w-small', 'h-small', 'text-onAccentContainer');
-                            }
+                            if (svg) svg.classList.remove('w-small', 'h-small', 'text-onAccentContainer');
                             
                             const textEl = btn.querySelector('.ActivityIndicator--Name');
                             if (textEl) {
-                                // Zeilenumbruch (z.B. TOP\nZufriedenheit) durch ein Leerzeichen ersetzen
                                 textEl.textContent = textEl.textContent.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
                             }
                         }
-                        
-                        badgesRow.appendChild(li); // Verschiebt den Node INKLUSIVE Modal (<dialog>) in unser Dashboard!
+                        badgesRow.appendChild(li); 
                     });
                     
                     colInfo.appendChild(badgesRow);
 
-                    // Footer Links (Aktiv, Antwortet, Follower)
                     const rowFooter = document.createElement('div');
                     rowFooter.className = 'cpd-footer-row';
                     
@@ -715,7 +1031,6 @@
                         folSpan.className = 'cpd-footer-item follower-item hoverable';
                         if (followersSvg) folSpan.appendChild(followersSvg);
                         
-                        // Original A-Tag nehmen, Style-Klassen löschen und exakte Flex-Zentrierung anwenden
                         followersA.className = 'follower-link'; 
                         followersA.style.display = 'inline-flex';
                         followersA.style.alignItems = 'center';
@@ -725,14 +1040,13 @@
                         if (numMatch) {
                             followersA.innerHTML = `<span class="cpd-footer-item-text"><strong>${numMatch[1]}</strong>&nbsp;Follower</span>`;
                         }
-                        folSpan.appendChild(followersA); // Verschiebt den Original-Node!
+                        folSpan.appendChild(followersA); 
                         rowFooter.appendChild(folSpan);
                     }
                     colInfo.appendChild(rowFooter);
                     
                     dashboard.appendChild(colInfo);
 
-                    // --- Stats & Actions Spalte ---
                     const colStats = document.createElement('div');
                     colStats.className = 'cpd-stats-actions-col';
                     
@@ -758,16 +1072,18 @@
                     
                     if (walletLink) {
                         const svg = walletLink.querySelector('svg');
-                        walletLink.innerHTML = ''; // Originalen Ballast leeren
-                        if (svg) {
-                            svg.classList.remove('w-large', 'h-large');
-                            walletLink.appendChild(svg);
-                        }
-                        const textSpan = document.createElement('span');
-                        textSpan.textContent = 'Verkaufsübersicht';
-                        walletLink.appendChild(textSpan);
+                        walletLink.innerHTML = ''; 
+                        
+                        walletLink.innerHTML = `
+                            <svg viewBox="0 0 24 24" fill="none" data-title="transactionsOverview" stroke="none" role="img" aria-hidden="true" focusable="false" class="w-5 h-5 text-gray-400 group-hover:text-[#5A33AE] shrink-0 fill-current block align-middle transition-colors" style="width: 20px; height: 20px;">
+                                <path d="M8 8C8.55229 8 9 7.55228 9 7 9 6.44772 8.55229 6 8 6 7.44772 6 7 6.44772 7 7 7 7.55228 7.44772 8 8 8ZM8 12C8.55229 12 9 11.5523 9 11 9 10.4477 8.55229 10 8 10 7.44772 10 7 10.4477 7 11 7 11.5523 7.44772 12 8 12ZM9 15C9 15.5523 8.55229 16 8 16 7.44772 16 7 15.5523 7 15 7 14.4477 7.44772 14 8 14 8.55229 14 9 14.4477 9 15ZM11 6C10.4477 6 10 6.44772 10 7 10 7.55228 10.4477 8 11 8H16C16.5523 8 17 7.55228 17 7 17 6.44772 16.5523 6 16 6H11ZM10 11C10 10.4477 10.4477 10 11 10H16C16.5523 10 17 10.4477 17 11 17 11.5523 16.5523 12 16 12H11C10.4477 12 10 11.5523 10 11ZM11 14C10.4477 14 10 14.4477 10 15 10 15.5523 10.4477 16 11 16H16C16.5523 16 17 15.5523 17 15 17 14.4477 16.5523 14 16 14H11Z" fill="currentColor"></path>
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M18.7071 21.2929C18.3166 21.6834 17.6834 21.6834 17.2929 21.2929L16 20L14.7071 21.2929L13.2929 21.2929L12 20L10.7071 21.2929H9.29289L8 20L6.7062 21.2938C6.3156 21.6834 5.68312 21.6831 5.29289 21.2929L4.29289 20.2929C4.10536 20.1054 4 19.851 4 19.5858V4C4 2.89543 4.89543 2 6 2H18C19.1046 2 20 2.89543 20 4V19.5858C20 19.851 19.8946 20.1054 19.7071 20.2929L18.7071 21.2929ZM14 19.1716L12 17.1716L10 19.1716L8 17.1716L6 19.1716V4H18V19.1716L16 17.1716L14 19.1716Z" fill="currentColor"></path>
+                                <path d="M10.7063 21.2937 10.7071 21.2929 13.2929 21.2929 13.2937 21.2937 10.7063 21.2937ZM14.7063 21.2937 14.7071 21.2929 17.2929 21.2929 14.7063 21.2937ZM13.2937 21.2937 14.7063 21.2937C14.316 21.6831 13.684 21.6831 13.2937 21.2937ZM10.7063 21.2937C10.3159 21.6826 9.68382 21.683 9.2937 21.2937L10.7063 21.2937Z" fill="currentColor"></path>
+                            </svg>
+                            <span style="font-weight: 700;">Verkaufsübersicht</span>
+                        `;
                         walletLink.className = 'cpd-action-btn primary';
-                        actionsBlock.appendChild(walletLink); // Verschiebt den Original-Node!
+                        actionsBlock.appendChild(walletLink); 
                     }
 
                     if (infoBtn) {
@@ -776,24 +1092,14 @@
                         settingsLink.className = 'cpd-action-btn secondary';
                         settingsLink.target = '_self';
                         
-                        // Generiere neues Zahnrad SVG-Icon
-                        const gearSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                        gearSvg.setAttribute("viewBox", "0 0 24 24");
-                        gearSvg.setAttribute("fill", "none");
-                        gearSvg.setAttribute("stroke", "currentColor");
-                        gearSvg.setAttribute("stroke-width", "2");
-                        gearSvg.setAttribute("stroke-linecap", "round");
-                        gearSvg.setAttribute("stroke-linejoin", "round");
-                        gearSvg.innerHTML = '<circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>';
-                        gearSvg.style.width = '14px';
-                        gearSvg.style.height = '14px';
-                        settingsLink.appendChild(gearSvg);
-                        
-                        const textSpan = document.createElement('span');
-                        textSpan.style.marginTop = '0px';
-                        textSpan.style.height = '14px';
-                        textSpan.textContent = 'Profil-Einstellungen';
-                        settingsLink.appendChild(textSpan);
+                        // Robustes Zahnrad-Icon mit !important auf kritischen Werten
+                        settingsLink.innerHTML = `
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px !important; height: 14px !important; display: block !important; flex-shrink: 0 !important; margin: 0 4px 0 0 !important;">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            </svg>
+                            <span style="line-height: 1; transform: translateY(1px);">Profil-Einstellungen</span>
+                        `;
                         
                         actionsBlock.appendChild(settingsLink); 
                     }
@@ -801,7 +1107,6 @@
                     colStats.appendChild(actionsBlock);
                     dashboard.appendChild(colStats);
 
-                    // 5. Das fertige Dashboard in die Original-Box kleben
                     profileBox.classList.add('custom-replaced');
                     profileBox.appendChild(dashboard);
 
@@ -811,7 +1116,7 @@
             }
         }
 
-        // --- BEARBEITEN/DUPLIZIEREN BUTTONS BEI ANZEIGEN ---
+        // --- BEARBEITEN/DUPLIZIEREN BUTTONS BEI ANZEIGEN (DETAIL & ÜBERSICHT) ---
         if (isOverviewPage || isDetailPage) {
             const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
             editLinks.forEach(link => {
@@ -835,7 +1140,6 @@
                     }
 
                     printLi = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                    // FIX: Verkaufsschild auf 100% Breite setzen, damit es eine eigene Zeile (vorletzte) bildet
                     printLi.style.margin = '0';
                     printLi.style.flexBasis = '100%';
                     printLi.style.display = 'flex';
@@ -844,12 +1148,11 @@
                     const printBtn = document.createElement('button');
                     printBtn.type = 'button';
                     printBtn.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn";
+                    
                     printBtn.innerHTML = `
                         <div class="relative flex items-center justify-center">
                             <div class="flex items-center justify-center gap-xsmall">
-                                <svg viewBox="0 0 24 24" fill="none" class="shrink-0 fill-current block align-middle w-medium h-medium">
-                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M17 7V4H7V7H4C2.89543 7 2 7.89543 2 9V15H6V20H18V15H22V9C22 7.89543 21.1046 7 20 7H17ZM9 6H15V7H9V6ZM16 15V18H8V15H16ZM16 13H8C6.89543 13 6 12.1046 6 11C6 9.89543 6.89543 9 8 9H16C17.1046 9 18 9.89543 18 11C18 12.1046 17.1046 13 16 13ZM15 10H17V12H15V10Z" fill="currentColor"></path>
-                                </svg>
+                                ${klPrinterSvg}
                                 <span>Verkaufsschild</span>
                             </div>
                         </div>`;
@@ -857,6 +1160,10 @@
                     printBtn.onclick = async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
+
+                        printBtn.blur(); // Optische Deaktivierung verhindern
+                        printBtn.removeAttribute('disabled');
+                        printBtn.classList.remove('is-disabled');
 
                         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
                         document.body.click();
@@ -897,6 +1204,10 @@
                                         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
                                         document.body.click(); 
                                         antiFlashStyle.remove();
+                                        
+                                        // Sicherheitshalber Status sofort zurücksetzen
+                                        printBtn.removeAttribute('disabled');
+                                        printBtn.classList.remove('is-disabled');
                                     }, 100);
                                     return; 
                                 }
@@ -907,6 +1218,9 @@
                                 document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
                                 document.body.click();
                                 antiFlashStyle.remove();
+                                
+                                printBtn.removeAttribute('disabled');
+                                printBtn.classList.remove('is-disabled');
                             }
                         }, 50);
                     };
@@ -922,8 +1236,6 @@
                     window.location.href = link.href;
                 };
 
-                // Jeden Button in ein einzelnes li packen 
-                // Da das Verkaufsschild 100% Breite beansprucht, fallen diese beiden automatisch nebeneinander in die letzte Zeile
                 const liDup = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
                 liDup.style.margin = '0';
                 liDup.appendChild(createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate')));
@@ -933,9 +1245,168 @@
                 liRelist.appendChild(createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist')));
 
                 container.append(liDup, liRelist);
+                
+                // --- TEILEN BUTTON AUS DER GERETTETEN SIDEBAR IN DIE LEISTE HOLEN ---
+                if (isDetailPage) {
+                    let shareBtn = document.getElementById('custom-rescued-share-btn') || document.querySelector('button.j-share-ad, a.j-share-ad');
+                    if (shareBtn && !shareBtn.dataset.movedToActions) {
+                        shareBtn.dataset.movedToActions = 'true';
+                        
+                        shareBtn.className = 'custom-native-btn-detail j-share-ad'; // Behalte Event-Klasse für natives Modal
+                        shareBtn.style.display = 'inline-flex'; // Falls er während der Rettung ausgeblendet wurde
+                        
+                        const shareSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`;
+                        shareBtn.innerHTML = `${shareSvg}<span>Teilen</span>`;
+                        
+                        const liShare = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                        liShare.style.margin = '0';
+                        liShare.appendChild(shareBtn);
+                        
+                        container.appendChild(liShare);
+                    }
+                }
+                
                 container.dataset.klInjected = 'true';
 
-                // --- NEU: 6-SPALTEN GRID LAYOUT (Bild | Infos | Trennlinie | Analyse | Trennlinie | Buttons) ---
+                // ====================================================
+                // --- 1. NEU: DETAIL-SEITEN REDESIGN STYLING ---
+                // ====================================================
+                if (isDetailPage) {
+                    // Styles auf den nativen Container und alle Buttons darin anwenden
+                    if (!container.dataset.klStyled) {
+                        container.dataset.klStyled = 'true';
+                        container.style.display = 'flex';
+                        container.style.flexWrap = 'wrap';
+                        container.style.gap = '8px';
+                        container.style.listStyle = 'none';
+                        container.style.padding = '0';
+                        container.style.margin = '0';
+
+                        // Überschrift über den Action-Buttons einfügen
+                        if (container.parentElement && !container.parentElement.querySelector('h2.sectionheadline')) {
+                            const h2 = document.createElement('h2');
+                            h2.className = 'sectionheadline';
+                            h2.setAttribute('style', 'margin-bottom: 12px !important;');
+                            h2.textContent = 'Deine Anzeige';
+                            container.parentElement.insertBefore(h2, container);
+                        }
+
+                        // --- FESTE SORTIERUNG DER BUTTONS (Detailseite) ---
+                        // Diese greift alle eingefügten & vorhandenen Buttons auf und reiht sie genau so auf.
+                        const orderMap = {
+                            'Bearbeiten': 1,
+                            'Reservieren': 2,
+                            'Aktivieren': 2,  // Fallback, wenn Reservieren z.B. umgeschalten wird
+                            'Deaktivieren': 2, // Fallback für Pause
+                            'Pausieren': 2,
+                            'Löschen': 3,
+                            'Verlängern': 4,
+                            'Verkaufsschild': 5,
+                            'drucken': 5,
+                            'Duplizieren': 6,
+                            'Neu einstellen': 7,
+                            'Teilen': 8
+                        };
+
+                        const getOrder = (li) => {
+                            const text = li.textContent || '';
+                            for (const [key, val] of Object.entries(orderMap)) {
+                                if (text.includes(key)) return val;
+                            }
+                            return 99; // Unbekannte Buttons reihen sich ganz am Ende ein
+                        };
+
+                        // Hole alle <li> Container (die die Buttons umschließen) und sortiere sie
+                        const listItems = Array.from(container.children);
+                        listItems.sort((a, b) => getOrder(a) - getOrder(b));
+                        
+                        // Setze sie in der neu sortierten Reihenfolge wieder ein
+                        listItems.forEach(li => container.appendChild(li));
+                    }
+                }
+
+                // Button-Styling und Icon-Injection (läuft periodisch über interval für nahtloses Toggle)
+                Array.from(container.querySelectorAll('a, button')).forEach(btn => {
+                    if (!btn.classList.contains('custom-purple-btn')) {
+                        if (!btn.classList.contains('custom-native-btn-detail')) {
+                            btn.classList.add('custom-native-btn-detail');
+                        }
+                        
+                        const text = btn.textContent;
+                        // Prüfen, ob das Icon fehlt oder der Text sich geändert hat (z.B. nach Toggle-Klick)
+                        const needsInjection = !btn.dataset.iconInjected || !btn.querySelector('svg');
+                        
+                        if (needsInjection) {
+                            btn.dataset.iconInjected = 'true';
+                            
+                            // Verkaufsschild
+                            if (text.includes('drucken') || text.includes('Verkaufsschild')) {
+                                btn.innerHTML = `${klPrinterSvg}<span>Verkaufsschild</span>`;
+                                
+                                // Verhindert das Deaktivieren des Verkaufsschild-Buttons auf der Detailseite extrem zuverlässig
+                                if (isDetailPage) {
+                                    const preventDisable = () => {
+                                        if (btn.hasAttribute('disabled') || btn.classList.contains('is-disabled')) {
+                                            btn.removeAttribute('disabled');
+                                            btn.classList.remove('is-disabled');
+                                            btn.style.pointerEvents = 'auto';
+                                            btn.style.opacity = '1';
+                                        }
+                                    };
+                                    
+                                    // Timeout fallback nach Klick
+                                    btn.addEventListener('click', () => {
+                                        setTimeout(preventDisable, 10);
+                                        setTimeout(preventDisable, 100);
+                                        setTimeout(preventDisable, 500);
+                                    });
+                                    
+                                    // Permanenter MutationObserver, falls Kleinanzeigen-Scripts später eingreifen
+                                    if (!btn.dataset.observerAttached) {
+                                        btn.dataset.observerAttached = 'true';
+                                        const observer = new MutationObserver(preventDisable);
+                                        observer.observe(btn, { attributes: true, attributeFilter: ['disabled', 'class'] });
+                                    }
+                                }
+                            } 
+                            // Reservieren
+                            else if (text.includes('Reservieren')) {
+                                btn.innerHTML = `${klFlagSvg}<span>Reservieren</span>`;
+                            } 
+                            // Aktivieren (z.B. nach Klick auf Reservieren oder Pausieren)
+                            else if (text.includes('Aktivieren')) {
+                                const klPlaySvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
+                                btn.innerHTML = `${klPlaySvg}<span>Aktivieren</span>`;
+                            } 
+                            // Deaktivieren / Pausieren
+                            else if (text.includes('Deaktivieren') || text.includes('Pausieren')) {
+                                const klPauseSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
+                                btn.innerHTML = `${klPauseSvg}<span>Deaktivieren</span>`;
+                            } 
+                            // Verlängern
+                            else if (text.includes('Verlängern')) {
+                                btn.innerHTML = `${klReactivateSvg}<span>Verlängern</span>`;
+                            }
+                        }
+
+                        // Verlängern Tooltip Logik (wird immer geprüft, da sich der disabled Status ändern kann)
+                        if (text.includes('Verlängern')) {
+                            if (btn.hasAttribute('disabled') || btn.getAttribute('aria-disabled') === 'true' || btn.classList.contains('is-disabled')) {
+                                btn.setAttribute('data-custom-tooltip', 'Du kannst deine Anzeigen innerhalb von 8\nTagen vor Ablauf um 60 Tage verlängern.');
+                                btn.removeAttribute('title');
+                                btn.onclick = (e) => e.preventDefault();
+                            } else {
+                                btn.removeAttribute('title');
+                                btn.removeAttribute('data-custom-tooltip');
+                                btn.onclick = null;
+                            }
+                        }
+                    }
+                });
+
+                // ====================================================
+                // --- 2. ÜBERSICHTS-SEITEN REDESIGN (GRID) ---
+                // ====================================================
                 if (isOverviewPage) {
                     const card = container.closest('li[data-testid="ad-card"]');
                     if (card) {
@@ -945,17 +1416,13 @@
                         if (footer && infoCol) {
                             const mainWrapper = infoCol.parentElement;
                             
-                            // Unnötige Werbesektion löschen
                             const featureSection = card.querySelector('#feature-offer-section');
                             if (featureSection) featureSection.remove();
                             
-                            // Leeres Wrapper-Div von Kleinanzeigen aufspüren, bevor wir den Footer herausholen
                             const oldCardFooterWrapper = card.querySelector('.card-footer');
 
-                            // 1. Spalte 6 (Buttons) sicher in ein DIV umbauen
                             const newFooterDiv = document.createElement('div');
                             newFooterDiv.className = 'mt-xsmall custom-action-area';
-                            // Flexbox-Styling zur vertikalen Zentrierung
                             newFooterDiv.style.display = 'flex';
                             newFooterDiv.style.flexDirection = 'column';
                             newFooterDiv.style.justifyContent = 'center';
@@ -965,69 +1432,55 @@
                                 newFooterDiv.appendChild(footer.firstChild);
                             }
 
-                            // 2. Spalte 5 (Trennlinie rechts) erstellen
                             const dividerDiv2 = document.createElement('div');
                             dividerDiv2.style.background = '#e0e0e0';
                             dividerDiv2.style.width = '1px';
-                            dividerDiv2.style.height = '130px'; // Fest auf 130px limitiert
+                            dividerDiv2.style.height = '130px'; 
 
-                            // 3. Spalte 4 (Anzeigenanalyse) erstellen
                             const statsContainer = document.createElement('div');
                             statsContainer.className = 'custom-stats-area align-top';
                             statsContainer.style.display = 'flex';
                             statsContainer.style.flexDirection = 'column';
                             statsContainer.style.height = '100%';
 
-                            // Titel "Anzeigenanalyse" hinzufügen und unterstreichen
                             const analyseHeader = document.createElement('div');
                             analyseHeader.className = 'mb-xsmall text-bodySmall text-onSurfaceNonessential';
                             analyseHeader.style.textDecoration = 'underline';
                             analyseHeader.textContent = 'Anzeigenanalyse';
                             statsContainer.appendChild(analyseHeader);
 
-                            // WICHTIGER FIX: Den Statistik-Block suchen ODER neu erzeugen (falls Inserat 0 Views hat)
                             let statsSection = infoCol.querySelector('section.text-onSurfaceNonessential') || infoCol.querySelector('section[class*="text-onSurfaceNonessential"]');
                             if (!statsSection) {
                                 statsSection = document.createElement('section');
                                 statsSection.className = 'text-bodySmall text-onSurfaceNonessential';
                             }
                             
-                            statsSection.style.marginTop = '0'; // Damit es bündig bleibt
+                            statsSection.style.marginTop = '0'; 
                             statsSection.style.display = 'flex';
                             statsSection.style.flexDirection = 'column';
-                            statsSection.style.gap = '12px'; // Erhöhter Zeilenabstand in der Anzeigeanalyse
+                            statsSection.style.gap = '12px'; 
                             statsSection.style.height = '100%';
                             statsContainer.appendChild(statsSection);
 
-                            // 4. Spalte 3 (Trennlinie links) erstellen
                             const dividerDiv1 = document.createElement('div');
                             dividerDiv1.style.background = '#e0e0e0';
                             dividerDiv1.style.width = '1px';
-                            dividerDiv1.style.height = '130px'; // Fest auf 130px limitiert
+                            dividerDiv1.style.height = '130px'; 
                             
-                            // Neues Grid auf den Haupt-Wrapper anwenden (6 Spalten)
                             mainWrapper.className = "grid w-full custom-ad-grid";
                             
-                            // Originalen Header der Info-Spalte suchen und (als optischen Platzhalter) ebenfalls unterstreichen. 
-                            // Wird im Background Fetch mit einem interaktiven Kategorie-Link ersetzt.
                             const originalHeader = infoCol.querySelector('.mb-xsmall.text-bodySmall.text-onSurfaceNonessential');
                             if (originalHeader) {
                                 originalHeader.style.textDecoration = 'underline';
                             }
 
-                            // Elemente in der richtigen Reihenfolge einfügen
                             mainWrapper.appendChild(dividerDiv1);
                             mainWrapper.appendChild(statsContainer);
                             mainWrapper.appendChild(dividerDiv2);
                             mainWrapper.appendChild(newFooterDiv);
 
-                            // Den nun leeren, alten <footer> Tag sauber entfernen
                             footer.remove();
-
-                            // Alten Container löschen, wenn er leer ist
-                            if (oldCardFooterWrapper) {
-                                oldCardFooterWrapper.remove();
-                            }
+                            if (oldCardFooterWrapper) oldCardFooterWrapper.remove();
                         }
                     }
                 }
@@ -1042,7 +1495,7 @@
                 
                 (async () => {
                     try {
-                        await new Promise(r => setTimeout(r, 800)); // Initiale Pause
+                        await new Promise(r => setTimeout(r, 800)); 
 
                         for (const card of pendingCards) {
                             card.dataset.klDetailsInjected = 'pending'; 
@@ -1064,7 +1517,6 @@
                                             const infoColTarget = card.querySelector('.custom-ad-grid > div:nth-child(2)');
                                             
                                             if (statsSection) {
-                                                // Originale Liste (Besucher/Gemerkt) - kann bei 0 Views fehlen
                                                 let statsUl = statsSection.querySelector('ul');
                                                 if (!statsUl) {
                                                     statsUl = document.createElement('ul');
@@ -1072,19 +1524,18 @@
                                                     statsSection.appendChild(statsUl);
                                                 }
 
-                                                // Optische Ausrichtung
                                                 statsUl.style.flexWrap = 'wrap';
-                                                statsUl.style.rowGap = '8px'; // Ebenfalls leicht erhöhter Abstand hier
+                                                statsUl.style.rowGap = '8px'; 
                                                 statsUl.style.columnGap = '12px';
-                                                statsUl.style.marginBottom = '0'; // Flex gap übernimmt jetzt die Steuerung
+                                                statsUl.style.marginBottom = '0'; 
 
                                                 Array.from(statsUl.querySelectorAll('li')).forEach(li => {
                                                     li.style.display = 'flex';
                                                     li.style.alignItems = 'center';
                                                     li.style.gap = '4px';
+                                                    if (li.textContent.includes('Besucher')) li.title = "Besucher";
                                                 });
 
-                                                // 2. Extrahiere "Endet am" aus dem Preis-Block
                                                 let endDateStr = "Unbekannt";
                                                 const oldEndDateSpan = card.querySelector('.managead-listitem-enddate');
                                                 if (oldEndDateSpan) {
@@ -1093,7 +1544,6 @@
                                                     if (oldLi) oldLi.remove(); 
                                                 }
 
-                                                // Berechne Tage online
                                                 let daysOnline = 1;
                                                 if (details.date && details.date !== "Unbekannt") {
                                                     const parts = details.date.split('.');
@@ -1106,14 +1556,13 @@
                                                     }
                                                 }
 
-                                                let daysColor = '#008000'; // Grün für < 30 Tage
+                                                let daysColor = '#008000'; 
                                                 if (daysOnline >= 30 && daysOnline <= 49) {
-                                                    daysColor = '#FFA500'; // Orange
+                                                    daysColor = '#FFA500'; 
                                                 } else if (daysOnline >= 50) {
-                                                    daysColor = '#FF0000'; // Rot
+                                                    daysColor = '#FF0000'; 
                                                 }
 
-                                                // Berechne Durchschnitte
                                                 let visitors = 0;
                                                 let watchers = 0;
                                                 const statItems = statsUl.querySelectorAll('li');
@@ -1131,7 +1580,6 @@
 
                                                 const svgClass = "shrink-0 block align-middle text-onSurfaceNonessential";
 
-                                                // 3. NEUE ZEILE 1 (Erstellt & Endet) erzeugen
                                                 if (!statsSection.querySelector('.custom-dates-ul')) {
                                                     const datesUl = document.createElement('ul');
                                                     datesUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-dates-ul';
@@ -1180,7 +1628,6 @@
                                                     statsSection.insertBefore(datesUl, statsUl);
                                                 }
 
-                                                // NEUE <ul> FÜR DIE DURSCHNITTE ERSTELLEN (Trennt Original und Kalkuliert)
                                                 let avgUl = statsSection.querySelector('.custom-avg-ul');
                                                 if (!avgUl) {
                                                     avgUl = document.createElement('ul');
@@ -1188,10 +1635,9 @@
                                                     avgUl.style.flexWrap = 'wrap';
                                                     avgUl.style.rowGap = '8px';
                                                     avgUl.style.columnGap = '12px';
-                                                    statsUl.after(avgUl); // Wird direkt nach der originalen ul eingefügt
+                                                    statsUl.after(avgUl); 
                                                 }
 
-                                                // 4. Durchschnitte splitten (Kombi-Icons als Nested-SVG näher zusammengerückt)
                                                 if (!avgUl.querySelector('.custom-avg-visitors')) {
                                                     const avgVisLi = document.createElement('li');
                                                     avgVisLi.className = 'custom-avg-visitors custom-stat-li';
@@ -1200,7 +1646,6 @@
                                                     avgVisLi.style.alignItems = 'center';
                                                     avgVisLi.style.gap = '4px';
                                                     
-                                                    // Kombi-Icon: Auge (w=18, h=18) + Trend (x=7, y=9)
                                                     avgVisLi.innerHTML = `
                                                         <span class="inline-block-icon" style="display: flex; align-items: center; margin-left: 2px;">
                                                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
@@ -1225,7 +1670,6 @@
                                                     avgWatLi.style.alignItems = 'center';
                                                     avgWatLi.style.gap = '4px';
 
-                                                    // Kombi-Icon: Herz (w=18, h=18) + Trend (x=7, y=9)
                                                     avgWatLi.innerHTML = `
                                                         <span class="inline-block-icon" style="display: flex; align-items: center;">
                                                             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
@@ -1242,31 +1686,34 @@
                                                     avgUl.appendChild(avgWatLi);
                                                 }
 
-                                                // 5. NEUE ZEILE (Anzeigen-ID in der Analyse Spalte hinzufügen, rutscht durch auto margin nach unten)
                                                 if (!statsSection.querySelector('.custom-ad-id-row')) {
                                                     const idUl = document.createElement('ul');
                                                     idUl.className = 'm-none flex min-h-[22px] list-none p-none custom-ad-id-row';
-                                                    idUl.style.marginTop = 'auto'; // Drückt die ID nach ganz unten
+                                                    idUl.style.marginTop = '0px'; 
                                                     
-                                                    // Grid mit 2 Spalten: Links Text, Rechts Wert
+                                                    // Margin-Right von 4px simuliert zusammen mit dem standard-flex-gap von 4px genau den gewünschten 8px Abstand
                                                     idUl.innerHTML = `
-                                                        <li class="custom-stat-li" style="width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center;">
-                                                            <span style="color: inherit; padding-right: 12px;">Anzeigen-ID</span>
-                                                            <span>${adId}</span>
+                                                        <li class="custom-stat-li" style="width: 100%; display: flex; align-items: center; padding-top: 2px;">
+                                                            <span class="inline-block-icon" style="display: flex; align-items: center; margin-left: 2px; margin-right: 0px;">
+                                                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
+                                                                    <line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line>
+                                                                </svg>
+                                                            </span>
+                                                            <span style="color: inherit; margin-right: 4px;">Anzeigen-ID</span>
+                                                            <span style="font-weight: normal;">${adId}</span>
                                                         </li>
                                                     `;
                                                     statsSection.appendChild(idUl);
                                                 }
                                             }
 
-                                            // 6. Ort erzeugen und in die Info-Spalte als letztes Element anhängen
                                             if (details.location && infoColTarget && !infoColTarget.querySelector('.custom-loc-ul')) {
                                                 const locUl = document.createElement('ul');
                                                 locUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-loc-ul text-bodySmall text-onSurfaceNonessential';
                                                 locUl.style.flexWrap = 'wrap';
                                                 locUl.style.rowGap = '4px';
                                                 locUl.style.columnGap = '12px';
-                                                locUl.style.marginTop = 'auto'; // Durch Info-Flexbox drückt es den Ort nun genau auf Höhe der ID nach unten
+                                                locUl.style.marginTop = 'auto'; 
 
                                                 const svgClass = "shrink-0 block align-middle text-onSurfaceNonessential";
                                                 locUl.innerHTML = `
@@ -1284,7 +1731,6 @@
                                                 infoColTarget.appendChild(locUl);
                                             }
 
-                                            // 7. Versandkosten neben dem Preis platzieren
                                             if (details.shipping) {
                                                 let priceEl = card.querySelector('.text-title3');
                                                 
@@ -1315,7 +1761,6 @@
                                                 }
                                             }
 
-                                            // 8. Kategorie als Suchlink formatieren (dynamisch anhand ID, Ort und URL-Slug)
                                             const categoryHeader = infoColTarget ? infoColTarget.querySelector('.mb-xsmall.text-bodySmall.text-onSurfaceNonessential') : null;
                                             if (categoryHeader && !categoryHeader.dataset.linkInjected) {
                                                 categoryHeader.dataset.linkInjected = 'true';
@@ -1331,7 +1776,6 @@
                                                     if (plz && catId && locId) {
                                                         const catText = categoryHeader.textContent.trim();
                                                         
-                                                        // Fallback-Slug generieren, falls die Breadcrumb Extraktion in fetchAdDetails fehlschlagen sollte
                                                         let slug = details.catSlug;
                                                         if (!slug) {
                                                             slug = catText.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -1339,8 +1783,7 @@
                                                         
                                                         const catLinkUrl = `https://www.kleinanzeigen.de/s-${slug}/${plz}/c${catId}l${locId}r10`;
                                                         
-                                                        // Überschreibe das DOM-Element mit einem aktiven Link
-                                                        const lupeSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+                                                        const lupeSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="#5A33AE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
                                                         const tooltipText = "Klicke hier, gelange direkt in die Kategorie & Ort deiner Anzeige und prüfe das aktuelle Ranking.";
                                                         categoryHeader.innerHTML = `<a href="${catLinkUrl}" class="custom-category-link" target="_blank" title="${tooltipText}">${lupeSvg}<span>${catText}</span></a>`;
                                                     }

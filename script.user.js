@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.6.89
+// @version       2.6.90
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -1319,7 +1319,8 @@
                             
                             const textEl = btn.querySelector('.ActivityIndicator--Name');
                             if (textEl) {
-                                textEl.textContent = textEl.textContent.replace(/\n/g, ' ').replace(/\s+/g, 'Trim');
+                                // FIX: Zeilenumbrüche und doppelte Leerzeichen werden hier nun korrekt durch ein einfaches Leerzeichen ersetzt.
+                                textEl.textContent = textEl.textContent.replace(/[\n\r]+/g, ' ').replace(/\s+/g, ' ').trim();
                             }
                         }
                         badgesRow.appendChild(li); 

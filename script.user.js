@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.6.90
+// @version       2.6.95
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -346,7 +346,9 @@
         
         .cpd-action-btn.primary {
             border: 2px solid #e0e0e0 !important; 
-            padding: 8px 12px !important; 
+            padding: 8px 16px !important; 
+            height: 55px !important;
+            min-height: 55px !important;
             font-size: 14px !important;
             font-weight: 700 !important; 
             color: #444 !important; 
@@ -442,7 +444,7 @@
             display: grid !important; 
             grid-template-columns: max-content max-content !important; /* Passt sich exakt an den längsten Text in der jeweiligen Spalte an */
             column-gap: 8px !important; 
-            row-gap: 6px !important; /* Etwas verringert für leicht höhere Buttons (32px) */
+            row-gap: 8px !important; 
             margin: 0 !important; 
             padding: 0 !important; 
             width: max-content !important; 
@@ -555,16 +557,23 @@
             align-items: center !important;     
             flex-shrink: 0 !important;
             gap: 0 !important;
+            border-radius: 9999px !important;
+            border-width: 1px !important; /* NEU: Dünnere Umrandung (1px statt 2px) für die kleinen Icons */
         }
         .custom-icon-only-btn span {
             display: none !important; /* Versteckt den Text explizit */
         }
         .custom-icon-only-btn svg {
             margin: 0 !important; /* Verhindert Verschiebungen */
+            width: 14px !important;
+            height: 14px !important;
         }
 
-        /* Spezifische Margin-Anpassung für das Teilen Icon (etwas höher setzen) */
-        .has-custom-btn .custom-icon-only-btn { margin-top: -5px !important; }
+        /* Spezifische Margin-Anpassung für das Teilen Icon */
+        .has-custom-btn .custom-icon-only-btn { 
+            margin-top: -2px !important;
+            transform: translateY(-4px) !important; /* NEU: Den Teilen-Button optisch weiter nach oben geschoben */
+        }
 
         .is-detail-page .custom-purple-btn,
         .is-detail-page .custom-native-btn-detail {

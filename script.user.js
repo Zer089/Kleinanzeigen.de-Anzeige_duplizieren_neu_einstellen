@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.6.42
+// @version       2.6.89
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -25,53 +25,41 @@
     const isHomePage = window.location.pathname === '/' || window.location.pathname === '';
     const isSearchPage = window.location.pathname.startsWith('/s-') && !isDetailPage;
     const isMessagesPage = window.location.href.includes('m-nachrichten.html');
+    const isSettingsPage = window.location.href.includes('m-einstellungen.html');
 
     const isWidePage = isOverviewPage || isHomePage || isSearchPage || isMessagesPage;
 
     if (isOverviewPage) document.documentElement.classList.add('is-overview-page');
     if (isDetailPage) document.documentElement.classList.add('is-detail-page');
     if (isEditPage) document.documentElement.classList.add('is-edit-page');
+    if (isSearchPage) document.documentElement.classList.add('is-search-page');
+    if (isSettingsPage) document.documentElement.classList.add('is-settings-page');
     if (isWidePage) document.documentElement.classList.add('is-wide-page');
 
-    // Original Kleinanzeigen Icons (Nachgezeichnet für Robustheit)
+    // Original Kleinanzeigen & Eigene SVGs für saubere Button-Fluchtung
     const klPrinterSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>`;
     const klFlagSvg = `<svg viewBox="0 0 24 24" fill="none" data-title="reservedOutline" stroke="none" role="img" aria-hidden="true" focusable="false" class="shrink-0 fill-current block align-middle" style="width: 14px; height: 14px;"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.97961 2H18.187C18.5696 2 18.9172 2.22734 19.077 2.58214C19.2369 2.93694 19.1798 3.35428 18.9308 3.65079L15.4081 7.84615L18.9308 12.0415C19.1798 12.338 19.2369 12.7554 19.077 13.1102C18.9172 13.465 18.5696 13.6923 18.187 13.6923H5.95922V21C5.95922 21.5523 5.52063 22 4.97961 22C4.43859 22 4 21.5523 4 21V3C4 2.44772 4.43859 2 4.97961 2ZM5.95922 11.6923H16.0572L13.3741 8.49694C13.0597 8.12245 13.0597 7.56985 13.3741 7.19536L16.0572 4H5.95922V11.6923Z" fill="currentColor"></path></svg>`;
     const klReactivateSvg = `<svg viewBox="0 0 24 24" fill="none" data-title="reactivate" stroke="none" role="img" aria-hidden="true" focusable="false" class="shrink-0 fill-current block align-middle" style="width: 14px; height: 14px;"><path d="M14.7071 5.70711C14.9032 5.51106 15.0008 5.25386 15 4.99691C14.9993 4.74196 14.9016 4.48723 14.7071 4.29271L14.6954 4.28122L12.7071 2.29289C12.3166 1.90237 11.6834 1.90237 11.2929 2.29289C10.9024 2.68342 10.9024 3.31658 11.2929 3.70711L11.5947 4.00896C6.81226 4.22089 3 8.16524 3 13C3 17.9706 7.02944 22 12 22C16.2413 22 19.7973 19.0663 20.7495 15.1174C20.8914 14.5288 20.4158 14 19.8103 14C19.3047 14 18.8838 14.3748 18.7495 14.8624C17.9341 17.8243 15.2211 20 12 20C8.13401 20 5 16.866 5 13C5 9.27746 7.90573 6.2336 11.5728 6.01282L11.2929 6.29271C10.9024 6.68323 10.9024 7.3164 11.2929 7.70692C11.6834 8.09745 12.3166 8.09745 12.7071 7.70692L14.6954 5.71862L14.7071 5.70711Z" fill="currentColor"></path></svg>`;
-
-    // ==========================================
-    // TRACKING-BLOCKER
-    // ==========================================
-    const blockedKeywords = ['liberty', 'kameleoon', 'pubads', 'gpt.js', 'conversion.js', 'ads.js', 'prebid', 'casalemedia', 'criteo'];
-    const originalCreateElement = document.createElement;
-    document.createElement = function(tagName) {
-        const element = originalCreateElement.call(document, tagName);
-        if (typeof tagName === 'string' && tagName.toLowerCase() === 'script') {
-            Object.defineProperty(element, 'src', {
-                set: function(url) {
-                    const urlString = url ? String(url) : '';
-                    if (blockedKeywords.some(keyword => urlString.includes(keyword))) return; 
-                    this.setAttribute('src', url);
-                },
-                get: function() { return this.getAttribute('src'); }
-            });
-        }
-        return element;
-    };
+    const klDupSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+    const klRelistSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>`;
+    const klShareSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`;
 
     // ==========================================
     // CSS INJECTION (Design & Layout)
     // ==========================================
     const style = document.createElement('style');
     style.textContent = `
-        /* Werbe- & Upsell-Säuberung */
+        /* Werbe- & Upsell-Säuberung (Cookie-Banner geschützt durch :not) */
         fieldset:has(#ad-feature-group), span:has(> div.bg-accentContainer), #feature-offer-section,
         .site-base--left-banner--full, .site-base--right-banner--full,
         #vip-billboard, #vip-belly, #vip-middle, #vip-bottom, #btf-billboard, #home-billboard,
+        #srchrslt-adtop, #srchrslt-adtop--flex, [data-testid="top-banner"], /* Suchseite Werbebox */
+        #srpb-top-banner, .mb-small:has(#srpb-top-banner), /* Entfernt die weiße leere Box der Werbung auf der Suchseite */
         #my-watchlist-atf, #my-msgbox-atf, #my-atf, .liberty-filled, .j-liberty-wrapper,
         [id^="vip-similar-ads-"], #pvap-featrs, .is-detail-page .icon-info-blue,
         .absolute.top-none.right-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.right-small.pt-large,
         .absolute.top-none.left-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.left-small.pt-large,
-        .ad-module, div[data-testid*="banner"], div[data-testid*="ad-wrapper"],
+        .ad-module, div[data-testid*="banner"]:not([data-testid*="gdpr"]), div[data-testid*="ad-wrapper"],
         .mb-small:has(> .ad-module), .mb-small:has([id^="dfp-"]), li:has(> .ad-module),
         ul#srchrslt-adtable > li:has([data-liberty-position-name]), 
         ul#srchrslt-adtable > li:has([id^="srps-result-list"]),
@@ -79,14 +67,23 @@
         div.mx-auto.mb-small:has([id^="srps-result-list"]):not(:has(#srchrslt-adtable)),
         li[id^="home-teaser-ads-"] { display: none !important; }
 
+        /* Schützt den Cookie-Banner zusätzlich explizit */
+        #gdpr-banner-container, dialog#gdpr-banner { display: block !important; visibility: visible !important; }
+
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
+        
+        /* Verstecke Kleinanzeigen Original-Elemente (z.B. alte Views/Watchers über den Buttons) */
+        .flex.text-bodySmall.my-xsmall.text-onSurface { display: none !important; }
 
         /* Allgemeine Abstands-Korrekturen nach Nutzer-Wunsch */
         .relative.mb-small.box-border.min-h-\\[10px\\].rounded-xsmall.text-onSurfaceSubdued { margin-bottom: 0px !important; }
         #tab-panel-all, [aria-labelledby="tabs-all"] { margin-top: 6px !important; }
         .text-left.text-bodySmall.text-onSurfaceNonessential { row-gap: 3px !important; }
-        .mx-none.my-xsmall.text-title4 { margin-bottom: 6px !important; }
-        .mx-none.my-xsmall.text-title3.text-secondary { margin-top: 0px !important; margin-bottom: 0px !important; }
+        
+        /* Spezifische Abstände laut Anforderung */
+        .mx-none.my-xsmall.text-title4 { margin-top: 0px !important; margin-bottom: 0px !important; }
+        .mb-xsmall.text-bodySmall.text-onSurfaceNonessential { margin-bottom: 3px !important; }
+        .custom-bottom-row { margin-top: 0px !important; }
         
         /* Container-Padding Fix */
         .jsx-1105488430.l-page-wrapper.l-container-row { padding-top: 12px !important; }
@@ -149,20 +146,27 @@
             box-sizing: border-box !important;
         }
 
-        /* Titel (2-Zeilig) Umbruch FIX: Verdeckungen verhindern */
+        /* Titel (Immer Platz für 2 Zeilen reservieren) FIX: Verdeckungen verhindern und Grid stabilisieren */
         .is-overview-page .custom-ad-grid .text-title4 {
             display: -webkit-box !important;
-            -webkit-line-clamp: 2 !important; /* Auf 2 Zeilen limitiert für mehr Platz */
+            -webkit-line-clamp: 2 !important; /* Auf 2 Zeilen limitiert */
             -webkit-box-orient: vertical !important;
             overflow: hidden !important;
             text-overflow: ellipsis !important;
             white-space: normal !important;
             line-height: 1.3 !important;
-            flex-shrink: 0 !important; /* Verhindert das Stauchen durch die Flexbox */
+            height: 2.6em !important; /* NEU: Erzwingt exakt den Platz von 2 Zeilen (1.3 * 2 = 2.6) */
+            min-height: 2.6em !important;
         }
         
-        /* Preis und Versand */
-        .is-overview-page .custom-ad-grid .text-title3 {
+        /* Flex-Basis-Fix für Preis-Zeile mit Button und Abstandsanpassung */
+        .is-overview-page .custom-ad-grid .text-title3.has-custom-btn {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            width: 100% !important;
+            margin-top: 0px !important;
+            margin-bottom: 0px !important;
             flex-shrink: 0 !important;
         }
 
@@ -206,7 +210,7 @@
         .custom-profile-dashboard {
             display: flex;
             flex-direction: row;
-            gap: 24px;
+            column-gap: 18px;
             background: #ffffff;
             border: 1px solid #e0e0e0;
             border-radius: 12px;
@@ -221,7 +225,8 @@
         }
         @media (max-width: 800px) {
             .custom-profile-dashboard { flex-direction: column; gap: 16px; height: auto !important; padding: 16px !important; align-items: flex-start; }
-            .cpd-stats-actions-col { height: auto !important; }
+            .cpd-stats-actions-col { height: auto !important; border-left: none !important; border-right: none !important; border-top: 1px solid #e0e0e0; padding-left: 0 !important; padding-right: 0 !important; padding-top: 20px; flex-direction: row; flex-wrap: wrap; width: 100%; justify-content: center; }
+            .cpd-actions-block { width: 100%; }
         }
         .custom-profile-dashboard::before {
             content: "";
@@ -309,37 +314,46 @@
 
         /* 3. Stats & Actions Column */
         .cpd-stats-actions-col {
-            display: flex; align-items: center; gap: 24px; border-left: 1px solid #e0e0e0; padding-left: 24px;
+            display: flex; align-items: center; justify-content: center; 
+            border-left: 1px solid #e0e0e0; border-right: 1px solid #e0e0e0; 
+            padding-left: 18px; padding-right: 18px;
             height: 90px !important;
-        }
-        @media (max-width: 800px) {
-            .cpd-stats-actions-col { border-left: none; border-top: 1px solid #e0e0e0; padding-left: 0; padding-top: 20px; flex-direction: row; flex-wrap: wrap; width: 100%; }
-            .cpd-divider { display: none !important; }
         }
         
         .cpd-stats-block { display: flex; flex-direction: column; align-items: center; }
         .cpd-stats-title { font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
-        .cpd-stats-tiles { display: flex; gap: 16px; }
-        .cpd-tile { display: flex; flex-direction: column; align-items: center; padding: 8px 12px; border-radius: 8px; transition: background 0.2s; }
+        .cpd-stats-tiles { display: flex; column-gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .cpd-tile { display: flex; flex-direction: column; align-items: center; padding: 8px 8px; border-radius: 8px; transition: background 0.2s; min-width: 48px; }
         .cpd-tile:hover { background: #f9f9f9; }
-        .cpd-tile-val { font-size: 14px; font-weight: 900; line-height: 1; color: #444; }
+        .cpd-tile-val { font-size: 14px; font-weight: 900; line-height: 1; color: #444; display: flex; align-items: center; justify-content: center; height: 14px; }
         .cpd-tile-val.online { color: #86B817; }
-        .cpd-tile-lbl { font-size: 11px; color: #757575; font-weight: 600; text-transform: uppercase; margin-top: 4px; }
+        .cpd-tile-lbl { font-size: 11px; color: #757575; font-weight: 600; text-transform: uppercase; margin-top: 4px; white-space: nowrap; }
 
-        .cpd-divider { width: 1px; align-self: stretch; height: auto; background: #e0e0e0; }
-
-        .cpd-actions-block { display: flex; flex-direction: column; gap: 8px; }
+        /* Actions Block */
+        .cpd-actions-block { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 6px;
+            width: 170px;
+            box-sizing: border-box !important;
+        }
+        
         .cpd-action-btn {
             display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important;
             border-radius: 8px !important; transition: all 0.2s !important; text-decoration: none !important;
             cursor: pointer !important; box-sizing: border-box !important;
         }
+        
         .cpd-action-btn.primary {
-            border: 2px solid #e0e0e0 !important; padding: 8px 16px !important; font-size: 14px !important;
-            font-weight: 700 !important; color: #444 !important; background: #fff !important; height: 50px !important;
+            border: 2px solid #e0e0e0 !important; 
+            padding: 8px 12px !important; 
+            font-size: 14px !important;
+            font-weight: 700 !important; 
+            color: #444 !important; 
+            background: #fff !important; 
         }
         .cpd-action-btn.primary:hover { border-color: #5A33AE !important; color: #5A33AE !important; }
-        .cpd-action-btn.primary svg { width: 20px !important; height: 20px !important; color: #999; transition: color 0.2s; }
+        .cpd-action-btn.primary svg { width: 16px !important; height: 16px !important; color: #999; transition: color 0.2s; flex-shrink: 0 !important; }
         .cpd-action-btn.primary:hover svg { color: #5A33AE !important; }
         
         .cpd-action-btn.secondary { 
@@ -370,42 +384,89 @@
         }
         .custom-purple-btn:hover { background-color: #D1C4E9 !important; border-color: #D1C4E9 !important; color: #5A33AE !important; }
 
-        /* NEU: 6-Spalten Grid (Bild | Infos | Trenn | Analyse | Trenn | Buttons) */
+        /* Gesamthöhe der Anzeige in der Übersicht */
+        .is-overview-page article.cardbox {
+            height: 145px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 6-Spalten Grid (Bild | Infos | Trenn | Analyse | Trenn | Buttons) */
         .custom-ad-grid { 
             display: grid !important; 
             width: 100% !important; 
-            grid-template-columns: 200px auto 1px 260px 1px 240px !important; 
-            column-gap: 18px !important;
+            grid-template-columns: 170px 1fr 1px max-content 1px max-content !important; 
+            column-gap: 16px !important;
+            height: 110px !important; /* Auf exakt 110px fixiert */
         }
         
-        /* Einheitliche Höhen für die Anzeigenspalten und das Vorschaubild */
+        /* Einheitliche Höhen für die Anzeigenspalten */
+        .custom-ad-grid > div:first-child,
         .custom-ad-grid > div:first-child a,
         .custom-ad-grid .pl-medium.align-top,
         .custom-stats-area.align-top,
         .mt-xsmall.custom-action-area {
-            height: 130px !important;
+            height: 110px !important; /* Auf exakt 110px fixiert */
             box-sizing: border-box !important;
         }
 
         .custom-ad-grid .mt-xsmall { margin-top: 0px !important; }
         
+        /* Vorschaubild auf 170x110px erzwingen */
+        .is-overview-page .custom-ad-grid > div:first-child,
+        .is-overview-page .custom-ad-grid > div:first-child > a {
+            width: 170px !important;
+            height: 110px !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            overflow: hidden !important;
+        }
+        .is-overview-page .custom-ad-grid > div:first-child img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+        }
+        
         /* Überschreibt das originale Padding der Info-Spalte und macht sie zur Flexbox für vertikale Ausrichtung */
         .custom-ad-grid .pl-medium.align-top { 
             padding-left: 0px !important; 
+            padding-right: 0px !important;
             display: flex !important;
             flex-direction: column !important;
         }
 
-        /* Buttons-Liste in der Action Area (Spalte 6) Layout Fixes */
-        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]),
-        .flex.list-none.flex-row.flex-wrap.p-none {
-            display: flex !important; flex-wrap: wrap !important; justify-content: flex-end !important;
-            align-content: flex-start !important; column-gap: 8px !important; row-gap: 6px !important; 
-            margin: 0 !important; padding: 0 !important; width: 100% !important; 
+        /* Buttons-Liste in der Action Area (Spalte 6) - DYNAMISCHES GRID */
+        .is-overview-page .custom-action-area ul,
+        .is-overview-page .flex.list-none.flex-row.flex-wrap.p-none {
+            display: grid !important; 
+            grid-template-columns: max-content max-content !important; /* Passt sich exakt an den längsten Text in der jeweiligen Spalte an */
+            column-gap: 8px !important; 
+            row-gap: 6px !important; /* Etwas verringert für leicht höhere Buttons (32px) */
+            margin: 0 !important; 
+            padding: 0 !important; 
+            width: max-content !important; 
+            justify-content: start !important;
+            height: 110px !important;
         }
-        .is-overview-page ul:has(> li > a[href*="/p-anzeige-bearbeiten.html"]) li,
-        .flex.list-none.flex-row.flex-wrap.p-none li { 
-            margin: 0 !important; width: auto !important; 
+        
+        .is-overview-page .custom-action-area li,
+        .is-overview-page .flex.list-none.flex-row.flex-wrap.p-none li { 
+            margin: 0 !important; width: 100% !important; 
+        }
+
+        /* Zwingt sichtbare Listenelemente in die Flexbox, aber respektiert ausgeblendete Elemente! */
+        .is-overview-page .custom-action-area li:not(.is-hidden):not(.hidden):not([style*="display: none"]):not([style*="display:none"]),
+        .is-overview-page .flex.list-none.flex-row.flex-wrap.p-none li:not(.is-hidden):not(.hidden):not([style*="display: none"]):not([style*="display:none"]) {
+            display: flex !important;
+        }
+
+        /* Native versteckte Elemente absolut und zwingend versteckt lassen */
+        .is-overview-page .custom-action-area li.is-hidden,
+        .is-overview-page .custom-action-area li.hidden,
+        .is-overview-page .custom-action-area li[style*="display: none"],
+        .is-overview-page .custom-action-area li[style*="display:none"] {
+            display: none !important;
         }
 
         /* ====================================================
@@ -457,14 +518,57 @@
             visibility: visible;
         }
 
-        /* EINHEITLICHE GRÖSSE FÜR ALLE BUTTONS IN SPALTE 6 UND AUF DER DETAIL-SEITE */
+        /* Lade-Animation für die Dashboard Zahl */
+        @keyframes customPulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* EINHEITLICHE GRÖSSE UND LINIE FÜR ALLE BUTTONS IN SPALTE 6 */
         .is-overview-page .custom-action-area a,
         .is-overview-page .custom-action-area button,
         .is-overview-page .custom-purple-btn, 
-        .is-overview-page .custom-native-btn,
+        .is-overview-page .custom-native-btn {
+            height: 32px !important; min-height: 32px !important; max-height: 32px !important;
+            padding: 0 12px 0 10px !important; /* Fixer Abstand nach links (10px) = exakt gleiche Text/Icon Flucht! */
+            font-size: 12px !important; line-height: 1 !important; margin: 0 !important; 
+            box-sizing: border-box !important; border-width: 2px !important; border-radius: 9999px !important;
+            display: inline-flex !important; align-items: center !important; justify-content: flex-start !important; 
+            width: 100% !important; /* Button dehnt sich über das max-content Grid aus */
+            gap: 6px !important; 
+            text-align: left !important;
+        }
+
+        /* Icon-Only Buttons (für Teilen & Verkaufsschild in Spalte 2) überschreiben die obigen Regeln */
+        .is-overview-page .custom-icon-only-btn,
+        .custom-icon-only-btn {
+            width: 24px !important;
+            min-width: 24px !important;
+            max-width: 24px !important;
+            height: 24px !important;
+            min-height: 24px !important;
+            max-height: 24px !important;
+            padding: 0 !important; /* Kein horizontales Padding! */
+            display: flex !important;
+            justify-content: center !important; /* Absolute Zentrierung */
+            align-items: center !important;     
+            flex-shrink: 0 !important;
+            gap: 0 !important;
+        }
+        .custom-icon-only-btn span {
+            display: none !important; /* Versteckt den Text explizit */
+        }
+        .custom-icon-only-btn svg {
+            margin: 0 !important; /* Verhindert Verschiebungen */
+        }
+
+        /* Spezifische Margin-Anpassung für das Teilen Icon (etwas höher setzen) */
+        .has-custom-btn .custom-icon-only-btn { margin-top: -5px !important; }
+
         .is-detail-page .custom-purple-btn,
         .is-detail-page .custom-native-btn-detail {
-            height: 28px !important; min-height: 28px !important; max-height: 28px !important;
+            height: 32px !important; min-height: 32px !important; max-height: 32px !important;
             padding: 0 12px !important; font-size: 12px !important; line-height: 1 !important; margin: 0 !important; 
             box-sizing: border-box !important; border-width: 2px !important; border-radius: 9999px !important;
             display: inline-flex !important; align-items: center !important; justify-content: center !important;
@@ -524,6 +628,7 @@
         .is-overview-page .custom-action-area button svg,
         .is-detail-page .custom-native-btn-detail svg {
             width: 14px !important; height: 14px !important; flex-shrink: 0 !important; margin: 0 !important;
+            display: block !important;
         }
         
         /* Schützt native Kleinanzeigen CSS-Sprites (i-Tags) davor zerschossen zu werden */
@@ -538,7 +643,30 @@
         }
 
         .custom-shipping-info { font-size: 13px !important; color: #757575 !important; font-weight: normal !important; white-space: nowrap; border: none !important; }
-        .custom-stat-li { display: flex !important; align-items: center !important; gap: 4px !important; color: inherit !important; white-space: nowrap; }
+        
+        /* Einheitliches 3-Spalten Grid für die Anzeigenanalyse */
+        .custom-analyse-grid {
+            display: grid !important;
+            grid-template-columns: minmax(101px, max-content) minmax(93px, max-content) max-content !important;
+            column-gap: 8px !important;
+            row-gap: 8px !important;
+            width: 100% !important;
+            margin-top: 4px !important; /* Update: Angepasst nach Wunsch */
+        }
+        .custom-analyse-item {
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            white-space: nowrap !important;
+            color: inherit !important; 
+        }
+        .custom-stat-label {
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+        .custom-stat-value {
+            font-weight: normal !important;
+        }
 
         /* BEARBEITEN-SEITE: Hier bleiben die Buttons groß (44px) */
         .is-edit-page .custom-purple-btn { height: 44px !important; min-height: 44px !important; padding: 0 16px !important; font-size: 14px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; border-width: 2px !important; border-style: solid !important; }
@@ -562,12 +690,130 @@
     }
 
     // ==========================================
+    // CUSTOM TEILEN-MODAL (FÜR ÜBERSICHTSSEITE)
+    // ==========================================
+    function showCustomShareModal(url, title, imgUrl) {
+        let overlay = document.getElementById('custom-share-overlay');
+        
+        const closeModal = () => {
+            if (overlay) overlay.style.display = 'none';
+            document.body.style.overflow = ''; // Scrollen wieder aktivieren
+        };
+
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'custom-share-overlay';
+            Object.assign(overlay.style, {
+                position: 'fixed', top: '0', left: '0', width: '100%', height: '100%',
+                backgroundColor: 'rgba(11, 11, 11, 0.8)', zIndex: '100000',
+                display: 'flex', alignItems: 'center', justifyContent: 'center'
+            });
+            
+            // Kompakteres Design mit reduzierten Paddings und Icon-Größen
+            overlay.innerHTML = `
+                <div class="mfp-container mfp-inline-holder" style="position:static; width:100%; height:auto; display:flex; justify-content:center; align-items:center; padding: 16px; box-sizing: border-box;">
+                    <div class="mfp-content" style="max-width: 420px; width: 100%; margin: 0 auto; position:relative;">
+                        <section class="modal-dialog mfp-popup-medium" style="display:block; position:relative; margin: 0 auto; background: #fff; border-radius: 6px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.25);">
+                            <header style="padding: 10px 16px; border-bottom: 1px solid #e0e0e0; background: #f9f9f9;">
+                                <h2 style="margin: 0; font-size: 16px; font-weight: 700; color: #333;">Anzeige teilen</h2>
+                            </header>
+                            <section class="modal-dialog-content" style="padding: 0;">
+                                <ul class="selectable-list" style="margin: 0; padding: 0; list-style: none;">
+                                    <li title="Anzeige per Email teilen" style="border-bottom: 1px solid #f0f0f0;">
+                                        <a id="c-share-mail" href="#" style="display: flex; align-items: center; padding: 8px 16px; text-decoration: none; color: #333; transition: background 0.2s;">
+                                            <i class="icon icon-tag icon-share-email-envelope-outline" style="margin-right: 10px; font-size: 20px;"></i>
+                                            <span style="font-size: 14px;">via E-Mail teilen</span>
+                                        </a>
+                                    </li>
+                                    <li title="Anzeige auf Facebook teilen" style="border-bottom: 1px solid #f0f0f0;">
+                                        <a id="c-share-fb" href="#" target="_blank" style="display: flex; align-items: center; padding: 8px 16px; text-decoration: none; color: #333; transition: background 0.2s;">
+                                            <i class="icon icon-tag icon-facebook-color" style="margin-right: 10px; font-size: 20px;"></i>
+                                            <span style="font-size: 14px;">via Facebook teilen</span>
+                                        </a>
+                                    </li>
+                                    <li title="Anzeige auf X teilen" style="border-bottom: 1px solid #f0f0f0;">
+                                        <a id="c-share-x" href="#" target="_blank" style="display: flex; align-items: center; padding: 8px 16px; text-decoration: none; color: #333; transition: background 0.2s;">
+                                            <i class="icon icon-tag icon-x-black" style="margin-right: 10px; font-size: 20px;"></i>
+                                            <span style="font-size: 14px;">via X teilen</span>
+                                        </a>
+                                    </li>
+                                    <li title="Anzeige auf Pinterest teilen" style="border-bottom: 1px solid #f0f0f0;">
+                                        <a id="c-share-pin" href="#" target="_blank" style="display: flex; align-items: center; padding: 8px 16px; text-decoration: none; color: #333; transition: background 0.2s;">
+                                            <i class="icon icon-tag icon-pinterest-color" style="margin-right: 10px; font-size: 20px;"></i>
+                                            <span style="font-size: 14px;">via Pinterest teilen</span>
+                                        </a>
+                                    </li>
+                                    <li title="Link kopieren" style="background-color: #fafafa;">
+                                        <a id="c-share-copy" href="#" style="display: flex; align-items: center; padding: 8px 16px; text-decoration: none; color: #333; transition: background 0.2s; cursor: pointer;">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px; height:18px; margin-right:12px; margin-left: 1px; color:#5A33AE;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                                            <span id="c-share-copy-text" style="font-size: 14px; font-weight: bold; color: #5A33AE;">Link kopieren</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </section>
+                            <button title="Schließen" class="mfp-close" style="position: absolute; right: 4px; top: 2px; width: 36px; height: 36px; background: transparent; border: none; font-size: 24px; line-height: 1; cursor: pointer; color: #999;">×</button>
+                        </section>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            // Hover-Effekte simulieren (da die globalen CSS Hover-Regeln oft an andere Container gebunden sind)
+            const links = overlay.querySelectorAll('a');
+            links.forEach(l => {
+                l.addEventListener('mouseover', () => l.style.backgroundColor = '#f0f0f0');
+                l.addEventListener('mouseout', () => l.style.backgroundColor = 'transparent');
+            });
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay || e.target.closest('.mfp-container') === overlay.firstChild || e.target.classList.contains('mfp-close') || e.target.closest('.mfp-close')) {
+                    closeModal();
+                }
+            });
+        }
+
+        const encUrl = encodeURIComponent(url);
+        const encTitle = encodeURIComponent(title);
+        const encImg = encodeURIComponent(imgUrl);
+
+        document.getElementById('c-share-mail').href = `mailto:?subject=Kleinanzeigen:%20${encTitle}&body=Gerade%20bei%20%23Kleinanzeigen%20gefunden.%20Wie%20findest%20du%20das%3F%0A${encUrl}`;
+        document.getElementById('c-share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encUrl}`;
+        document.getElementById('c-share-x').href = `https://x.com/intent/tweet?text=Schaut+mal,+was+ich+bei+%23Kleinanzeigen+gefunden+habe.+Wie+findet+ihr+das?&url=${encUrl}`;
+        document.getElementById('c-share-pin').href = `https://pinterest.com/pin/create/button/?url=${encUrl}&media=${encImg}&description=${encTitle}`;
+        
+        const copyBtn = document.getElementById('c-share-copy');
+        const copyText = document.getElementById('c-share-copy-text');
+        copyText.textContent = "Link kopieren"; 
+        copyBtn.onclick = (e) => {
+            e.preventDefault();
+            const tempInput = document.createElement("input");
+            tempInput.style.position = "absolute";
+            tempInput.style.left = "-9999px";
+            tempInput.value = url;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            try {
+                document.execCommand("copy");
+                copyText.textContent = "Kopiert!";
+                setTimeout(() => { closeModal(); }, 800);
+            } catch (err) {
+                console.error("Copy failed", err);
+            }
+            document.body.removeChild(tempInput);
+        };
+
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Scrollen des Hintergrunds blockieren
+    }
+
+    // ==========================================
     // BUTTON LOGIK & METADATEN FETCHING
     // ==========================================
-    function createBtn(text, icon, click) {
+    function createBtn(text, iconStr, click) {
         const b = document.createElement('button');
         b.className = 'custom-purple-btn';
-        b.innerHTML = `<span>${icon}</span> <span>${text}</span>`;
+        // Genau dieselbe Struktur für SVG und Text wie bei nativen Buttons verwenden (SVG direkt im Button, Span für den Text)
+        b.innerHTML = `${iconStr}<span>${text}</span>`;
         b.onclick = click;
         return b;
     }
@@ -622,11 +868,74 @@
         }
     }
 
+    // ==========================================
+    // 30-TAGE STATISTIK SCRAPER (HIDDEN JSON METHOD)
+    // ==========================================
+    const CACHE_KEY_30D = '__KL_ACTIVITY_30D_V9';
+
+    // Holt die Zahl vollautomatisch im Hintergrund (ohne iframe, ohne Klick)
+    async function fetchBackgroundStats() {
+        try {
+            // 1. Der schnelle & direkte Weg: Kleinanzeigen JSON-API abfragen
+            const response = await fetch('/m-einstellungen-bearbeiten.json', { 
+                headers: {
+                    'Accept': 'application/json, text/javascript, */*; q=0.01',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin' 
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data && data.newAdCount !== undefined) {
+                    const count = data.newAdCount.toString();
+                    localStorage.setItem(CACHE_KEY_30D, count);
+                    return count;
+                }
+            }
+        } catch(e) {
+            console.error("Fehler beim API-Abruf der 30-Tage Statistik:", e);
+        }
+
+        // 2. Fallback: Alte HTML-Methode
+        try {
+            const response = await fetch('/m-einstellungen.html', { credentials: 'same-origin' });
+            if (!response.ok) return null;
+            
+            const html = await response.text();
+            let match = html.match(/(?:adsInLast30Days|publishedAds30Days|thirtyDaysAdsCount|adsCount30Days)"?\s*:\s*(\d+)/i) || 
+                        html.match(/letzten\s+30\s+Tagen\s+(\d+)/i);
+            
+            if (match && match[1]) {
+                localStorage.setItem(CACHE_KEY_30D, match[1]);
+                return match[1];
+            }
+        } catch(e) {
+            console.error("Fehler beim HTML-Fallback der 30-Tage Statistik:", e);
+        }
+        return null;
+    }
+
+    // Passiver Scraper: Falls der User ohnehin auf der Einstellungen-Seite ist
+    if (isSettingsPage) {
+        setInterval(() => {
+            const textContent = document.body.textContent || "";
+            let match = textContent.match(/letzten\s+30\s+Tagen\s+(\d+)/i) || 
+                        textContent.match(/(\d+)\s+Anzeigen\s+aufgegeben/i);
+            
+            if (match && match[1]) {
+                localStorage.setItem(CACHE_KEY_30D, match[1]);
+            }
+        }, 2000);
+    }
+
     const inject = () => {
         // --- DOM CLEANUP: Banner physisch entfernen ---
         const banners = document.querySelectorAll(`
             .site-base--left-banner--full, .site-base--right-banner--full,
             #btf-billboard, #home-billboard, #my-watchlist-atf, #my-msgbox-atf, #my-atf,
+            #srchrslt-adtop, #srchrslt-adtop--flex, [data-testid="top-banner"], 
+            #srpb-top-banner,
             .absolute.top-none.right-small.bottom-1\\/2, 
             .absolute.bottom-none.top-1\\/2.right-small.pt-large,
             .absolute.top-none.left-small.bottom-1\\/2, 
@@ -637,7 +946,13 @@
             div.mx-auto.mb-small:has([id^="srps-result-list"]):not(:has(#srchrslt-adtable)),
             li[id^="home-teaser-ads-"]
         `);
-        banners.forEach(b => b.remove());
+        banners.forEach(b => {
+            if (b.id === 'srpb-top-banner') {
+                const parent = b.closest('.mb-small');
+                if (parent) parent.remove();
+            }
+            b.remove();
+        });
 
         // --- SIDEBAR ENTFERNEN UND CONTENT STRECKEN (DETAILSEITE) ---
         // Dies muss passieren, BEVOR andere Skriptelemente nach Elementen in der Sidebar suchen!
@@ -751,7 +1066,7 @@
                 extraInfo.style.alignItems = 'center';
                 extraInfo.style.gap = '8px 16px';
 
-                // Hilfsfunktion zum Finden bestimmter <dt> Knoten
+                // Hilfsfunktion zum Finden bestimmten <dt> Knoten
                 const getDtByText = (text) => Array.from(dlStats.querySelectorAll('dt')).find(dt => dt.textContent.includes(text));
 
                 // A. "Besuche:" aus dlStats komplett ausblenden
@@ -807,9 +1122,14 @@
 
                         ddMerk.style.display = 'inline-flex';
                         ddMerk.style.marginLeft = '0px';
-                        if (!ddMerk.innerText.includes('gemerkt')) {
-                            ddMerk.innerText = ddMerk.innerText.trim() + ' mal gemerkt';
+                        
+                        let t = ddMerk.innerText.trim();
+                        if (t.includes(' mal gemerkt')) {
+                            t = t.replace(' mal gemerkt', 'x gemerkt');
+                        } else if (!t.includes('gemerkt')) {
+                            t = t + 'x gemerkt';
                         }
+                        ddMerk.innerText = t;
 
                         const wrapper = document.createElement('div');
                         wrapper.style.display = 'flex'; wrapper.style.alignItems = 'center';
@@ -847,8 +1167,7 @@
                         
                         wrapper.innerHTML = `
                             <span title="${idLabel}" style="display: flex; align-items: center;">${svgHash}</span>
-                            <span style="color: #757575; margin-right: 8px;">${idLabel}:</span> 
-                            <span style="font-weight: normal; color: #757575;">${idValue}</span>
+                            <span style="font-weight: normal; color: #757575;">${idLabel} ${idValue}</span>
                         `;
                         
                         // Direkt als nächstes Geschwisterelement von extraInfo einfügen (eigenständige Zeile!)
@@ -863,7 +1182,6 @@
             const profileBox = document.querySelector('.ownprofile-main');
             
             // --- REACT OVERWRITE SCHUTZ (AUTO-HEALING) ---
-            // Prüft, ob unser Dashboard verschwunden ist, obwohl das Script meint, es sei noch da.
             if (profileBox && profileBox.dataset.redesignInjected && !profileBox.querySelector('.custom-profile-dashboard')) {
                 delete profileBox.dataset.redesignInjected; // Setzt den Inject-Status zurück, um Neuaufbau zu erzwingen
                 profileBox.classList.remove('custom-replaced');
@@ -1001,7 +1319,7 @@
                             
                             const textEl = btn.querySelector('.ActivityIndicator--Name');
                             if (textEl) {
-                                textEl.textContent = textEl.textContent.replace(/\n/g, ' ').replace(/\s+/g, ' ').trim();
+                                textEl.textContent = textEl.textContent.replace(/\n/g, ' ').replace(/\s+/g, 'Trim');
                             }
                         }
                         badgesRow.appendChild(li); 
@@ -1038,51 +1356,52 @@
                         
                         const numMatch = followersA.textContent.match(/(\d+)/);
                         if (numMatch) {
-                            followersA.innerHTML = `<span class="cpd-footer-item-text"><strong>${numMatch[1]}</strong>&nbsp;Follower</span>`;
+                            followersA.innerHTML = `<span class="cpd-footer-item-text"><strong>${numMatch[1]}</strong> Follower</span>`;
                         }
                         folSpan.appendChild(followersA); 
                         rowFooter.appendChild(folSpan);
                     }
                     colInfo.appendChild(rowFooter);
-                    
-                    dashboard.appendChild(colInfo);
+                
+                dashboard.appendChild(colInfo);
 
-                    const colStats = document.createElement('div');
-                    colStats.className = 'cpd-stats-actions-col';
-                    
-                    colStats.innerHTML = `
-                        <div class="cpd-stats-block">
-                            <span class="cpd-stats-title">Anzeigen</span>
-                            <div class="cpd-stats-tiles">
-                                <div class="cpd-tile">
-                                    <span class="cpd-tile-val online">${onlineCount}</span>
-                                    <span class="cpd-tile-lbl">Online</span>
-                                </div>
-                                <div class="cpd-tile">
-                                    <span class="cpd-tile-val">${totalCount}</span>
-                                    <span class="cpd-tile-lbl">Gesamt</span>
-                                </div>
+                const colStats = document.createElement('div');
+                colStats.className = 'cpd-stats-actions-col';
+                
+                colStats.innerHTML = `
+                    <div class="cpd-stats-block">
+                        <span class="cpd-stats-title">Anzeigen</span>
+                        <div class="cpd-stats-tiles">
+                            <div class="cpd-tile" title="Du hast aktuell ${onlineCount} Anzeigen online.">
+                                <span class="cpd-tile-val online">${onlineCount}</span>
+                                <span class="cpd-tile-lbl">Online</span>
+                            </div>
+                            <div class="cpd-tile" title="Du hast insgesamt ${totalCount} Anzeigen erstellt.">
+                                <span class="cpd-tile-val">${totalCount}</span>
+                                <span class="cpd-tile-lbl">Gesamt</span>
+                            </div>
+                            <div class="cpd-tile" id="custom-30d-tile" title="Lade Statistik...">
+                                <span class="cpd-tile-val" id="custom-30d-val"></span>
+                                <span class="cpd-tile-lbl">30 Tage</span>
                             </div>
                         </div>
-                        <div class="cpd-divider"></div>
-                    `;
+                    </div>
+                `;
 
-                    const actionsBlock = document.createElement('div');
-                    actionsBlock.className = 'cpd-actions-block';
-                    
-                    if (walletLink) {
-                        const svg = walletLink.querySelector('svg');
-                        walletLink.innerHTML = ''; 
-                        
+                const actionsBlock = document.createElement('div');
+                actionsBlock.className = 'cpd-actions-block';
+                
+                if (walletLink) {
                         walletLink.innerHTML = `
-                            <svg viewBox="0 0 24 24" fill="none" data-title="transactionsOverview" stroke="none" role="img" aria-hidden="true" focusable="false" class="w-5 h-5 text-gray-400 group-hover:text-[#5A33AE] shrink-0 fill-current block align-middle transition-colors" style="width: 20px; height: 20px;">
+                            <svg viewBox="0 0 24 24" fill="none" data-title="transactionsOverview" stroke="none" role="img" aria-hidden="true" focusable="false" class="shrink-0 fill-current block align-middle transition-colors text-gray-400 group-hover:text-[#5A33AE]" style="width: 16px; height: 16px;">
                                 <path d="M8 8C8.55229 8 9 7.55228 9 7 9 6.44772 8.55229 6 8 6 7.44772 6 7 6.44772 7 7 7 7.55228 7.44772 8 8 8ZM8 12C8.55229 12 9 11.5523 9 11 9 10.4477 8.55229 10 8 10 7.44772 10 7 10.4477 7 11 7 11.5523 7.44772 12 8 12ZM9 15C9 15.5523 8.55229 16 8 16 7.44772 16 7 15.5523 7 15 7 14.4477 7.44772 14 8 14 8.55229 14 9 14.4477 9 15ZM11 6C10.4477 6 10 6.44772 10 7 10 7.55228 10.4477 8 11 8H16C16.5523 8 17 7.55228 17 7 17 6.44772 16.5523 6 16 6H11ZM10 11C10 10.4477 10.4477 10 11 10H16C16.5523 10 17 10.4477 17 11 17 11.5523 16.5523 12 16 12H11C10.4477 12 10 11.5523 10 11ZM11 14C10.4477 14 10 14.4477 10 15 10 15.5523 10.4477 16 11 16H16C16.5523 16 17 15.5523 17 15 17 14.4477 16.5523 14 16 14H11Z" fill="currentColor"></path>
                                 <path fill-rule="evenodd" clip-rule="evenodd" d="M18.7071 21.2929C18.3166 21.6834 17.6834 21.6834 17.2929 21.2929L16 20L14.7071 21.2929L13.2929 21.2929L12 20L10.7071 21.2929H9.29289L8 20L6.7062 21.2938C6.3156 21.6834 5.68312 21.6831 5.29289 21.2929L4.29289 20.2929C4.10536 20.1054 4 19.851 4 19.5858V4C4 2.89543 4.89543 2 6 2H18C19.1046 2 20 2.89543 20 4V19.5858C20 19.851 19.8946 20.1054 19.7071 20.2929L18.7071 21.2929ZM14 19.1716L12 17.1716L10 19.1716L8 17.1716L6 19.1716V4H18V19.1716L16 17.1716L14 19.1716Z" fill="currentColor"></path>
                                 <path d="M10.7063 21.2937 10.7071 21.2929 13.2929 21.2929 13.2937 21.2937 10.7063 21.2937ZM14.7063 21.2937 14.7071 21.2929 17.2929 21.2929 14.7063 21.2937ZM13.2937 21.2937 14.7063 21.2937C14.316 21.6831 13.684 21.6831 13.2937 21.2937ZM10.7063 21.2937C10.3159 21.6826 9.68382 21.683 9.2937 21.2937L10.7063 21.2937Z" fill="currentColor"></path>
                             </svg>
-                            <span style="font-weight: 700;">Verkaufsübersicht</span>
+                            <span>Verkaufsübersicht</span>
                         `;
                         walletLink.className = 'cpd-action-btn primary';
+                        walletLink.title = 'Einnahmen über das Bezahlsystem';
                         actionsBlock.appendChild(walletLink); 
                     }
 
@@ -1092,7 +1411,6 @@
                         settingsLink.className = 'cpd-action-btn secondary';
                         settingsLink.target = '_self';
                         
-                        // Robustes Zahnrad-Icon mit !important auf kritischen Werten
                         settingsLink.innerHTML = `
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px !important; height: 14px !important; display: block !important; flex-shrink: 0 !important; margin: 0 4px 0 0 !important;">
                                 <circle cx="12" cy="12" r="3"></circle>
@@ -1102,15 +1420,39 @@
                         `;
                         
                         actionsBlock.appendChild(settingsLink); 
-                    }
+                }
+                
+                dashboard.appendChild(colStats);
+                dashboard.appendChild(actionsBlock);
+
+                profileBox.classList.add('custom-replaced');
+                profileBox.appendChild(dashboard);
+
+                // --- 30-Tage Statistik laden ---
+                const val30d = dashboard.querySelector('#custom-30d-val');
+                if (val30d) {
+                    const cachedVal = localStorage.getItem(CACHE_KEY_30D);
                     
-                    colStats.appendChild(actionsBlock);
-                    dashboard.appendChild(colStats);
+                    if (cachedVal && cachedVal !== '-') {
+                        val30d.textContent = cachedVal;
+                        val30d.parentElement.title = `Du hast in den letzten 30 Tagen ${cachedVal} Anzeigen eingestellt.`;
+                    } else {
+                        val30d.innerHTML = '<span style="font-size: 11px; font-weight: normal; animation: customPulse 1s infinite;">LÄDT</span>';
+                        
+                        // Versuche die Daten versteckt im Hintergrund zu holen
+                        fetchBackgroundStats().then(val => {
+                            if (val) {
+                                val30d.textContent = val;
+                                val30d.parentElement.title = `Du hast in den letzten 30 Tagen ${val} Anzeigen eingestellt.`;
+                            } else {
+                                val30d.innerHTML = '<span style="font-size: 14px; color: #999;">?</span>';
+                                val30d.parentElement.title = "Konnte im Hintergrund nicht geladen werden. Bitte Einstellungen einmal manuell öffnen.";
+                            }
+                        });
+                    }
+                }
 
-                    profileBox.classList.add('custom-replaced');
-                    profileBox.appendChild(dashboard);
-
-                } catch(e) {
+            } catch(e) {
                     console.error("Fehler beim Erstellen des Dashboards:", e);
                 }
             }
@@ -1129,7 +1471,8 @@
 
                 // --- DROP DOWN "MEHR" HACK & VERKAUFSSCHILD EINFÜGEN ---
                 const mehrBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent.includes('Mehr'));
-                let printLi;
+                let printBtn = null;
+                let printLi = null;
                 
                 if (mehrBtn) {
                     const mehrLi = mehrBtn.closest('li');
@@ -1139,23 +1482,22 @@
                         mehrLi.style.pointerEvents = 'none';
                     }
 
-                    printLi = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                    printLi.style.margin = '0';
-                    printLi.style.flexBasis = '100%';
-                    printLi.style.display = 'flex';
-                    printLi.style.justifyContent = 'flex-end';
-
-                    const printBtn = document.createElement('button');
+                    printBtn = document.createElement('button');
                     printBtn.type = 'button';
                     printBtn.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn";
                     
-                    printBtn.innerHTML = `
-                        <div class="relative flex items-center justify-center">
-                            <div class="flex items-center justify-center gap-xsmall">
-                                ${klPrinterSvg}
-                                <span>Verkaufsschild</span>
-                            </div>
-                        </div>`;
+                    if (isOverviewPage) {
+                        printBtn.innerHTML = `${klPrinterSvg}`;
+                        printBtn.classList.add('custom-icon-only-btn');
+                        printBtn.title = "Verkaufsschild drucken";
+                    } else {
+                        printBtn.innerHTML = `${klPrinterSvg}<span>Verkaufsschild</span>`;
+                        printLi = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                        printLi.style.margin = '0';
+                        printLi.style.width = '100%';
+                        printLi.style.display = 'flex';
+                        printLi.appendChild(printBtn);
+                    }
 
                     printBtn.onclick = async (e) => {
                         e.preventDefault();
@@ -1224,29 +1566,77 @@
                             }
                         }, 50);
                     };
-
-                    printLi.appendChild(printBtn);
-                    container.append(printLi);
                 }
 
                 // --- LILA CUSTOM BUTTONS ---
                 const doAction = (e, type) => {
                     e.preventDefault();
                     localStorage.setItem('__KL_AUTO_ACTION', JSON.stringify({action: type, adId}));
+                    localStorage.setItem('__KL_AUTO_REDIRECT', 'true');
                     window.location.href = link.href;
                 };
 
                 const liDup = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
                 liDup.style.margin = '0';
-                liDup.appendChild(createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate')));
+                liDup.appendChild(createBtn('Duplizieren', klDupSvg, (e) => doAction(e, 'duplicate')));
 
                 const liRelist = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
                 liRelist.style.margin = '0';
-                liRelist.appendChild(createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist')));
+                liRelist.appendChild(createBtn('Neu einstellen', klRelistSvg, (e) => doAction(e, 'relist')));
 
-                container.append(liDup, liRelist);
+                // --- NEUER TEILEN BUTTON FÜR DIE ÜBERSICHTSSEITE ---
+                let shareBtnEl = null;
+                if (isOverviewPage) {
+                    const shareAction = (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const card = link.closest('li[data-testid="ad-card"]');
+                        
+                        const titleLink = card ? card.querySelector('a[href*="/s-anzeige/"]') : null;
+                        const url = titleLink ? titleLink.href : window.location.href;
+                        
+                        // Titel explizit aus dem h2 (oder der Titel-Klasse) holen, da der erste Link oft das Bild mit der Foto-Anzahl ist!
+                        const titleHeading = card ? card.querySelector('h2, .text-title4') : null;
+                        let adTitle = 'Anzeige';
+                        if (titleHeading) {
+                            // Falls es einen Screenreader-Text davor gibt, bereinigen
+                            const clone = titleHeading.cloneNode(true);
+                            const srOnly = clone.querySelector('.sr-only');
+                            if (srOnly) srOnly.remove();
+                            adTitle = clone.textContent.trim();
+                        } else if (titleLink) {
+                            adTitle = titleLink.textContent.trim();
+                        }
+                        
+                        const imgEl = card ? card.querySelector('.imagebox-image img') : null;
+                        let imgUrl = '';
+                        if (imgEl) {
+                            imgUrl = imgEl.src;
+                            if (imgUrl.includes('data:image') && imgEl.dataset.src) {
+                                imgUrl = imgEl.dataset.src;
+                            }
+                        }
+                        
+                        showCustomShareModal(url, adTitle, imgUrl);
+                    };
+                    
+                    shareBtnEl = document.createElement('button');
+                    shareBtnEl.type = 'button';
+                    shareBtnEl.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn custom-icon-only-btn";
+                    shareBtnEl.innerHTML = `${klShareSvg}`;
+                    shareBtnEl.onclick = shareAction;
+                    shareBtnEl.title = "Anzeige teilen";
+                }
+
+                // Platzierung der Buttons in der Action-Spalte (Spalte 6)
+                if (isOverviewPage) {
+                    container.append(liDup, liRelist); // Teilen und Verkaufsschild wurden hier auf der Übersichtsseite entfernt
+                } else {
+                    if (printLi) container.append(printLi);
+                    container.append(liDup, liRelist);
+                }
                 
-                // --- TEILEN BUTTON AUS DER GERETTETEN SIDEBAR IN DIE LEISTE HOLEN ---
+                // --- TEILEN BUTTON AUS DER GERETTETEN SIDEBAR IN DIE LEISTE HOLEN (NUR DETAILSEITE) ---
                 if (isDetailPage) {
                     let shareBtn = document.getElementById('custom-rescued-share-btn') || document.querySelector('button.j-share-ad, a.j-share-ad');
                     if (shareBtn && !shareBtn.dataset.movedToActions) {
@@ -1255,14 +1645,13 @@
                         shareBtn.className = 'custom-native-btn-detail j-share-ad'; // Behalte Event-Klasse für natives Modal
                         shareBtn.style.display = 'inline-flex'; // Falls er während der Rettung ausgeblendet wurde
                         
-                        const shareSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`;
-                        shareBtn.innerHTML = `${shareSvg}<span>Teilen</span>`;
+                        shareBtn.innerHTML = `${klShareSvg}<span>Teilen</span>`;
                         
-                        const liShare = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                        liShare.style.margin = '0';
-                        liShare.appendChild(shareBtn);
+                        const liShareDetail = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                        liShareDetail.style.margin = '0';
+                        liShareDetail.appendChild(shareBtn);
                         
-                        container.appendChild(liShare);
+                        container.appendChild(liShareDetail);
                     }
                 }
                 
@@ -1339,7 +1728,7 @@
                         if (needsInjection) {
                             btn.dataset.iconInjected = 'true';
                             
-                            // Verkaufsschild
+                            // Verkaufsschild (auf Detailseite)
                             if (text.includes('drucken') || text.includes('Verkaufsschild')) {
                                 btn.innerHTML = `${klPrinterSvg}<span>Verkaufsschild</span>`;
                                 
@@ -1413,74 +1802,128 @@
                         const footer = card.querySelector('footer');
                         const infoCol = card.querySelector('.pl-medium.align-top');
                         
-                        if (footer && infoCol) {
-                            const mainWrapper = infoCol.parentElement;
-                            
-                            const featureSection = card.querySelector('#feature-offer-section');
-                            if (featureSection) featureSection.remove();
-                            
-                            const oldCardFooterWrapper = card.querySelector('.card-footer');
-
-                            const newFooterDiv = document.createElement('div');
-                            newFooterDiv.className = 'mt-xsmall custom-action-area';
-                            newFooterDiv.style.display = 'flex';
-                            newFooterDiv.style.flexDirection = 'column';
-                            newFooterDiv.style.justifyContent = 'center';
-                            newFooterDiv.style.height = '100%';
-                            
-                            while (footer.firstChild) {
-                                newFooterDiv.appendChild(footer.firstChild);
+                        if (infoCol) {
+                            // --- EINBAU DES TEILEN-BUTTONS IN SPALTE 2 ---
+                            if (shareBtnEl && !shareBtnEl.parentElement) {
+                                let priceEl = card.querySelector('.text-title3');
+                                if (!priceEl) {
+                                    priceEl = Array.from(card.querySelectorAll('li, p, span, div')).find(el => 
+                                        (el.textContent.includes('€') || el.textContent.includes('VB')) &&
+                                        !el.classList.contains('custom-shipping-info') &&
+                                        el.children.length === 0
+                                    );
+                                }
+                                if (priceEl) {
+                                    // Flexbox Setup mit space-between, drückt den Button garantiert ganz nach rechts
+                                    priceEl.classList.add('has-custom-btn');
+                                    
+                                    // Wrapper für den Content links (Preis + Versand)
+                                    const leftContent = document.createElement('div');
+                                    leftContent.style.display = 'flex';
+                                    leftContent.style.alignItems = 'center';
+                                    leftContent.style.gap = '4px';
+                                    leftContent.style.flexWrap = 'nowrap';
+                                    
+                                    // Verschiebe existierenden Inhalt in den linken Wrapper
+                                    while (priceEl.firstChild) {
+                                        leftContent.appendChild(priceEl.firstChild);
+                                    }
+                                    
+                                    priceEl.appendChild(leftContent);
+                                    priceEl.appendChild(shareBtnEl);
+                                } else {
+                                    shareBtnEl.style.marginLeft = 'auto';
+                                    infoCol.appendChild(shareBtnEl);
+                                }
                             }
 
-                            const dividerDiv2 = document.createElement('div');
-                            dividerDiv2.style.background = '#e0e0e0';
-                            dividerDiv2.style.width = '1px';
-                            dividerDiv2.style.height = '130px'; 
-
-                            const statsContainer = document.createElement('div');
-                            statsContainer.className = 'custom-stats-area align-top';
-                            statsContainer.style.display = 'flex';
-                            statsContainer.style.flexDirection = 'column';
-                            statsContainer.style.height = '100%';
-
-                            const analyseHeader = document.createElement('div');
-                            analyseHeader.className = 'mb-xsmall text-bodySmall text-onSurfaceNonessential';
-                            analyseHeader.style.textDecoration = 'underline';
-                            analyseHeader.textContent = 'Anzeigenanalyse';
-                            statsContainer.appendChild(analyseHeader);
-
-                            let statsSection = infoCol.querySelector('section.text-onSurfaceNonessential') || infoCol.querySelector('section[class*="text-onSurfaceNonessential"]');
-                            if (!statsSection) {
-                                statsSection = document.createElement('section');
-                                statsSection.className = 'text-bodySmall text-onSurfaceNonessential';
+                            // --- EINBAU DES VERKAUFSSCHILD-BUTTONS IN SPALTE 2 ---
+                            if (printBtn && !printBtn.parentElement) {
+                                let bottomRow = infoCol.querySelector('.custom-bottom-row');
+                                if (!bottomRow) {
+                                    bottomRow = document.createElement('div');
+                                    bottomRow.className = 'custom-bottom-row';
+                                    bottomRow.style.display = 'flex';
+                                    bottomRow.style.justifyContent = 'space-between'; // Drückt links und rechts auseinander
+                                    bottomRow.style.alignItems = 'center';
+                                    bottomRow.style.marginTop = '0px'; 
+                                    bottomRow.style.width = '100%';
+                                    infoCol.appendChild(bottomRow);
+                                } else {
+                                    bottomRow.style.justifyContent = 'space-between';
+                                }
+                                bottomRow.appendChild(printBtn);
                             }
                             
-                            statsSection.style.marginTop = '0'; 
-                            statsSection.style.display = 'flex';
-                            statsSection.style.flexDirection = 'column';
-                            statsSection.style.gap = '12px'; 
-                            statsSection.style.height = '100%';
-                            statsContainer.appendChild(statsSection);
+                            if (footer) {
+                                const mainWrapper = infoCol.parentElement;
+                                
+                                const featureSection = card.querySelector('#feature-offer-section');
+                                if (featureSection) featureSection.remove();
+                                
+                                const oldCardFooterWrapper = card.querySelector('.card-footer');
 
-                            const dividerDiv1 = document.createElement('div');
-                            dividerDiv1.style.background = '#e0e0e0';
-                            dividerDiv1.style.width = '1px';
-                            dividerDiv1.style.height = '130px'; 
-                            
-                            mainWrapper.className = "grid w-full custom-ad-grid";
-                            
-                            const originalHeader = infoCol.querySelector('.mb-xsmall.text-bodySmall.text-onSurfaceNonessential');
-                            if (originalHeader) {
-                                originalHeader.style.textDecoration = 'underline';
+                                const newFooterDiv = document.createElement('div');
+                                newFooterDiv.className = 'mt-xsmall custom-action-area';
+                                newFooterDiv.style.display = 'flex';
+                                newFooterDiv.style.flexDirection = 'column';
+                                newFooterDiv.style.justifyContent = 'center';
+                                newFooterDiv.style.height = '100%';
+                                
+                                while (footer.firstChild) {
+                                    newFooterDiv.appendChild(footer.firstChild);
+                                }
+
+                                const dividerDiv2 = document.createElement('div');
+                                dividerDiv2.style.background = '#e0e0e0';
+                                dividerDiv2.style.width = '1px';
+                                dividerDiv2.style.height = '110px'; 
+
+                                const statsContainer = document.createElement('div');
+                                statsContainer.className = 'custom-stats-area align-top';
+                                statsContainer.style.display = 'flex';
+                                statsContainer.style.flexDirection = 'column';
+                                statsContainer.style.height = '100%';
+
+                                const analyseHeader = document.createElement('div');
+                                analyseHeader.className = 'mb-xsmall text-bodySmall text-onSurfaceNonessential';
+                                analyseHeader.style.textDecoration = 'underline';
+                                analyseHeader.textContent = 'Anzeigenanalyse';
+                                statsContainer.appendChild(analyseHeader);
+
+                                let statsSection = infoCol.querySelector('section.text-onSurfaceNonessential') || infoCol.querySelector('section[class*="text-onSurfaceNonessential"]');
+                                if (!statsSection) {
+                                    statsSection = document.createElement('section');
+                                    statsSection.className = 'text-bodySmall text-onSurfaceNonessential';
+                                }
+                                
+                                statsSection.style.marginTop = '0'; 
+                                statsSection.style.display = 'flex';
+                                statsSection.style.flexDirection = 'column';
+                                statsSection.style.gap = '12px'; 
+                                statsSection.style.height = '100%';
+                                statsContainer.appendChild(statsSection);
+
+                                const dividerDiv1 = document.createElement('div');
+                                dividerDiv1.style.background = '#e0e0e0';
+                                dividerDiv1.style.width = '1px';
+                                dividerDiv1.style.height = '110px'; 
+                                
+                                mainWrapper.className = "grid w-full custom-ad-grid";
+                                
+                                const originalHeader = infoCol.querySelector('.mb-xsmall.text-bodySmall.text-onSurfaceNonessential');
+                                if (originalHeader) {
+                                    originalHeader.style.textDecoration = 'underline';
+                                }
+
+                                mainWrapper.appendChild(dividerDiv1);
+                                mainWrapper.appendChild(statsContainer);
+                                mainWrapper.appendChild(dividerDiv2);
+                                mainWrapper.appendChild(newFooterDiv);
+
+                                footer.remove();
+                                if (oldCardFooterWrapper) oldCardFooterWrapper.remove();
                             }
-
-                            mainWrapper.appendChild(dividerDiv1);
-                            mainWrapper.appendChild(statsContainer);
-                            mainWrapper.appendChild(dividerDiv2);
-                            mainWrapper.appendChild(newFooterDiv);
-
-                            footer.remove();
-                            if (oldCardFooterWrapper) oldCardFooterWrapper.remove();
                         }
                     }
                 }
@@ -1517,31 +1960,45 @@
                                             const infoColTarget = card.querySelector('.custom-ad-grid > div:nth-child(2)');
                                             
                                             if (statsSection) {
-                                                let statsUl = statsSection.querySelector('ul');
-                                                if (!statsUl) {
-                                                    statsUl = document.createElement('ul');
-                                                    statsUl.className = 'm-none mb-xxsmall flex min-h-[22px] list-none p-none';
-                                                    statsSection.appendChild(statsUl);
-                                                }
-
-                                                statsUl.style.flexWrap = 'wrap';
-                                                statsUl.style.rowGap = '8px'; 
-                                                statsUl.style.columnGap = '12px';
-                                                statsUl.style.marginBottom = '0'; 
-
-                                                Array.from(statsUl.querySelectorAll('li')).forEach(li => {
-                                                    li.style.display = 'flex';
-                                                    li.style.alignItems = 'center';
-                                                    li.style.gap = '4px';
-                                                    if (li.textContent.includes('Besucher')) li.title = "Besucher";
-                                                });
-
+                                                let visitors = 0;
+                                                let watchers = 0;
                                                 let endDateStr = "Unbekannt";
+
+                                                // Robuste Datumssuche für "Endet am" - Suchbereich auf 'card' erweitert
                                                 const oldEndDateSpan = card.querySelector('.managead-listitem-enddate');
                                                 if (oldEndDateSpan) {
-                                                    endDateStr = oldEndDateSpan.textContent.trim();
-                                                    const oldLi = oldEndDateSpan.closest('li');
-                                                    if (oldLi) oldLi.remove(); 
+                                                    endDateStr = oldEndDateSpan.textContent.replace(/Endet am/i, '').trim();
+                                                    // Versteckt das originale Element, damit es nicht doppelt im UI auftaucht
+                                                    if (oldEndDateSpan.parentElement) oldEndDateSpan.parentElement.style.display = 'none';
+                                                }
+
+                                                // Originale Statistiken extrahieren und dann das alte Element entfernen
+                                                const originalStatsUl = statsSection.querySelector('ul');
+                                                if (originalStatsUl) {
+                                                    const statItems = originalStatsUl.querySelectorAll('li');
+                                                    statItems.forEach(li => {
+                                                        const text = li.textContent.trim();
+                                                        if(text.includes('Besucher')) {
+                                                            let match = text.match(/\d+/);
+                                                            if(match) visitors = parseInt(match[0], 10);
+                                                        }
+                                                        else if(text.toLowerCase().includes('gemerkt')) {
+                                                            let match = text.match(/\d+/);
+                                                            if(match) watchers = parseInt(match[0], 10);
+                                                        }
+                                                        else if (endDateStr === "Unbekannt" && text.includes('Endet am')) {
+                                                            endDateStr = text.replace(/Endet am/i, '').trim();
+                                                        }
+                                                    });
+                                                    
+                                                    // Entfernt die alte von Kleinanzeigen generierte Liste komplett!
+                                                    originalStatsUl.remove();
+                                                }
+                                                
+                                                // Fallback für Endet-am, falls das Format extrem abweicht
+                                                if (endDateStr === "Unbekannt") {
+                                                     const matchFallback = card.textContent.match(/Endet am\s*([\d\.]+)/i);
+                                                     if (matchFallback) endDateStr = matchFallback[1];
                                                 }
 
                                                 let daysOnline = 1;
@@ -1556,179 +2013,93 @@
                                                     }
                                                 }
 
-                                                let daysColor = '#008000'; 
-                                                if (daysOnline >= 30 && daysOnline <= 49) {
-                                                    daysColor = '#FFA500'; 
-                                                } else if (daysOnline >= 50) {
-                                                    daysColor = '#FF0000'; 
+                                                // Ampelsystem Logik
+                                                let daysColor = '#008000'; // Grün
+                                                if (daysOnline >= 21 && daysOnline <= 34) {
+                                                    daysColor = '#FFA500'; // Gelb
+                                                } else if (daysOnline >= 35) {
+                                                    daysColor = '#FF0000'; // Rot
                                                 }
-
-                                                let visitors = 0;
-                                                let watchers = 0;
-                                                const statItems = statsUl.querySelectorAll('li');
-                                                statItems.forEach(li => {
-                                                    if(li.textContent.includes('Besucher')) {
-                                                        visitors = parseInt(li.textContent.replace(/\D/g, '')) || 0;
-                                                    }
-                                                    if(li.textContent.includes('gemerkt')) {
-                                                        watchers = parseInt(li.textContent.replace(/\D/g, '')) || 0;
-                                                    }
-                                                });
                                             
                                                 const avgVisitors = (visitors / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
                                                 const avgWatchers = (watchers / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
 
-                                                const svgClass = "shrink-0 block align-middle text-onSurfaceNonessential";
+                                                let analyseGrid = statsSection.querySelector('.custom-analyse-grid');
+                                                if (!analyseGrid) {
+                                                    analyseGrid = document.createElement('div');
+                                                    analyseGrid.className = 'custom-analyse-grid';
+                                                    statsSection.appendChild(analyseGrid);
+                                                }
 
-                                                if (!statsSection.querySelector('.custom-dates-ul')) {
-                                                    const datesUl = document.createElement('ul');
-                                                    datesUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-dates-ul';
-                                                    datesUl.style.flexWrap = 'wrap';
-                                                    datesUl.style.rowGap = '8px';
-                                                    datesUl.style.columnGap = '12px';
-                                                    datesUl.style.marginTop = '8px';
+                                                const svgClass = "shrink-0 block align-middle";
+                                                const iconErstellt = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}" style="width: 14px; height: 14px;"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>`;
+                                                const iconEndet = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}" style="width: 14px; height: 14px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+                                                const iconOnline = `<svg viewBox="0 0 24 24" fill="none" stroke="${daysColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}" style="width: 14px; height: 14px;"><rect x="3" y="2" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="1" x2="16" y2="6"></line><line x1="8" y1="1" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>`;
+                                                const iconBesucher = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+                                                const iconMerkliste = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+                                                const iconAvgVis = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><svg x="0" y="0" width="18" height="18" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><svg x="7" y="9" width="16" height="16" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></svg>`;
+                                                const iconAvgWat = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><svg x="0" y="0" width="18" height="18" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><svg x="7" y="9" width="16" height="16" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></svg>`;
+                                                const iconId = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>`;
 
-                                                    if (details.date) {
-                                                        datesUl.innerHTML += `
-                                                            <li class="custom-stat-li" title="Erstellt am">
-                                                                <span class="inline-block-icon" style="display: flex; align-items: center; padding-bottom: 0px;">
-                                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}" style="width: 16px !important; height: 16px !important;">
-                                                                        <path d="m3 11 18-5v12L3 14v-3z"></path>
-                                                                        <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path>
-                                                                    </svg>
-                                                                </span>
-                                                                <span>${details.date}</span>
-                                                            </li>
-                                                        `;
-                                                    }
+                                                const makeItem = (icon, text, tooltip, color) => `
+                                                    <div class="custom-analyse-item" title="${tooltip}">
+                                                        ${icon ? `<span class="custom-stat-label" ${color ? `style="color:${color};"` : ''}>${icon}</span>` : ''}
+                                                        <span class="custom-stat-value" ${color ? `style="color:${color}; font-weight:bold;"` : ''}>${text}</span>
+                                                    </div>
+                                                `;
 
-                                                    if (endDateStr !== "Unbekannt") {
-                                                        datesUl.innerHTML += `
-                                                            <li class="custom-stat-li" title="Endet am">
-                                                                <span class="inline-block-icon" style="display: flex; align-items: center;">
-                                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}" style="width: 16px !important; height: 16px !important;">
-                                                                        <circle cx="12" cy="12" r="10"></circle>
-                                                                        <polyline points="12 6 12 12 16 14"></polyline>
-                                                                    </svg>
-                                                                </span>
-                                                                <span class="managead-listitem-enddate">${endDateStr}</span>
-                                                                <span title="Online seit" style="margin-left: 8px; display: inline-flex; align-items: center; gap: 4px; color: ${daysColor};">
-                                                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 16px !important; height: 16px !important;">
-                                                                        <rect x="3" y="2" width="18" height="18" rx="2" ry="2"></rect>
-                                                                        <line x1="16" y1="1" x2="16" y2="6"></line>
-                                                                        <line x1="8" y1="1" x2="8" y2="6"></line>
-                                                                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                                                                    </svg>
-                                                                    ${daysOnline === 1 ? '1 Tag' : daysOnline + ' Tage'}
-                                                                </span>
-                                                            </li>
-                                                        `;
-                                                    }
+                                                // Neues sauberes CSS Grid generieren:
+                                                analyseGrid.innerHTML = `
+                                                    ${makeItem(iconErstellt, details.date || 'Unbekannt', 'Erstellt am')}
+                                                    ${makeItem(iconEndet, endDateStr, 'Endet am')}
+                                                    ${makeItem(iconOnline, daysOnline === 1 ? '1 Tag' : daysOnline + ' Tage', 'Online seit', daysColor)}
                                                     
-                                                    statsSection.insertBefore(datesUl, statsUl);
-                                                }
-
-                                                let avgUl = statsSection.querySelector('.custom-avg-ul');
-                                                if (!avgUl) {
-                                                    avgUl = document.createElement('ul');
-                                                    avgUl.className = 'm-none flex min-h-[22px] list-none p-none custom-avg-ul';
-                                                    avgUl.style.flexWrap = 'wrap';
-                                                    avgUl.style.rowGap = '8px';
-                                                    avgUl.style.columnGap = '12px';
-                                                    statsUl.after(avgUl); 
-                                                }
-
-                                                if (!avgUl.querySelector('.custom-avg-visitors')) {
-                                                    const avgVisLi = document.createElement('li');
-                                                    avgVisLi.className = 'custom-avg-visitors custom-stat-li';
-                                                    avgVisLi.title = 'Besucher pro Tag';
-                                                    avgVisLi.style.display = 'flex';
-                                                    avgVisLi.style.alignItems = 'center';
-                                                    avgVisLi.style.gap = '4px';
+                                                    ${makeItem(iconBesucher, visitors + ' Besucher', 'Besucher')}
+                                                    ${makeItem(iconMerkliste, watchers + 'x gemerkt', 'Merkliste')}
+                                                    <div></div>
                                                     
-                                                    avgVisLi.innerHTML = `
-                                                        <span class="inline-block-icon" style="display: flex; align-items: center; margin-left: 2px;">
-                                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                                <svg x="0" y="0" width="18" height="18" viewBox="0 0 24 24">
-                                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>
-                                                                </svg>
-                                                                <svg x="7" y="9" width="16" height="16" viewBox="0 0 24 24">
-                                                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>
-                                                                </svg>
-                                                            </svg>
-                                                        </span>
-                                                        <span>${avgVisitors} pro Tag</span>
-                                                    `;
-                                                    avgUl.appendChild(avgVisLi);
-                                                }
-
-                                                if (!avgUl.querySelector('.custom-avg-watchers')) {
-                                                    const avgWatLi = document.createElement('li');
-                                                    avgWatLi.className = 'custom-avg-watchers custom-stat-li';
-                                                    avgWatLi.title = 'Gemerkt pro Tag';
-                                                    avgWatLi.style.display = 'flex';
-                                                    avgWatLi.style.alignItems = 'center';
-                                                    avgWatLi.style.gap = '4px';
-
-                                                    avgWatLi.innerHTML = `
-                                                        <span class="inline-block-icon" style="display: flex; align-items: center;">
-                                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                                <svg x="0" y="0" width="18" height="18" viewBox="0 0 24 24">
-                                                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                                                                </svg>
-                                                                <svg x="7" y="9" width="16" height="16" viewBox="0 0 24 24">
-                                                                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>
-                                                                </svg>
-                                                            </svg>
-                                                        </span>
-                                                        <span>${avgWatchers} pro Tag</span>
-                                                    `;
-                                                    avgUl.appendChild(avgWatLi);
-                                                }
-
-                                                if (!statsSection.querySelector('.custom-ad-id-row')) {
-                                                    const idUl = document.createElement('ul');
-                                                    idUl.className = 'm-none flex min-h-[22px] list-none p-none custom-ad-id-row';
-                                                    idUl.style.marginTop = '0px'; 
+                                                    ${makeItem(iconAvgVis, avgVisitors + ' pro Tag', 'Besucher pro Tag')}
+                                                    ${makeItem(iconAvgWat, avgWatchers + ' pro Tag', 'Gemerkt pro Tag')}
+                                                    <div></div>
                                                     
-                                                    // Margin-Right von 4px simuliert zusammen mit dem standard-flex-gap von 4px genau den gewünschten 8px Abstand
-                                                    idUl.innerHTML = `
-                                                        <li class="custom-stat-li" style="width: 100%; display: flex; align-items: center; padding-top: 2px;">
-                                                            <span class="inline-block-icon" style="display: flex; align-items: center; margin-left: 2px; margin-right: 0px;">
-                                                                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}">
-                                                                    <line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line>
-                                                                </svg>
-                                                            </span>
-                                                            <span style="color: inherit; margin-right: 4px;">Anzeigen-ID</span>
-                                                            <span style="font-weight: normal;">${adId}</span>
-                                                        </li>
-                                                    `;
-                                                    statsSection.appendChild(idUl);
-                                                }
+                                                    ${makeItem(iconId, 'Anzeigen-ID', 'Anzeigen-ID')}
+                                                    ${makeItem('', adId, 'Anzeigen-ID')}
+                                                    <div></div>
+                                                `;
                                             }
 
                                             if (details.location && infoColTarget && !infoColTarget.querySelector('.custom-loc-ul')) {
                                                 const locUl = document.createElement('ul');
                                                 locUl.className = 'm-none flex min-h-[22px] list-none gap-x-xsmall p-none custom-loc-ul text-bodySmall text-onSurfaceNonessential';
-                                                locUl.style.flexWrap = 'wrap';
-                                                locUl.style.rowGap = '4px';
-                                                locUl.style.columnGap = '12px';
-                                                locUl.style.marginTop = 'auto'; 
+                                                locUl.style.flexWrap = 'nowrap'; // Geändert auf nowrap, um alles auf einer Linie zu halten
+                                                locUl.style.alignItems = 'center';
 
                                                 const svgClass = "shrink-0 block align-middle text-onSurfaceNonessential";
                                                 locUl.innerHTML = `
-                                                    <li class="custom-stat-li" title="Ort">
+                                                    <li class="custom-analyse-item" title="Ort">
                                                         <span class="inline-block-icon" style="display: flex; align-items: center;">
                                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}" style="width: 16px !important; height: 16px !important;">
                                                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                                                                 <circle cx="12" cy="10" r="3"></circle>
                                                             </svg>
                                                         </span>
-                                                        <span>${details.location}</span>
+                                                        <span style="font-weight: normal;">${details.location}</span>
                                                     </li>
                                                 `;
                                                 
-                                                infoColTarget.appendChild(locUl);
+                                                // Location in die neue untere Zeile (zusammen mit dem Verkaufsschild-Button) einfügen
+                                                let bottomRow = infoColTarget.querySelector('.custom-bottom-row');
+                                                if (bottomRow) {
+                                                    const printB = bottomRow.querySelector('.custom-icon-only-btn');
+                                                    if (printB) {
+                                                        bottomRow.insertBefore(locUl, printB);
+                                                    } else {
+                                                        bottomRow.appendChild(locUl);
+                                                    }
+                                                } else {
+                                                    locUl.style.marginTop = '0px'; 
+                                                    infoColTarget.appendChild(locUl);
+                                                }
                                             }
 
                                             if (details.shipping) {
@@ -1752,12 +2123,13 @@
                                                     span.style.marginLeft = '4px';
                                                     span.textContent = details.shipping;
                                                     
-                                                    priceEl.style.display = 'flex';
-                                                    priceEl.style.alignItems = 'baseline';
-                                                    priceEl.style.gap = '4px';
-                                                    priceEl.style.flexWrap = 'wrap'; 
-                                                    
-                                                    priceEl.appendChild(span);
+                                                    // Die Info in den korrekten Container setzen (den linken Teil, falls Flexbox aktiv)
+                                                    const leftContent = priceEl.querySelector('div');
+                                                    if (leftContent) {
+                                                        leftContent.appendChild(span);
+                                                    } else {
+                                                        priceEl.appendChild(span);
+                                                    }
                                                 }
                                             }
 
@@ -1821,19 +2193,37 @@
                 e.preventDefault(); e.stopPropagation();
                 window.__KL_ACTION = type;
                 window.__KL_OLD_AD_ID = currentAdId;
+                localStorage.setItem('__KL_AUTO_REDIRECT', 'true');
                 showLoading();
                 saveBtn.click();
-                
-                setInterval(() => {
-                    const skip = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Ohne Hochschieben weiter'));
-                    if (skip) skip.click();
-                }, 200);
             };
 
-            const btnDup = createBtn('Duplizieren', '⧉', (e) => doAction(e, 'duplicate'));
-            const btnRelist = createBtn('Neu einstellen', '⟳', (e) => doAction(e, 'relist'));
+            const btnDup = createBtn('Duplizieren', klDupSvg, (e) => doAction(e, 'duplicate'));
+            const btnRelist = createBtn('Neu einstellen', klRelistSvg, (e) => doAction(e, 'relist'));
 
             saveBtn.after(btnDup, btnRelist);
+            
+            // NEU: Standard-Speichern fangen und auf Übersicht umleiten
+            saveBtn.addEventListener('click', () => {
+                if (!window.__KL_ACTION) {
+                    localStorage.setItem('__KL_AUTO_REDIRECT', 'true');
+                    
+                    // Fallback: Falls die Validierung fehlschlägt, den Redirect bei nächster Interaktion abbrechen
+                    const resetRedirect = (e) => {
+                        // Ignoriere Interaktionen mit dem automatischen Werbe-Popup
+                        if (e.target && e.target.textContent && e.target.textContent.includes('Ohne Hochschieben')) return;
+                        localStorage.removeItem('__KL_AUTO_REDIRECT');
+                        document.removeEventListener('input', resetRedirect);
+                        document.removeEventListener('click', resetRedirect);
+                    };
+                    
+                    setTimeout(() => {
+                        document.addEventListener('input', resetRedirect);
+                        document.addEventListener('click', resetRedirect);
+                    }, 1500);
+                }
+            });
+
             container.dataset.klInjected = 'true';
         }
     };
@@ -1844,7 +2234,6 @@
     // PAGINIERUNG (Übersicht) SYNC & ZENTRIERUNG
     // ==========================================
     if (isOverviewPage) {
-        
         function getBottomNavContainer() {
             const navs = Array.from(document.querySelectorAll('nav'));
             for (const nav of navs) {
@@ -1914,7 +2303,64 @@
                 topContainer.innerHTML = currentHTML;
                 topContainer.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
             }
+        }, 500);
+    }
 
+    // ==========================================
+    // PAGINIERUNG (Suche) SYNC & ZENTRIERUNG
+    // ==========================================
+    if (isSearchPage) {
+        setInterval(() => {
+            const bottomContainer = document.getElementById('srchrslt-pagination');
+            if (!bottomContainer) return;
+
+            const currentHTML = bottomContainer.innerHTML;
+            let topContainer = document.getElementById('custom-top-pagination-search');
+
+            if (!topContainer) {
+                topContainer = document.createElement('div');
+                topContainer.id = 'custom-top-pagination-search';
+                
+                // Styling identisch zur unteren Leiste
+                topContainer.className = bottomContainer.className;
+                topContainer.style.paddingTop = '0px';
+                topContainer.style.paddingBottom = '16px';
+                topContainer.style.width = '100%';
+                topContainer.style.display = 'flex';
+                topContainer.style.justifyContent = 'center';
+                topContainer.style.zIndex = '10';
+
+                // Wir positionieren die neue Navigation exakt VOR der Liste der Suchergebnisse
+                const adList = document.querySelector('#srchrslt-adtable');
+                if (adList && adList.parentNode) {
+                    adList.parentNode.insertBefore(topContainer, adList);
+                } else {
+                    return; // Falls die Liste noch nicht im DOM ist, beim nächsten Interval probieren
+                }
+
+                // Event Listener für geklonte Navigation
+                topContainer.addEventListener('click', (e) => {
+                    const spanWithUrl = e.target.closest('[data-url]');
+                    if (spanWithUrl) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.location.href = spanWithUrl.getAttribute('data-url');
+                    }
+                    // Info: Klicks auf native "a[href]" Links navigieren automatisch und müssen nicht abgefangen werden
+                });
+            }
+
+            if (topContainer.dataset.sourceHtml !== currentHTML) {
+                topContainer.dataset.sourceHtml = currentHTML;
+                
+                // Scripts blocken, damit Kleinanzeigens Pagination-Skript nicht versehentlich doppelt an den Knoten feuert
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = currentHTML;
+                tempDiv.querySelectorAll('script').forEach(s => s.remove());
+                tempDiv.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+                
+                topContainer.innerHTML = tempDiv.innerHTML;
+            }
         }, 500);
     }
 
@@ -1922,6 +2368,24 @@
     // AUTO-SAVE VERARBEITUNG
     // ==========================================
     if (isEditPage) {
+        // --- Automatisches Wegklicken des Werbe-Popups ---
+        const startSkipObserver = () => {
+            if (!document.body) {
+                requestAnimationFrame(startSkipObserver);
+                return;
+            }
+            const skipObserver = new MutationObserver(() => {
+                const skipBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Ohne Hochschieben weiter'));
+                if (skipBtn && !skipBtn.dataset.autoClicked) {
+                    skipBtn.dataset.autoClicked = 'true';
+                    localStorage.setItem('__KL_AUTO_REDIRECT', 'true'); // Sicherstellen, dass der Redirect nach dem Popup läuft
+                    skipBtn.click();
+                }
+            });
+            skipObserver.observe(document.body, { childList: true, subtree: true });
+        };
+        startSkipObserver();
+
         const config = JSON.parse(localStorage.getItem('__KL_AUTO_ACTION') || '{}');
         const currentId = new URLSearchParams(window.location.search).get('adId');
         if (config.adId === currentId) {
@@ -1934,10 +2398,6 @@
                         window.__KL_ACTION = config.action;
                         window.__KL_OLD_AD_ID = currentId;
                         btn.click();
-                        setInterval(() => {
-                            const skip = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Ohne Hochschieben weiter'));
-                            if (skip) skip.click();
-                        }, 200);
                     }
                 }, 800);
             });
@@ -1945,15 +2405,79 @@
     }
 
     // ==========================================
-    // LÖSCHEN & NETWORK INTERCEPTOR
+    // LÖSCHEN, REDIRECT & NETWORK INTERCEPTOR
     // ==========================================
-    if (isConfirmPage) {
-        const delId = localStorage.getItem('__KL_PENDING_DELETE');
-        if (delId) {
-            const token = document.querySelector('meta[name="_csrf"]')?.content;
-            fetch(`/m-anzeigen-loeschen.json?ids=${delId}`, { method: 'POST', headers: { 'x-csrf-token': token }})
-            .then(() => localStorage.removeItem('__KL_PENDING_DELETE'));
-        }
+    const shouldAutoRedirect = localStorage.getItem('__KL_AUTO_REDIRECT') === 'true';
+    const delId = localStorage.getItem('__KL_PENDING_DELETE');
+
+    // Falls der User den Prozess abbricht und manuell zur Übersicht wechselt: Status bereinigen
+    if (isOverviewPage && !delId) {
+        localStorage.removeItem('__KL_AUTO_REDIRECT');
+    }
+
+    // Abfangen der Zielseiten, um Seiten-Flackern beim Redirect zu verhindern
+    if (shouldAutoRedirect && (isConfirmPage || isDetailPage)) {
+        document.documentElement.style.opacity = '0'; // Seite sofort unsichtbar schalten
+        
+        window.addEventListener('DOMContentLoaded', () => {
+            document.documentElement.style.opacity = '1';
+            const spinner = document.createElement("div");
+            Object.assign(spinner.style, {
+                height: '100%', width: '100%', position: 'fixed', top: '0', left: '0',
+                zIndex: '999999', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(5px)'
+            });
+            spinner.innerHTML = '<div style="font-size: 20px; font-weight: bold; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: #86B817; text-align: center;">Aktion erfolgreich!<br><span style="font-size: 14px; color: #666; font-weight: normal; margin-top: 10px; display: block;">Rückkehr zur Übersicht...</span></div>';
+            document.body.innerHTML = ''; // Entfernt Original-Body um Popups/Upsells zu blocken
+            document.body.appendChild(spinner);
+        });
+    }
+
+    // WICHTIG: Die Löschung darf nicht nur auf isConfirmPage geprüft werden!
+    // Kleinanzeigen leitet manchmal direkt auf die neue Detailseite weiter.
+    if (delId && (isConfirmPage || isDetailPage || isOverviewPage)) {
+        localStorage.removeItem('__KL_PENDING_DELETE'); // Verhindert mehrfaches Auslösen
+
+        (async () => {
+            let token = document.querySelector('meta[name="_csrf"]')?.content;
+            
+            // Failsafe: Falls die Zielseite (z.B. Detailseite) keinen CSRF-Token im Head hat,
+            // holen wir ihn uns schnell unsichtbar von der Übersichtsseite.
+            if (!token) {
+                try {
+                    const response = await fetch('/m-meine-anzeigen.html');
+                    const html = await response.text();
+                    const match = html.match(/<meta\s+name="_csrf"\s+content="([^"]+)"/i);
+                    if (match) token = match[1];
+                } catch(e) {
+                    console.error('Fehler beim Holen des CSRF Tokens:', e);
+                }
+            }
+
+            if (token) {
+                try {
+                    await fetch(`/m-anzeigen-loeschen.json?ids=${delId}`, { 
+                        method: 'POST', 
+                        headers: { 'x-csrf-token': token }
+                    });
+                } catch(e) {
+                    console.error('Fehler beim Löschen der alten Anzeige:', e);
+                }
+            }
+
+            // Nach Abschluss navigieren
+            if (shouldAutoRedirect && !isOverviewPage) {
+                localStorage.removeItem('__KL_AUTO_REDIRECT');
+                window.location.replace('/m-meine-anzeigen.html');
+            } else if (isOverviewPage && shouldAutoRedirect) {
+                localStorage.removeItem('__KL_AUTO_REDIRECT');
+                window.location.reload();
+            }
+        })();
+    } else if (shouldAutoRedirect && (isConfirmPage || isDetailPage)) {
+        // Failsafe: Nur Redirect, wenn nichts gelöscht werden muss
+        localStorage.removeItem('__KL_AUTO_REDIRECT');
+        window.location.replace('/m-meine-anzeigen.html');
     }
 
     const originalFetch = window.fetch;

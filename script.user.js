@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.6.95
+// @version       2.6.100
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -61,7 +61,7 @@
         .absolute.top-none.left-small.bottom-1\\/2, .absolute.bottom-none.top-1\\/2.left-small.pt-large,
         .ad-module, div[data-testid*="banner"]:not([data-testid*="gdpr"]), div[data-testid*="ad-wrapper"],
         .mb-small:has(> .ad-module), .mb-small:has([id^="dfp-"]), li:has(> .ad-module),
-        ul#srchrslt-adtable > li:has([data-liberty-position-name]), 
+        ul#srchrslt-adtable > li:has([data-liberty-position-name]),
         ul#srchrslt-adtable > li:has([id^="srps-result-list"]),
         div.mx-auto.mb-small:has([data-liberty-position-name]):not(:has(#srchrslt-adtable)),
         div.mx-auto.mb-small:has([id^="srps-result-list"]):not(:has(#srchrslt-adtable)),
@@ -71,7 +71,7 @@
         #gdpr-banner-container, dialog#gdpr-banner { display: block !important; visibility: visible !important; }
 
         section[data-testid="page-container"] { margin-bottom: 0px !important; }
-        
+
         /* Verstecke Kleinanzeigen Original-Elemente (z.B. alte Views/Watchers über den Buttons) */
         .flex.text-bodySmall.my-xsmall.text-onSurface { display: none !important; }
 
@@ -79,12 +79,12 @@
         .relative.mb-small.box-border.min-h-\\[10px\\].rounded-xsmall.text-onSurfaceSubdued { margin-bottom: 0px !important; }
         #tab-panel-all, [aria-labelledby="tabs-all"] { margin-top: 6px !important; }
         .text-left.text-bodySmall.text-onSurfaceNonessential { row-gap: 3px !important; }
-        
+
         /* Spezifische Abstände laut Anforderung */
         .mx-none.my-xsmall.text-title4 { margin-top: 0px !important; margin-bottom: 0px !important; }
         .mb-xsmall.text-bodySmall.text-onSurfaceNonessential { margin-bottom: 3px !important; }
         .custom-bottom-row { margin-top: 0px !important; }
-        
+
         /* Container-Padding Fix */
         .jsx-1105488430.l-page-wrapper.l-container-row { padding-top: 12px !important; }
         .l-page-wrapper.l-container-row { padding-top: 20px !important; }
@@ -158,7 +158,7 @@
             height: 2.6em !important; /* NEU: Erzwingt exakt den Platz von 2 Zeilen (1.3 * 2 = 2.6) */
             min-height: 2.6em !important;
         }
-        
+
         /* Flex-Basis-Fix für Preis-Zeile mit Button und Abstandsanpassung */
         .is-overview-page .custom-ad-grid .text-title3.has-custom-btn {
             display: flex !important;
@@ -198,7 +198,7 @@
            NEUES PROFIL DASHBOARD (MOCKUP STYLES)
            ==================================================== */
         .kl-hidden-original { display: none !important; }
-        
+
         .ownprofile-main.custom-replaced {
             background: transparent !important;
             padding: 0 !important;
@@ -254,7 +254,7 @@
             line-height: normal !important;
         }
         .cpd-avatar-col img { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        
+
         /* 2. Main Info Column */
         .cpd-info-col {
             flex: 1;
@@ -266,17 +266,17 @@
         }
         .cpd-name-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .cpd-name-row h2 { font-size: 24px !important; font-weight: 700 !important; color: #111 !important; margin: 0 !important; line-height: 1 !important; }
-        
+
         .cpd-usertype-tag {
             background: #f5f5f5 !important; color: #444 !important; border: 1px solid #e0e0e0 !important;
             font-size: 12px !important; padding: 4px 10px !important; border-radius: 999px !important;
             font-weight: 600 !important; display: flex !important; align-items: center !important; gap: 6px !important;
         }
         .cpd-usertype-tag svg { width: 14px !important; height: 14px !important; }
-        
+
         .cpd-badges-row { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
         .custom-badge-wrapper { margin: 0 !important; padding: 0 !important; }
-        
+
         /* Einheitliches Layout für ALLE Badges (Button & Span) */
         .custom-badge-item {
             background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 11px !important;
@@ -288,11 +288,11 @@
             transition: background-color 0.2s !important;
         }
         .custom-badge-item svg { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
-        
+
         /* Spezifische Button-Klassen (Klickbar) */
         button.custom-badge-item { cursor: pointer !important; }
         button.custom-badge-item:hover { background-color: #e9d5ff !important; text-decoration: underline !important; }
-        
+
         /* Spezifische Span-Klassen (Nur Info) */
         span.custom-badge-item { cursor: default !important; }
         span.custom-badge-item:hover { text-decoration: underline !important; }
@@ -302,10 +302,10 @@
         .cpd-footer-item { display: inline-flex !important; align-items: center !important; gap: 6px !important; height: 16px !important; }
         .cpd-footer-item svg { width: 16px !important; height: 16px !important; display: block !important; margin: 0 !important; padding: 0 !important; flex-shrink: 0 !important; }
         .cpd-footer-item-text { display: inline-flex !important; align-items: center !important; height: 16px !important; line-height: 1 !important; transform: translateY(1px); /* Optischer Ausgleich für Baseline */ }
-        
+
         .cpd-footer-item a { color: #111 !important; font-weight: normal !important; text-decoration: none !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; }
         .cpd-footer-item a:hover { text-decoration: underline !important; }
-        
+
         /* Custom Farben und Hover für Follower-Element */
         .cpd-footer-item.follower-item, .cpd-footer-item.follower-item svg { color: rgb(50, 105, 22) !important; }
         .cpd-footer-item.follower-item a { color: rgb(50, 105, 22) !important; text-decoration: none !important; }
@@ -314,12 +314,12 @@
 
         /* 3. Stats & Actions Column */
         .cpd-stats-actions-col {
-            display: flex; align-items: center; justify-content: center; 
-            border-left: 1px solid #e0e0e0; border-right: 1px solid #e0e0e0; 
+            display: flex; align-items: center; justify-content: center;
+            border-left: 1px solid #e0e0e0; border-right: 1px solid #e0e0e0;
             padding-left: 18px; padding-right: 18px;
             height: 90px !important;
         }
-        
+
         .cpd-stats-block { display: flex; flex-direction: column; align-items: center; }
         .cpd-stats-title { font-size: 12px; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
         .cpd-stats-tiles { display: flex; column-gap: 8px; flex-wrap: wrap; justify-content: center; }
@@ -330,49 +330,49 @@
         .cpd-tile-lbl { font-size: 11px; color: #757575; font-weight: 600; text-transform: uppercase; margin-top: 4px; white-space: nowrap; }
 
         /* Actions Block */
-        .cpd-actions-block { 
-            display: flex; 
-            flex-direction: column; 
+        .cpd-actions-block {
+            display: flex;
+            flex-direction: column;
             gap: 6px;
             width: 170px;
             box-sizing: border-box !important;
         }
-        
+
         .cpd-action-btn {
             display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important;
             border-radius: 8px !important; transition: all 0.2s !important; text-decoration: none !important;
             cursor: pointer !important; box-sizing: border-box !important;
         }
-        
+
         .cpd-action-btn.primary {
-            border: 2px solid #e0e0e0 !important; 
-            padding: 8px 16px !important; 
+            border: 2px solid #e0e0e0 !important;
+            padding: 8px 16px !important;
             height: 55px !important;
             min-height: 55px !important;
             font-size: 14px !important;
-            font-weight: 700 !important; 
-            color: #444 !important; 
-            background: #fff !important; 
+            font-weight: 700 !important;
+            color: #444 !important;
+            background: #fff !important;
         }
         .cpd-action-btn.primary:hover { border-color: #5A33AE !important; color: #5A33AE !important; }
         .cpd-action-btn.primary svg { width: 16px !important; height: 16px !important; color: #999; transition: color 0.2s; flex-shrink: 0 !important; }
         .cpd-action-btn.primary:hover svg { color: #5A33AE !important; }
-        
-        .cpd-action-btn.secondary { 
-            background: transparent !important; 
-            border: none !important; 
-            font-size: 12px !important; 
-            font-weight: 600 !important; 
-            color: #999 !important; 
-            padding: 4px !important; 
+
+        .cpd-action-btn.secondary {
+            background: transparent !important;
+            border: none !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            color: #999 !important;
+            padding: 4px !important;
             height: 28px !important;
             line-height: 1 !important;
         }
         .cpd-action-btn.secondary:hover { color: #666 !important; }
-        .cpd-action-btn.secondary svg { 
-            display: block !important; 
-            flex-shrink: 0 !important; 
-            overflow: visible !important; 
+        .cpd-action-btn.secondary svg {
+            display: block !important;
+            flex-shrink: 0 !important;
+            overflow: visible !important;
         }
 
         /* ====================================================
@@ -382,7 +382,7 @@
             background-color: #5A33AE !important; border-color: #5A33AE !important; color: #ffffff !important;
             border-radius: 9999px !important; font-weight: bold !important; cursor: pointer !important;
             gap: 6px !important; text-decoration: none !important;
-            transition: all 0.2s ease-in-out; 
+            transition: all 0.2s ease-in-out;
         }
         .custom-purple-btn:hover { background-color: #D1C4E9 !important; border-color: #D1C4E9 !important; color: #5A33AE !important; }
 
@@ -393,14 +393,14 @@
         }
 
         /* 6-Spalten Grid (Bild | Infos | Trenn | Analyse | Trenn | Buttons) */
-        .custom-ad-grid { 
-            display: grid !important; 
-            width: 100% !important; 
-            grid-template-columns: 170px 1fr 1px max-content 1px max-content !important; 
+        .custom-ad-grid {
+            display: grid !important;
+            width: 100% !important;
+            grid-template-columns: 170px 1fr 1px max-content 1px max-content !important;
             column-gap: 16px !important;
             height: 110px !important; /* Auf exakt 110px fixiert */
         }
-        
+
         /* Einheitliche Höhen für die Anzeigenspalten */
         .custom-ad-grid > div:first-child,
         .custom-ad-grid > div:first-child a,
@@ -412,7 +412,7 @@
         }
 
         .custom-ad-grid .mt-xsmall { margin-top: 0px !important; }
-        
+
         /* Vorschaubild auf 170x110px erzwingen */
         .is-overview-page .custom-ad-grid > div:first-child,
         .is-overview-page .custom-ad-grid > div:first-child > a {
@@ -429,10 +429,10 @@
             height: 100% !important;
             object-fit: cover !important;
         }
-        
+
         /* Überschreibt das originale Padding der Info-Spalte und macht sie zur Flexbox für vertikale Ausrichtung */
-        .custom-ad-grid .pl-medium.align-top { 
-            padding-left: 0px !important; 
+        .custom-ad-grid .pl-medium.align-top {
+            padding-left: 0px !important;
             padding-right: 0px !important;
             display: flex !important;
             flex-direction: column !important;
@@ -441,20 +441,20 @@
         /* Buttons-Liste in der Action Area (Spalte 6) - DYNAMISCHES GRID */
         .is-overview-page .custom-action-area ul,
         .is-overview-page .flex.list-none.flex-row.flex-wrap.p-none {
-            display: grid !important; 
+            display: grid !important;
             grid-template-columns: max-content max-content !important; /* Passt sich exakt an den längsten Text in der jeweiligen Spalte an */
-            column-gap: 8px !important; 
-            row-gap: 8px !important; 
-            margin: 0 !important; 
-            padding: 0 !important; 
-            width: max-content !important; 
+            column-gap: 8px !important;
+            row-gap: 8px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: max-content !important;
             justify-content: start !important;
             height: 110px !important;
         }
-        
+
         .is-overview-page .custom-action-area li,
-        .is-overview-page .flex.list-none.flex-row.flex-wrap.p-none li { 
-            margin: 0 !important; width: 100% !important; 
+        .is-overview-page .flex.list-none.flex-row.flex-wrap.p-none li {
+            margin: 0 !important; width: 100% !important;
         }
 
         /* Zwingt sichtbare Listenelemente in die Flexbox, aber respektiert ausgeblendete Elemente! */
@@ -530,15 +530,15 @@
         /* EINHEITLICHE GRÖSSE UND LINIE FÜR ALLE BUTTONS IN SPALTE 6 */
         .is-overview-page .custom-action-area a,
         .is-overview-page .custom-action-area button,
-        .is-overview-page .custom-purple-btn, 
+        .is-overview-page .custom-purple-btn,
         .is-overview-page .custom-native-btn {
             height: 32px !important; min-height: 32px !important; max-height: 32px !important;
             padding: 0 12px 0 10px !important; /* Fixer Abstand nach links (10px) = exakt gleiche Text/Icon Flucht! */
-            font-size: 12px !important; line-height: 1 !important; margin: 0 !important; 
+            font-size: 12px !important; line-height: 1 !important; margin: 0 !important;
             box-sizing: border-box !important; border-width: 2px !important; border-radius: 9999px !important;
-            display: inline-flex !important; align-items: center !important; justify-content: flex-start !important; 
+            display: inline-flex !important; align-items: center !important; justify-content: flex-start !important;
             width: 100% !important; /* Button dehnt sich über das max-content Grid aus */
-            gap: 6px !important; 
+            gap: 6px !important;
             text-align: left !important;
         }
 
@@ -554,7 +554,7 @@
             padding: 0 !important; /* Kein horizontales Padding! */
             display: flex !important;
             justify-content: center !important; /* Absolute Zentrierung */
-            align-items: center !important;     
+            align-items: center !important;
             flex-shrink: 0 !important;
             gap: 0 !important;
             border-radius: 9999px !important;
@@ -570,7 +570,7 @@
         }
 
         /* Spezifische Margin-Anpassung für das Teilen Icon */
-        .has-custom-btn .custom-icon-only-btn { 
+        .has-custom-btn .custom-icon-only-btn {
             margin-top: -2px !important;
             transform: translateY(-4px) !important; /* NEU: Den Teilen-Button optisch weiter nach oben geschoben */
         }
@@ -578,40 +578,40 @@
         .is-detail-page .custom-purple-btn,
         .is-detail-page .custom-native-btn-detail {
             height: 32px !important; min-height: 32px !important; max-height: 32px !important;
-            padding: 0 12px !important; font-size: 12px !important; line-height: 1 !important; margin: 0 !important; 
+            padding: 0 12px !important; font-size: 12px !important; line-height: 1 !important; margin: 0 !important;
             box-sizing: border-box !important; border-width: 2px !important; border-radius: 9999px !important;
             display: inline-flex !important; align-items: center !important; justify-content: center !important;
         }
 
         /* Native Buttons auf der Detailseite nachrüsten und an den Overview-Grün-Ton angleichen */
         .is-detail-page .custom-native-btn-detail {
-            border: 2px solid #95958E !important; 
-            background: transparent !important; 
-            color: #326916 !important; 
-            font-weight: 700 !important; 
-            text-decoration: none !important; 
-            transition: all 0.2s !important; 
+            border: 2px solid #95958E !important;
+            background: transparent !important;
+            color: #326916 !important;
+            font-weight: 700 !important;
+            text-decoration: none !important;
+            transition: all 0.2s !important;
             gap: 6px !important;
         }
-        
+
         /* Einheitlicher grüner Hover-Effekt wie auf der Übersichtsseite */
         .is-detail-page .custom-native-btn-detail:not([disabled]):not([aria-disabled="true"]):not(.is-disabled):hover {
-            background-color: #D3F28D !important; 
-            border-color: #1D4B00 !important; 
-            color: #1D4B00 !important; 
+            background-color: #D3F28D !important;
+            border-color: #1D4B00 !important;
+            color: #1D4B00 !important;
         }
-        
+
         /* Deaktivierte Buttons auf der Detailseite (z.B. Verlängern) schützen */
         .is-detail-page .custom-native-btn-detail[disabled],
         .is-detail-page .custom-native-btn-detail[aria-disabled="true"],
         .is-detail-page .custom-native-btn-detail.is-disabled {
-            color: rgba(50, 105, 22, 0.5) !important; 
+            color: rgba(50, 105, 22, 0.5) !important;
             border-color: rgba(149, 149, 142, 0.5) !important;
             cursor: not-allowed !important;
             background: transparent !important;
-            pointer-events: auto !important; 
+            pointer-events: auto !important;
         }
-        
+
         /* Zwingend sicherstellen, dass inaktive Status-Buttons auf der Detailseite (Reservieren/Aktivieren Toggle) absolut versteckt bleiben */
         .is-detail-page .custom-native-btn-detail.is-hidden,
         .is-detail-page .custom-native-btn-detail.hidden,
@@ -620,18 +620,18 @@
         .is-detail-page li.hidden .custom-native-btn-detail {
             display: none !important;
         }
-        
+
         /* Abstände für den Button-Container auf der Detailseite (pvap-mngad-actns) */
         #pvap-mngad-actns.list, #pvap-mngad-actns {
             margin-top: 12px !important;
             margin-bottom: 6px !important;
         }
-        
+
         /* Allgemeine Fallback-Sicherheit für versteckte Elemente */
         .is-hidden, .hide, [style*="display: none"], [style*="display:none"] {
             display: none !important;
         }
-        
+
         /* Icon Skalierung für SVGs in Action Area und Detail Buttons */
         .is-overview-page .custom-action-area a svg,
         .is-overview-page .custom-action-area button svg,
@@ -639,10 +639,10 @@
             width: 14px !important; height: 14px !important; flex-shrink: 0 !important; margin: 0 !important;
             display: block !important;
         }
-        
+
         /* Schützt native Kleinanzeigen CSS-Sprites (i-Tags) davor zerschossen zu werden */
         .is-detail-page .custom-native-btn-detail i {
-            margin: 0 !important; 
+            margin: 0 !important;
         }
 
         /* Erzwinge Schriftgröße 12px für alle Text-Elemente innerhalb der Action Area Buttons */
@@ -652,7 +652,7 @@
         }
 
         .custom-shipping-info { font-size: 13px !important; color: #757575 !important; font-weight: normal !important; white-space: nowrap; border: none !important; }
-        
+
         /* Einheitliches 3-Spalten Grid für die Anzeigenanalyse */
         .custom-analyse-grid {
             display: grid !important;
@@ -667,7 +667,7 @@
             align-items: center !important;
             gap: 6px !important;
             white-space: nowrap !important;
-            color: inherit !important; 
+            color: inherit !important;
         }
         .custom-stat-label {
             display: inline-flex !important;
@@ -679,6 +679,220 @@
 
         /* BEARBEITEN-SEITE: Hier bleiben die Buttons groß (44px) */
         .is-edit-page .custom-purple-btn { height: 44px !important; min-height: 44px !important; padding: 0 16px !important; font-size: 14px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; border-width: 2px !important; border-style: solid !important; }
+
+        /* ====================================================
+           GLOBALE KORREKTUR GEGEN HORIZONTALES SCROLLEN
+           ==================================================== */
+        html, body {
+            max-width: 100vw !important;
+            overflow-x: hidden !important;
+        }
+
+        /* ====================================================
+           CUSTOM PAGINATION DESIGN (Mockup Match)
+           ==================================================== */
+        nav[aria-label*="Seiten-Navigation"],
+        .flex.justify-center.py-small nav,
+        #custom-top-pagination,
+        #custom-top-pagination-search,
+        #srchrslt-pagination {
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin-top: 16px !important;
+            margin-bottom: 16px !important;
+            padding: 0 !important;
+            width: auto !important; /* Erzwungene Breite entfernt */
+            max-width: none !important;
+        }
+
+        /* Der innere Container (Pille) */
+        nav[aria-label*="Seiten-Navigation"] > ul,
+        .flex.justify-center.py-small nav > ul,
+        #custom-top-pagination ul,
+        #custom-top-pagination-search ul,
+        #srchrslt-pagination ul {
+            background-color: #ffffff !important;
+            border: 2px solid #f3f4f6 !important;
+            border-radius: 9999px !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important;
+            padding: 2px !important;
+            display: inline-flex !important; /* Schrumpft automatisch auf exakte Inhaltsbreite */
+            align-items: center !important;
+            gap: 4px !important;
+            margin: 0 !important; /* Zentrierung übernimmt der äußere Container */
+            list-style: none !important;
+            width: auto !important;
+            max-width: 100% !important; /* Sicherheit auf mobilen Geräten */
+        }
+
+        /* Listen-Elemente (Wrapper für jeden Button) */
+        nav[aria-label*="Seiten-Navigation"] > ul > li,
+        .flex.justify-center.py-small nav > ul > li,
+        #custom-top-pagination ul > li,
+        #custom-top-pagination-search ul > li,
+        #srchrslt-pagination ul > li {
+            margin: 0 !important;
+            padding: 0 !important;
+            display: flex !important;
+        }
+
+        /* Alle klickbaren Buttons / Zahlen in der Pagination */
+        nav[aria-label*="Seiten-Navigation"] > ul > li > a,
+        nav[aria-label*="Seiten-Navigation"] > ul > li > button,
+        nav[aria-label*="Seiten-Navigation"] > ul > li > span,
+        .flex.justify-center.py-small nav > ul > li > a,
+        .flex.justify-center.py-small nav > ul > li > button,
+        .flex.justify-center.py-small nav > ul > li > span,
+        #custom-top-pagination ul > li > a,
+        #custom-top-pagination ul > li > button,
+        #custom-top-pagination ul > li > span,
+        #custom-top-pagination-search ul > li > a,
+        #custom-top-pagination-search ul > li > button,
+        #custom-top-pagination-search ul > li > span,
+        #srchrslt-pagination ul > li > a,
+        #srchrslt-pagination ul > li > button,
+        #srchrslt-pagination ul > li > span {
+            width: 32px !important;
+            min-width: 32px !important;
+            max-width: 32px !important;
+            height: 32px !important;
+            min-height: 32px !important;
+            max-height: 32px !important;
+            aspect-ratio: 1 / 1 !important;
+            padding: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 50% !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            font-family: inherit !important;
+            border: none !important;
+            background: transparent !important;
+            color: #326916 !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+            box-sizing: border-box !important;
+            line-height: 1 !important;
+        }
+
+        /* Hover Inaktive Zahlen (Zahlen zwischen Pfeilen) */
+        nav[aria-label*="Seiten-Navigation"] > ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover,
+        .flex.justify-center.py-small nav > ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover,
+        #custom-top-pagination ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover,
+        #custom-top-pagination-search ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover,
+        #srchrslt-pagination ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover {
+            background-color: #f5f5f5 !important;
+        }
+
+        /* Aktive Zahl (ausgewählte Seite) */
+        nav[aria-label*="Seiten-Navigation"] > ul > li > [aria-current="page"],
+        nav[aria-label*="Seiten-Navigation"] > ul > li > .bg-accent,
+        nav[aria-label*="Seiten-Navigation"] > ul > li > .bg-accentContainer,
+        .flex.justify-center.py-small nav > ul > li > [aria-current="page"],
+        .flex.justify-center.py-small nav > ul > li > .bg-accent,
+        .flex.justify-center.py-small nav > ul > li > .bg-accentContainer,
+        #custom-top-pagination ul > li > [aria-current="page"],
+        #custom-top-pagination ul > li > .bg-accent,
+        #custom-top-pagination-search ul > li > [aria-current="page"],
+        #custom-top-pagination-search ul > li > .bg-accent,
+        #srchrslt-pagination ul > li > [aria-current="page"],
+        #srchrslt-pagination ul > li > .bg-accent {
+            background-color: #326916 !important;
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(50, 105, 22, 0.3) !important;
+        }
+
+        /* VOR/ZURÜCK Buttons ENABLED (Knalliges Neongrün) */
+        nav[aria-label*="Seiten-Navigation"] > ul > li:first-child > *,
+        nav[aria-label*="Seiten-Navigation"] > ul > li:last-child > *,
+        .flex.justify-center.py-small nav > ul > li:first-child > *,
+        .flex.justify-center.py-small nav > ul > li:last-child > *,
+        #custom-top-pagination ul > li:first-child > *,
+        #custom-top-pagination ul > li:last-child > *,
+        #custom-top-pagination-search ul > li:first-child > *,
+        #custom-top-pagination-search ul > li:last-child > *,
+        #srchrslt-pagination ul > li:first-child > *,
+        #srchrslt-pagination ul > li:last-child > * {
+            background-color: #cfff00 !important;
+            color: #326916 !important;
+            opacity: 1 !important;
+        }
+
+        nav[aria-label*="Seiten-Navigation"] > ul > li:first-child > *:not([disabled]):hover,
+        nav[aria-label*="Seiten-Navigation"] > ul > li:last-child > *:not([disabled]):hover,
+        .flex.justify-center.py-small nav > ul > li:first-child > *:not([disabled]):hover,
+        .flex.justify-center.py-small nav > ul > li:last-child > *:not([disabled]):hover,
+        #custom-top-pagination ul > li:first-child > *:not([disabled]):hover,
+        #custom-top-pagination ul > li:last-child > *:not([disabled]):hover,
+        #custom-top-pagination-search ul > li:first-child > *:not([disabled]):hover,
+        #custom-top-pagination-search ul > li:last-child > *:not([disabled]):hover,
+        #srchrslt-pagination ul > li:first-child > *:not([disabled]):hover,
+        #srchrslt-pagination ul > li:last-child > *:not([disabled]):hover {
+            background-color: #b8e600 !important;
+        }
+
+        /* VOR/ZURÜCK Buttons DISABLED (Blasses Grün) */
+        nav[aria-label*="Seiten-Navigation"] > ul > li:first-child > [disabled],
+        nav[aria-label*="Seiten-Navigation"] > ul > li:first-child > [aria-disabled="true"],
+        nav[aria-label*="Seiten-Navigation"] > ul > li:last-child > [disabled],
+        nav[aria-label*="Seiten-Navigation"] > ul > li:last-child > [aria-disabled="true"],
+        .flex.justify-center.py-small nav > ul > li:first-child > [disabled],
+        .flex.justify-center.py-small nav > ul > li:first-child > [aria-disabled="true"],
+        .flex.justify-center.py-small nav > ul > li:last-child > [disabled],
+        .flex.justify-center.py-small nav > ul > li:last-child > [aria-disabled="true"],
+        #custom-top-pagination ul > li:first-child > [disabled],
+        #custom-top-pagination ul > li:first-child > [aria-disabled="true"],
+        #custom-top-pagination ul > li:last-child > [disabled],
+        #custom-top-pagination ul > li:last-child > [aria-disabled="true"],
+        #custom-top-pagination-search ul > li:first-child > [disabled],
+        #custom-top-pagination-search ul > li:first-child > [aria-disabled="true"],
+        #custom-top-pagination-search ul > li:last-child > [disabled],
+        #custom-top-pagination-search ul > li:last-child > [aria-disabled="true"],
+        #srchrslt-pagination ul > li:first-child > [disabled],
+        #srchrslt-pagination ul > li:first-child > [aria-disabled="true"],
+        #srchrslt-pagination ul > li:last-child > [disabled],
+        #srchrslt-pagination ul > li:last-child > [aria-disabled="true"] {
+            background-color: #dcf2b0 !important;
+            cursor: not-allowed !important;
+            opacity: 1 !important;
+        }
+
+        /* Pfeil Icons (SVGs) in den Vor/Zurück Buttons */
+        nav[aria-label*="Seiten-Navigation"] > ul > li:first-child svg,
+        nav[aria-label*="Seiten-Navigation"] > ul > li:last-child svg,
+        .flex.justify-center.py-small nav > ul > li:first-child svg,
+        .flex.justify-center.py-small nav > ul > li:last-child svg,
+        #custom-top-pagination ul > li:first-child svg,
+        #custom-top-pagination ul > li:last-child svg,
+        #custom-top-pagination-search ul > li:first-child svg,
+        #custom-top-pagination-search ul > li:last-child svg,
+        #srchrslt-pagination ul > li:first-child svg,
+        #srchrslt-pagination ul > li:last-child svg {
+            width: 16px !important;
+            height: 16px !important;
+            stroke: #326916 !important;
+            stroke-width: 3px !important;
+            color: #326916 !important;
+            fill: none !important;
+            display: block !important;
+        }
+
+        /* Ellipsis "..." - falls viele Seiten vorhanden sind */
+        nav[aria-label*="Seiten-Navigation"] > ul > li > span.text-onSurfaceNonessential,
+        .flex.justify-center.py-small nav > ul > li > span.text-onSurfaceNonessential,
+        #custom-top-pagination ul > li > span.text-onSurfaceNonessential,
+        #custom-top-pagination-search ul > li > span.text-onSurfaceNonessential,
+        #srchrslt-pagination ul > li > span.text-onSurfaceNonessential {
+            width: 20px !important;
+            min-width: 20px !important;
+            max-width: 20px !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            cursor: default !important;
+            font-weight: bold !important;
+        }
     `;
     document.head ? document.head.appendChild(style) : document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
 
@@ -703,7 +917,7 @@
     // ==========================================
     function showCustomShareModal(url, title, imgUrl) {
         let overlay = document.getElementById('custom-share-overlay');
-        
+
         const closeModal = () => {
             if (overlay) overlay.style.display = 'none';
             document.body.style.overflow = ''; // Scrollen wieder aktivieren
@@ -717,7 +931,7 @@
                 backgroundColor: 'rgba(11, 11, 11, 0.8)', zIndex: '100000',
                 display: 'flex', alignItems: 'center', justifyContent: 'center'
             });
-            
+
             // Kompakteres Design mit reduzierten Paddings und Icon-Größen
             overlay.innerHTML = `
                 <div class="mfp-container mfp-inline-holder" style="position:static; width:100%; height:auto; display:flex; justify-content:center; align-items:center; padding: 16px; box-sizing: border-box;">
@@ -789,10 +1003,10 @@
         document.getElementById('c-share-fb').href = `https://www.facebook.com/sharer/sharer.php?u=${encUrl}`;
         document.getElementById('c-share-x').href = `https://x.com/intent/tweet?text=Schaut+mal,+was+ich+bei+%23Kleinanzeigen+gefunden+habe.+Wie+findet+ihr+das?&url=${encUrl}`;
         document.getElementById('c-share-pin').href = `https://pinterest.com/pin/create/button/?url=${encUrl}&media=${encImg}&description=${encTitle}`;
-        
+
         const copyBtn = document.getElementById('c-share-copy');
         const copyText = document.getElementById('c-share-copy-text');
-        copyText.textContent = "Link kopieren"; 
+        copyText.textContent = "Link kopieren";
         copyBtn.onclick = (e) => {
             e.preventDefault();
             const tempInput = document.createElement("input");
@@ -828,14 +1042,14 @@
     }
 
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V11_${adId}`; 
+        const cacheKey = `__KL_AD_DETAILS_V11_${adId}`;
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
         try {
             const response = await fetch(adUrl);
             if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            
+
             const html = await response.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
@@ -843,9 +1057,9 @@
             const locationEl = doc.querySelector('#viewad-locality');
             const dateIcon = doc.querySelector('.icon-calendar-gray-simple');
             const shippingEl = doc.querySelector('.boxedarticle--details--shipping');
-            
+
             let location = locationEl ? locationEl.textContent.replace(/\s+/g, ' ').trim() : 'Unbekannt';
-            
+
             let date = 'Unbekannt';
             if (dateIcon && dateIcon.nextElementSibling) {
                 date = dateIcon.nextElementSibling.textContent.trim();
@@ -854,7 +1068,7 @@
             }
 
             let shipping = shippingEl ? shippingEl.textContent.trim() : '';
-            
+
             let catSlug = '';
             const breadcrumbLinks = doc.querySelectorAll('#viewad-breadcrumb a[href*="/s-"]');
             if (breadcrumbLinks.length > 0) {
@@ -862,7 +1076,7 @@
                     const href = breadcrumbLinks[i].getAttribute('href');
                     const match = href.match(/\/s-([^/]+)\/c\d+/);
                     if (match) {
-                        catSlug = match[1]; 
+                        catSlug = match[1];
                         break;
                     }
                 }
@@ -886,14 +1100,14 @@
     async function fetchBackgroundStats() {
         try {
             // 1. Der schnelle & direkte Weg: Kleinanzeigen JSON-API abfragen
-            const response = await fetch('/m-einstellungen-bearbeiten.json', { 
+            const response = await fetch('/m-einstellungen-bearbeiten.json', {
                 headers: {
                     'Accept': 'application/json, text/javascript, */*; q=0.01',
                     'X-Requested-With': 'XMLHttpRequest'
                 },
-                credentials: 'same-origin' 
+                credentials: 'same-origin'
             });
-            
+
             if (response.ok) {
                 const data = await response.json();
                 if (data && data.newAdCount !== undefined) {
@@ -910,11 +1124,11 @@
         try {
             const response = await fetch('/m-einstellungen.html', { credentials: 'same-origin' });
             if (!response.ok) return null;
-            
+
             const html = await response.text();
-            let match = html.match(/(?:adsInLast30Days|publishedAds30Days|thirtyDaysAdsCount|adsCount30Days)"?\s*:\s*(\d+)/i) || 
+            let match = html.match(/(?:adsInLast30Days|publishedAds30Days|thirtyDaysAdsCount|adsCount30Days)"?\s*:\s*(\d+)/i) ||
                         html.match(/letzten\s+30\s+Tagen\s+(\d+)/i);
-            
+
             if (match && match[1]) {
                 localStorage.setItem(CACHE_KEY_30D, match[1]);
                 return match[1];
@@ -929,9 +1143,9 @@
     if (isSettingsPage) {
         setInterval(() => {
             const textContent = document.body.textContent || "";
-            let match = textContent.match(/letzten\s+30\s+Tagen\s+(\d+)/i) || 
+            let match = textContent.match(/letzten\s+30\s+Tagen\s+(\d+)/i) ||
                         textContent.match(/(\d+)\s+Anzeigen\s+aufgegeben/i);
-            
+
             if (match && match[1]) {
                 localStorage.setItem(CACHE_KEY_30D, match[1]);
             }
@@ -943,13 +1157,13 @@
         const banners = document.querySelectorAll(`
             .site-base--left-banner--full, .site-base--right-banner--full,
             #btf-billboard, #home-billboard, #my-watchlist-atf, #my-msgbox-atf, #my-atf,
-            #srchrslt-adtop, #srchrslt-adtop--flex, [data-testid="top-banner"], 
+            #srchrslt-adtop, #srchrslt-adtop--flex, [data-testid="top-banner"],
             #srpb-top-banner,
-            .absolute.top-none.right-small.bottom-1\\/2, 
+            .absolute.top-none.right-small.bottom-1\\/2,
             .absolute.bottom-none.top-1\\/2.right-small.pt-large,
-            .absolute.top-none.left-small.bottom-1\\/2, 
+            .absolute.top-none.left-small.bottom-1\\/2,
             .absolute.bottom-none.top-1\\/2.left-small.pt-large,
-            ul#srchrslt-adtable > li:has([data-liberty-position-name]), 
+            ul#srchrslt-adtable > li:has([data-liberty-position-name]),
             ul#srchrslt-adtable > li:has([id^="srps-result-list"]),
             div.mx-auto.mb-small:has([data-liberty-position-name]):not(:has(#srchrslt-adtable)),
             div.mx-auto.mb-small:has([id^="srps-result-list"]):not(:has(#srchrslt-adtable)),
@@ -968,7 +1182,7 @@
         if (isDetailPage) {
             const sidebar = document.getElementById('viewad-sidebar');
             if (sidebar && !sidebar.dataset.removedSafely) {
-                
+
                 // 1a. Teilen-Button und das Modal retten, bevor die Sidebar gelöscht wird!
                 const shareBtnOriginal = sidebar.querySelector('.j-share-ad, [href="#viewad-share-ad"], [data-mfp-src="#viewad-share-ad"]');
                 if (shareBtnOriginal) {
@@ -978,7 +1192,7 @@
                 }
                 const shareModal = sidebar.querySelector('#viewad-share-ad');
                 if (shareModal) document.body.appendChild(shareModal);
-                
+
                 // 1b. Anzeigen-ID Box retten
                 const adIdBoxOriginal = sidebar.querySelector('#viewad-ad-id-box');
                 if (adIdBoxOriginal) {
@@ -990,7 +1204,7 @@
                 // 2. Sidebar sicher löschen
                 sidebar.dataset.removedSafely = 'true';
                 sidebar.remove();
-                
+
                 // 3. Content-Container auf volle Breite (a-span-24) aufziehen
                 const mainCol = document.querySelector('#viewad-cntnt .a-span-16');
                 if (mainCol) {
@@ -1023,23 +1237,23 @@
             const cntrNum = document.getElementById('viewad-cntr-num');
             if (cntrParent && cntrNum && !cntrParent.dataset.styled) {
                 cntrParent.dataset.styled = 'true';
-                
+
                 cntrNum.removeAttribute('title');
-                
+
                 cntrParent.classList.remove('textcounter');
                 cntrParent.style.backgroundImage = 'none';
                 cntrParent.style.paddingLeft = '0';
                 cntrParent.style.display = 'inline-flex';
                 cntrParent.style.alignItems = 'center';
                 cntrParent.style.gap = '6px';
-                
+
                 const eyeSvg = document.createElement('span');
                 eyeSvg.title = "Besucher";
                 eyeSvg.style.display = 'inline-flex';
                 eyeSvg.style.alignItems = 'center';
                 eyeSvg.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
                 cntrParent.insertBefore(eyeSvg, cntrNum);
-                
+
                 if (!document.getElementById('custom-besucher-text')) {
                     const txtSpan = document.createElement('span');
                     txtSpan.id = 'custom-besucher-text';
@@ -1131,7 +1345,7 @@
 
                         ddMerk.style.display = 'inline-flex';
                         ddMerk.style.marginLeft = '0px';
-                        
+
                         let t = ddMerk.innerText.trim();
                         if (t.includes(' mal gemerkt')) {
                             t = t.replace(' mal gemerkt', 'x gemerkt');
@@ -1147,7 +1361,7 @@
                         wrapper.appendChild(ddMerk);
                     }
                 }
-                
+
                 // 4. Eigene Anzeige Check & "Zur Merkliste hinzufügen" entfernen
                 const isOwnAd = document.getElementById('pvap-mngad-actns') !== null || document.querySelector('a[href*="/p-anzeige-bearbeiten.html"]') !== null;
                 if (isOwnAd) {
@@ -1162,23 +1376,23 @@
                     if (idListItems.length >= 2) {
                         const idLabel = idListItems[0].textContent.trim();
                         const idValue = idListItems[1].textContent.trim();
-                        
+
                         // Neuen, unabhängigen Container für die ID nach extraInfo erstellen
                         const wrapper = document.createElement('div');
                         wrapper.id = 'custom-ad-id-row';
                         wrapper.className = 'text-bodySmall text-onSurfaceNonessential';
                         wrapper.style.display = 'flex';
                         wrapper.style.alignItems = 'center';
-                        wrapper.style.width = '100%'; 
+                        wrapper.style.width = '100%';
                         wrapper.style.marginTop = '6px'; // Deutlich abgesetzt als eigene Zeile
-                        
+
                         const svgHash = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="margin-right: 4px;"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>`;
-                        
+
                         wrapper.innerHTML = `
                             <span title="${idLabel}" style="display: flex; align-items: center;">${svgHash}</span>
                             <span style="font-weight: normal; color: #757575;">${idLabel} ${idValue}</span>
                         `;
-                        
+
                         // Direkt als nächstes Geschwisterelement von extraInfo einfügen (eigenständige Zeile!)
                         extraInfo.parentNode.insertBefore(wrapper, extraInfo.nextSibling);
                     }
@@ -1189,7 +1403,7 @@
         // --- MOCKUP PROFIL REDESIGN INJECTOR ---
         if (isOverviewPage) {
             const profileBox = document.querySelector('.ownprofile-main');
-            
+
             // --- REACT OVERWRITE SCHUTZ (AUTO-HEALING) ---
             if (profileBox && profileBox.dataset.redesignInjected && !profileBox.querySelector('.custom-profile-dashboard')) {
                 delete profileBox.dataset.redesignInjected; // Setzt den Inject-Status zurück, um Neuaufbau zu erzwingen
@@ -1197,7 +1411,7 @@
             }
 
             if (profileBox && !profileBox.dataset.redesignInjected) {
-                
+
                 // 1. ASYNCHRONES LADEN VON REACT ABWARTEN
                 const nameEl = profileBox.querySelector('h2');
                 const statsEl = profileBox.querySelector('[data-testid="posted-ads"]');
@@ -1212,7 +1426,7 @@
                     nameText = clone.textContent.trim();
                 }
 
-                if (nameText.length === 0 || !statsEl || !userInfoUl) return; 
+                if (nameText.length === 0 || !statsEl || !userInfoUl) return;
 
                 profileBox.dataset.redesignInjected = 'true';
 
@@ -1233,9 +1447,9 @@
                     profileBox.querySelectorAll('[data-testid="user-info"] li').forEach(li => {
                         const txt = li.textContent.toLowerCase();
                         const svg = li.querySelector('svg');
-                        
+
                         if (txt.includes('nutzer')) {
-                            userTypeHtml = li.innerHTML; 
+                            userTypeHtml = li.innerHTML;
                         } else if (txt.includes('aktiv seit')) {
                             const text = li.textContent.trim();
                             activeSinceHtml = '';
@@ -1245,21 +1459,21 @@
                             let text = li.textContent.trim();
                             text = text.replace(/Antwortet in der Regel innerhalb von/i, 'Antwortet innerhalb');
                             text = text.replace(/Antwortet in der Regel nach/i, 'Antwortet nach');
-                            
+
                             const match = text.match(/(\d+)\s*(Stunden?|Minuten?|Tagen?|Wochen?)/i);
                             if (match) {
-                                let val = match[1]; 
+                                let val = match[1];
                                 let type = match[2].toLowerCase();
                                 let timeStr = type.includes('stunde') ? val + 'h' : type.includes('minute') ? val + 'min' : val + (val === '1' ? ' Tag' : ' Tage');
                                 text = text.replace(match[0], timeStr);
                             }
-                            
+
                             replyTimeHtml = '';
                             if (svg) replyTimeHtml += svg.outerHTML;
                             replyTimeHtml += `<span class="cpd-footer-item-text">${text}</span>`;
                         } else if (txt.includes('follower')) {
                             followersSvg = svg ? svg.cloneNode(true) : null;
-                            followersA = li.querySelector('a'); 
+                            followersA = li.querySelector('a');
                         }
                     });
 
@@ -1271,30 +1485,30 @@
                         if (m2) totalCount = m2[1];
                     }
 
-                    const walletLink = profileBox.querySelector('a[href*="wallet.html"]'); 
+                    const walletLink = profileBox.querySelector('a[href*="wallet.html"]');
                     const infoBtn = profileBox.querySelector('button[aria-label="Profilinformationen öffnen"]');
 
                     // 4. Aufbau des neuen Dashboards
                     const dashboard = document.createElement('div');
                     dashboard.className = 'custom-profile-dashboard';
-                    
+
                     const colAvatar = document.createElement('div');
                     colAvatar.className = 'cpd-avatar-col';
                     if (avatarClone) {
-                        avatarClone.className = 'user-profile-badge'; 
+                        avatarClone.className = 'user-profile-badge';
                         colAvatar.appendChild(avatarClone);
                     }
                     dashboard.appendChild(colAvatar);
 
                     const colInfo = document.createElement('div');
                     colInfo.className = 'cpd-info-col';
-                    
+
                     const rowName = document.createElement('div');
                     rowName.className = 'cpd-name-row';
                     const nameH2 = document.createElement('h2');
                     nameH2.textContent = nameText;
                     rowName.appendChild(nameH2);
-                    
+
                     if (userTypeHtml) {
                         const typeSpan = document.createElement('span');
                         typeSpan.className = 'cpd-usertype-tag';
@@ -1305,79 +1519,79 @@
 
                     const badgesRow = document.createElement('ul');
                     badgesRow.className = 'cpd-badges-row';
-                    
+
                     const originalBadgeLis = profileBox.querySelectorAll('.ownprofile-badges.userbadges > li');
                     originalBadgeLis.forEach(li => {
-                        li.className = 'custom-badge-wrapper'; 
-                        
+                        li.className = 'custom-badge-wrapper';
+
                         const btn = li.querySelector('button[data-testid="user-badge"]');
                         if (btn) {
-                            btn.className = 'custom-badge-item'; 
-                            
+                            btn.className = 'custom-badge-item';
+
                             const innerDiv = btn.querySelector('.ActivityIndicator');
                             if (innerDiv) {
-                                innerDiv.className = ''; 
+                                innerDiv.className = '';
                                 innerDiv.style.display = 'flex';
                                 innerDiv.style.alignItems = 'center';
                                 innerDiv.style.justifyContent = 'center';
                                 innerDiv.style.gap = '4px';
                             }
-                            
+
                             const svg = btn.querySelector('svg');
                             if (svg) svg.classList.remove('w-small', 'h-small', 'text-onAccentContainer');
-                            
+
                             const textEl = btn.querySelector('.ActivityIndicator--Name');
                             if (textEl) {
                                 // FIX: Zeilenumbrüche und doppelte Leerzeichen werden hier nun korrekt durch ein einfaches Leerzeichen ersetzt.
                                 textEl.textContent = textEl.textContent.replace(/[\n\r]+/g, ' ').replace(/\s+/g, ' ').trim();
                             }
                         }
-                        badgesRow.appendChild(li); 
+                        badgesRow.appendChild(li);
                     });
-                    
+
                     colInfo.appendChild(badgesRow);
 
                     const rowFooter = document.createElement('div');
                     rowFooter.className = 'cpd-footer-row';
-                    
+
                     if (activeSinceHtml) {
                         const asSpan = document.createElement('span');
                         asSpan.className = 'cpd-footer-item';
                         asSpan.innerHTML = activeSinceHtml;
                         rowFooter.appendChild(asSpan);
                     }
-                    
+
                     if (replyTimeHtml) {
                         const rtSpan = document.createElement('span');
                         rtSpan.className = 'cpd-footer-item';
                         rtSpan.innerHTML = replyTimeHtml;
                         rowFooter.appendChild(rtSpan);
                     }
-                    
+
                     if (followersA) {
                         const folSpan = document.createElement('span');
                         folSpan.className = 'cpd-footer-item follower-item hoverable';
                         if (followersSvg) folSpan.appendChild(followersSvg);
-                        
-                        followersA.className = 'follower-link'; 
+
+                        followersA.className = 'follower-link';
                         followersA.style.display = 'inline-flex';
                         followersA.style.alignItems = 'center';
                         followersA.style.gap = '4px';
-                        
+
                         const numMatch = followersA.textContent.match(/(\d+)/);
                         if (numMatch) {
                             followersA.innerHTML = `<span class="cpd-footer-item-text"><strong>${numMatch[1]}</strong> Follower</span>`;
                         }
-                        folSpan.appendChild(followersA); 
+                        folSpan.appendChild(followersA);
                         rowFooter.appendChild(folSpan);
                     }
                     colInfo.appendChild(rowFooter);
-                
+
                 dashboard.appendChild(colInfo);
 
                 const colStats = document.createElement('div');
                 colStats.className = 'cpd-stats-actions-col';
-                
+
                 colStats.innerHTML = `
                     <div class="cpd-stats-block">
                         <span class="cpd-stats-title">Anzeigen</span>
@@ -1400,7 +1614,7 @@
 
                 const actionsBlock = document.createElement('div');
                 actionsBlock.className = 'cpd-actions-block';
-                
+
                 if (walletLink) {
                         walletLink.innerHTML = `
                             <svg viewBox="0 0 24 24" fill="none" data-title="transactionsOverview" stroke="none" role="img" aria-hidden="true" focusable="false" class="shrink-0 fill-current block align-middle transition-colors text-gray-400 group-hover:text-[#5A33AE]" style="width: 16px; height: 16px;">
@@ -1412,7 +1626,7 @@
                         `;
                         walletLink.className = 'cpd-action-btn primary';
                         walletLink.title = 'Einnahmen über das Bezahlsystem';
-                        actionsBlock.appendChild(walletLink); 
+                        actionsBlock.appendChild(walletLink);
                     }
 
                     if (infoBtn) {
@@ -1420,7 +1634,7 @@
                         settingsLink.href = 'https://www.kleinanzeigen.de/m-einstellungen.html';
                         settingsLink.className = 'cpd-action-btn secondary';
                         settingsLink.target = '_self';
-                        
+
                         settingsLink.innerHTML = `
                             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px !important; height: 14px !important; display: block !important; flex-shrink: 0 !important; margin: 0 4px 0 0 !important;">
                                 <circle cx="12" cy="12" r="3"></circle>
@@ -1428,10 +1642,10 @@
                             </svg>
                             <span style="line-height: 1; transform: translateY(1px);">Profil-Einstellungen</span>
                         `;
-                        
-                        actionsBlock.appendChild(settingsLink); 
+
+                        actionsBlock.appendChild(settingsLink);
                 }
-                
+
                 dashboard.appendChild(colStats);
                 dashboard.appendChild(actionsBlock);
 
@@ -1442,13 +1656,13 @@
                 const val30d = dashboard.querySelector('#custom-30d-val');
                 if (val30d) {
                     const cachedVal = localStorage.getItem(CACHE_KEY_30D);
-                    
+
                     if (cachedVal && cachedVal !== '-') {
                         val30d.textContent = cachedVal;
                         val30d.parentElement.title = `Du hast in den letzten 30 Tagen ${cachedVal} Anzeigen eingestellt.`;
                     } else {
                         val30d.innerHTML = '<span style="font-size: 11px; font-weight: normal; animation: customPulse 1s infinite;">LÄDT</span>';
-                        
+
                         // Versuche die Daten versteckt im Hintergrund zu holen
                         fetchBackgroundStats().then(val => {
                             if (val) {
@@ -1474,7 +1688,7 @@
             editLinks.forEach(link => {
                 const container = link.closest('ul') || link.parentElement;
                 if (!container || container.dataset.klInjected) return;
-                
+
                 const match = link.getAttribute('href').match(/adId=(\d+)/);
                 if (!match) return;
                 const adId = match[1];
@@ -1483,7 +1697,7 @@
                 const mehrBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent.includes('Mehr'));
                 let printBtn = null;
                 let printLi = null;
-                
+
                 if (mehrBtn) {
                     const mehrLi = mehrBtn.closest('li');
                     if (mehrLi) {
@@ -1495,7 +1709,7 @@
                     printBtn = document.createElement('button');
                     printBtn.type = 'button';
                     printBtn.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn";
-                    
+
                     if (isOverviewPage) {
                         printBtn.innerHTML = `${klPrinterSvg}`;
                         printBtn.classList.add('custom-icon-only-btn');
@@ -1523,9 +1737,9 @@
                         const antiFlashStyle = document.createElement('style');
                         antiFlashStyle.id = 'hide-dropdown-flash';
                         antiFlashStyle.textContent = `
-                            [role="menu"], [data-testid*="menu"], [id^="radix-"] { 
-                                opacity: 0 !important; 
-                                visibility: hidden !important; 
+                            [role="menu"], [data-testid*="menu"], [id^="radix-"] {
+                                opacity: 0 !important;
+                                visibility: hidden !important;
                                 pointer-events: none !important;
                                 transform: scale(0) !important;
                             }
@@ -1533,15 +1747,15 @@
                         document.head.appendChild(antiFlashStyle);
 
                         await new Promise(r => setTimeout(r, 50));
-                        mehrBtn.click(); 
+                        mehrBtn.click();
 
                         let attempts = 0;
                         const interval = setInterval(() => {
                             attempts++;
-                            
+
                             const menuId = mehrBtn.getAttribute('aria-controls');
                             let targetMenu = menuId ? document.getElementById(menuId) : null;
-                            
+
                             if (!targetMenu) targetMenu = document.querySelector('[data-state="open"]');
 
                             if (targetMenu) {
@@ -1550,27 +1764,27 @@
 
                                 if (nativePrintBtn) {
                                     clearInterval(interval);
-                                    nativePrintBtn.click(); 
-                                    
+                                    nativePrintBtn.click();
+
                                     setTimeout(() => {
                                         document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-                                        document.body.click(); 
+                                        document.body.click();
                                         antiFlashStyle.remove();
-                                        
+
                                         // Sicherheitshalber Status sofort zurücksetzen
                                         printBtn.removeAttribute('disabled');
                                         printBtn.classList.remove('is-disabled');
                                     }, 100);
-                                    return; 
+                                    return;
                                 }
                             }
-                            
+
                             if (attempts > 30) {
                                 clearInterval(interval);
                                 document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
                                 document.body.click();
                                 antiFlashStyle.remove();
-                                
+
                                 printBtn.removeAttribute('disabled');
                                 printBtn.classList.remove('is-disabled');
                             }
@@ -1601,10 +1815,10 @@
                         e.preventDefault();
                         e.stopPropagation();
                         const card = link.closest('li[data-testid="ad-card"]');
-                        
+
                         const titleLink = card ? card.querySelector('a[href*="/s-anzeige/"]') : null;
                         const url = titleLink ? titleLink.href : window.location.href;
-                        
+
                         // Titel explizit aus dem h2 (oder der Titel-Klasse) holen, da der erste Link oft das Bild mit der Foto-Anzahl ist!
                         const titleHeading = card ? card.querySelector('h2, .text-title4') : null;
                         let adTitle = 'Anzeige';
@@ -1617,7 +1831,7 @@
                         } else if (titleLink) {
                             adTitle = titleLink.textContent.trim();
                         }
-                        
+
                         const imgEl = card ? card.querySelector('.imagebox-image img') : null;
                         let imgUrl = '';
                         if (imgEl) {
@@ -1626,10 +1840,10 @@
                                 imgUrl = imgEl.dataset.src;
                             }
                         }
-                        
+
                         showCustomShareModal(url, adTitle, imgUrl);
                     };
-                    
+
                     shareBtnEl = document.createElement('button');
                     shareBtnEl.type = 'button';
                     shareBtnEl.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn custom-icon-only-btn";
@@ -1645,26 +1859,26 @@
                     if (printLi) container.append(printLi);
                     container.append(liDup, liRelist);
                 }
-                
+
                 // --- TEILEN BUTTON AUS DER GERETTETEN SIDEBAR IN DIE LEISTE HOLEN (NUR DETAILSEITE) ---
                 if (isDetailPage) {
                     let shareBtn = document.getElementById('custom-rescued-share-btn') || document.querySelector('button.j-share-ad, a.j-share-ad');
                     if (shareBtn && !shareBtn.dataset.movedToActions) {
                         shareBtn.dataset.movedToActions = 'true';
-                        
+
                         shareBtn.className = 'custom-native-btn-detail j-share-ad'; // Behalte Event-Klasse für natives Modal
                         shareBtn.style.display = 'inline-flex'; // Falls er während der Rettung ausgeblendet wurde
-                        
+
                         shareBtn.innerHTML = `${klShareSvg}<span>Teilen</span>`;
-                        
+
                         const liShareDetail = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
                         liShareDetail.style.margin = '0';
                         liShareDetail.appendChild(shareBtn);
-                        
+
                         container.appendChild(liShareDetail);
                     }
                 }
-                
+
                 container.dataset.klInjected = 'true';
 
                 // ====================================================
@@ -1718,7 +1932,7 @@
                         // Hole alle <li> Container (die die Buttons umschließen) und sortiere sie
                         const listItems = Array.from(container.children);
                         listItems.sort((a, b) => getOrder(a) - getOrder(b));
-                        
+
                         // Setze sie in der neu sortierten Reihenfolge wieder ein
                         listItems.forEach(li => container.appendChild(li));
                     }
@@ -1730,18 +1944,18 @@
                         if (!btn.classList.contains('custom-native-btn-detail')) {
                             btn.classList.add('custom-native-btn-detail');
                         }
-                        
+
                         const text = btn.textContent;
                         // Prüfen, ob das Icon fehlt oder der Text sich geändert hat (z.B. nach Toggle-Klick)
                         const needsInjection = !btn.dataset.iconInjected || !btn.querySelector('svg');
-                        
+
                         if (needsInjection) {
                             btn.dataset.iconInjected = 'true';
-                            
+
                             // Verkaufsschild (auf Detailseite)
                             if (text.includes('drucken') || text.includes('Verkaufsschild')) {
                                 btn.innerHTML = `${klPrinterSvg}<span>Verkaufsschild</span>`;
-                                
+
                                 // Verhindert das Deaktivieren des Verkaufsschild-Buttons auf der Detailseite extrem zuverlässig
                                 if (isDetailPage) {
                                     const preventDisable = () => {
@@ -1752,14 +1966,14 @@
                                             btn.style.opacity = '1';
                                         }
                                     };
-                                    
+
                                     // Timeout fallback nach Klick
                                     btn.addEventListener('click', () => {
                                         setTimeout(preventDisable, 10);
                                         setTimeout(preventDisable, 100);
                                         setTimeout(preventDisable, 500);
                                     });
-                                    
+
                                     // Permanenter MutationObserver, falls Kleinanzeigen-Scripts später eingreifen
                                     if (!btn.dataset.observerAttached) {
                                         btn.dataset.observerAttached = 'true';
@@ -1767,21 +1981,21 @@
                                         observer.observe(btn, { attributes: true, attributeFilter: ['disabled', 'class'] });
                                     }
                                 }
-                            } 
+                            }
                             // Reservieren
                             else if (text.includes('Reservieren')) {
                                 btn.innerHTML = `${klFlagSvg}<span>Reservieren</span>`;
-                            } 
+                            }
                             // Aktivieren (z.B. nach Klick auf Reservieren oder Pausieren)
                             else if (text.includes('Aktivieren')) {
                                 const klPlaySvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>`;
                                 btn.innerHTML = `${klPlaySvg}<span>Aktivieren</span>`;
-                            } 
+                            }
                             // Deaktivieren / Pausieren
                             else if (text.includes('Deaktivieren') || text.includes('Pausieren')) {
                                 const klPauseSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
                                 btn.innerHTML = `${klPauseSvg}<span>Deaktivieren</span>`;
-                            } 
+                            }
                             // Verlängern
                             else if (text.includes('Verlängern')) {
                                 btn.innerHTML = `${klReactivateSvg}<span>Verlängern</span>`;
@@ -1811,13 +2025,13 @@
                     if (card) {
                         const footer = card.querySelector('footer');
                         const infoCol = card.querySelector('.pl-medium.align-top');
-                        
+
                         if (infoCol) {
                             // --- EINBAU DES TEILEN-BUTTONS IN SPALTE 2 ---
                             if (shareBtnEl && !shareBtnEl.parentElement) {
                                 let priceEl = card.querySelector('.text-title3');
                                 if (!priceEl) {
-                                    priceEl = Array.from(card.querySelectorAll('li, p, span, div')).find(el => 
+                                    priceEl = Array.from(card.querySelectorAll('li, p, span, div')).find(el =>
                                         (el.textContent.includes('€') || el.textContent.includes('VB')) &&
                                         !el.classList.contains('custom-shipping-info') &&
                                         el.children.length === 0
@@ -1826,19 +2040,19 @@
                                 if (priceEl) {
                                     // Flexbox Setup mit space-between, drückt den Button garantiert ganz nach rechts
                                     priceEl.classList.add('has-custom-btn');
-                                    
+
                                     // Wrapper für den Content links (Preis + Versand)
                                     const leftContent = document.createElement('div');
                                     leftContent.style.display = 'flex';
                                     leftContent.style.alignItems = 'center';
                                     leftContent.style.gap = '4px';
                                     leftContent.style.flexWrap = 'nowrap';
-                                    
+
                                     // Verschiebe existierenden Inhalt in den linken Wrapper
                                     while (priceEl.firstChild) {
                                         leftContent.appendChild(priceEl.firstChild);
                                     }
-                                    
+
                                     priceEl.appendChild(leftContent);
                                     priceEl.appendChild(shareBtnEl);
                                 } else {
@@ -1856,7 +2070,7 @@
                                     bottomRow.style.display = 'flex';
                                     bottomRow.style.justifyContent = 'space-between'; // Drückt links und rechts auseinander
                                     bottomRow.style.alignItems = 'center';
-                                    bottomRow.style.marginTop = '0px'; 
+                                    bottomRow.style.marginTop = '0px';
                                     bottomRow.style.width = '100%';
                                     infoCol.appendChild(bottomRow);
                                 } else {
@@ -1864,13 +2078,13 @@
                                 }
                                 bottomRow.appendChild(printBtn);
                             }
-                            
+
                             if (footer) {
                                 const mainWrapper = infoCol.parentElement;
-                                
+
                                 const featureSection = card.querySelector('#feature-offer-section');
                                 if (featureSection) featureSection.remove();
-                                
+
                                 const oldCardFooterWrapper = card.querySelector('.card-footer');
 
                                 const newFooterDiv = document.createElement('div');
@@ -1879,7 +2093,7 @@
                                 newFooterDiv.style.flexDirection = 'column';
                                 newFooterDiv.style.justifyContent = 'center';
                                 newFooterDiv.style.height = '100%';
-                                
+
                                 while (footer.firstChild) {
                                     newFooterDiv.appendChild(footer.firstChild);
                                 }
@@ -1887,7 +2101,7 @@
                                 const dividerDiv2 = document.createElement('div');
                                 dividerDiv2.style.background = '#e0e0e0';
                                 dividerDiv2.style.width = '1px';
-                                dividerDiv2.style.height = '110px'; 
+                                dividerDiv2.style.height = '110px';
 
                                 const statsContainer = document.createElement('div');
                                 statsContainer.className = 'custom-stats-area align-top';
@@ -1906,21 +2120,21 @@
                                     statsSection = document.createElement('section');
                                     statsSection.className = 'text-bodySmall text-onSurfaceNonessential';
                                 }
-                                
-                                statsSection.style.marginTop = '0'; 
+
+                                statsSection.style.marginTop = '0';
                                 statsSection.style.display = 'flex';
                                 statsSection.style.flexDirection = 'column';
-                                statsSection.style.gap = '12px'; 
+                                statsSection.style.gap = '12px';
                                 statsSection.style.height = '100%';
                                 statsContainer.appendChild(statsSection);
 
                                 const dividerDiv1 = document.createElement('div');
                                 dividerDiv1.style.background = '#e0e0e0';
                                 dividerDiv1.style.width = '1px';
-                                dividerDiv1.style.height = '110px'; 
-                                
+                                dividerDiv1.style.height = '110px';
+
                                 mainWrapper.className = "grid w-full custom-ad-grid";
-                                
+
                                 const originalHeader = infoCol.querySelector('.mb-xsmall.text-bodySmall.text-onSurfaceNonessential');
                                 if (originalHeader) {
                                     originalHeader.style.textDecoration = 'underline';
@@ -1944,31 +2158,31 @@
         if (isOverviewPage && !window.__KL_FETCHING_ADS) {
             const pendingCards = document.querySelectorAll('li[data-testid="ad-card"]:not([data-kl-details-injected])');
             if (pendingCards.length > 0) {
-                window.__KL_FETCHING_ADS = true; 
-                
+                window.__KL_FETCHING_ADS = true;
+
                 (async () => {
                     try {
-                        await new Promise(r => setTimeout(r, 800)); 
+                        await new Promise(r => setTimeout(r, 800));
 
                         for (const card of pendingCards) {
-                            card.dataset.klDetailsInjected = 'pending'; 
-                            
+                            card.dataset.klDetailsInjected = 'pending';
+
                             try {
                                 const titleLink = card.querySelector('a[href*="/s-anzeige/"]');
                                 const editLink = card.querySelector('a[href*="adId="]');
-                                
+
                                 if (titleLink && editLink) {
                                     const adUrl = titleLink.href;
                                     const match = editLink.href.match(/adId=(\d+)/);
-                                    
+
                                     if (match) {
                                         const adId = match[1];
                                         const details = await fetchAdDetails(adUrl, adId);
-                                        
+
                                         if (details) {
                                             const statsSection = card.querySelector('section.text-onSurfaceNonessential') || card.querySelector('section[class*="text-onSurfaceNonessential"]');
                                             const infoColTarget = card.querySelector('.custom-ad-grid > div:nth-child(2)');
-                                            
+
                                             if (statsSection) {
                                                 let visitors = 0;
                                                 let watchers = 0;
@@ -2000,11 +2214,11 @@
                                                             endDateStr = text.replace(/Endet am/i, '').trim();
                                                         }
                                                     });
-                                                    
+
                                                     // Entfernt die alte von Kleinanzeigen generierte Liste komplett!
                                                     originalStatsUl.remove();
                                                 }
-                                                
+
                                                 // Fallback für Endet-am, falls das Format extrem abweicht
                                                 if (endDateStr === "Unbekannt") {
                                                      const matchFallback = card.textContent.match(/Endet am\s*([\d\.]+)/i);
@@ -2030,7 +2244,7 @@
                                                 } else if (daysOnline >= 35) {
                                                     daysColor = '#FF0000'; // Rot
                                                 }
-                                            
+
                                                 const avgVisitors = (visitors / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
                                                 const avgWatchers = (watchers / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
 
@@ -2063,15 +2277,15 @@
                                                     ${makeItem(iconErstellt, details.date || 'Unbekannt', 'Erstellt am')}
                                                     ${makeItem(iconEndet, endDateStr, 'Endet am')}
                                                     ${makeItem(iconOnline, daysOnline === 1 ? '1 Tag' : daysOnline + ' Tage', 'Online seit', daysColor)}
-                                                    
+
                                                     ${makeItem(iconBesucher, visitors + ' Besucher', 'Besucher')}
                                                     ${makeItem(iconMerkliste, watchers + 'x gemerkt', 'Merkliste')}
                                                     <div></div>
-                                                    
+
                                                     ${makeItem(iconAvgVis, avgVisitors + ' pro Tag', 'Besucher pro Tag')}
                                                     ${makeItem(iconAvgWat, avgWatchers + ' pro Tag', 'Gemerkt pro Tag')}
                                                     <div></div>
-                                                    
+
                                                     ${makeItem(iconId, 'Anzeigen-ID', 'Anzeigen-ID')}
                                                     ${makeItem('', adId, 'Anzeigen-ID')}
                                                     <div></div>
@@ -2096,7 +2310,7 @@
                                                         <span style="font-weight: normal;">${details.location}</span>
                                                     </li>
                                                 `;
-                                                
+
                                                 // Location in die neue untere Zeile (zusammen mit dem Verkaufsschild-Button) einfügen
                                                 let bottomRow = infoColTarget.querySelector('.custom-bottom-row');
                                                 if (bottomRow) {
@@ -2107,16 +2321,16 @@
                                                         bottomRow.appendChild(locUl);
                                                     }
                                                 } else {
-                                                    locUl.style.marginTop = '0px'; 
+                                                    locUl.style.marginTop = '0px';
                                                     infoColTarget.appendChild(locUl);
                                                 }
                                             }
 
                                             if (details.shipping) {
                                                 let priceEl = card.querySelector('.text-title3');
-                                                
+
                                                 if (!priceEl) {
-                                                    priceEl = Array.from(card.querySelectorAll('li, p, span, div')).find(el => 
+                                                    priceEl = Array.from(card.querySelectorAll('li, p, span, div')).find(el =>
                                                         (el.textContent.includes('€') || el.textContent.includes('VB')) &&
                                                         !el.classList.contains('custom-shipping-info') &&
                                                         el.children.length === 0
@@ -2126,13 +2340,13 @@
                                                 if (priceEl && !priceEl.querySelector('.custom-shipping-info')) {
                                                     const span = document.createElement('span');
                                                     span.className = 'custom-shipping-info';
-                                                    
+
                                                     span.style.fontSize = '12px';
                                                     span.style.fontWeight = 'normal';
-                                                    span.style.color = '#757575'; 
+                                                    span.style.color = '#757575';
                                                     span.style.marginLeft = '4px';
                                                     span.textContent = details.shipping;
-                                                    
+
                                                     // Die Info in den korrekten Container setzen (den linken Teil, falls Flexbox aktiv)
                                                     const leftContent = priceEl.querySelector('div');
                                                     if (leftContent) {
@@ -2146,25 +2360,25 @@
                                             const categoryHeader = infoColTarget ? infoColTarget.querySelector('.mb-xsmall.text-bodySmall.text-onSurfaceNonessential') : null;
                                             if (categoryHeader && !categoryHeader.dataset.linkInjected) {
                                                 categoryHeader.dataset.linkInjected = 'true';
-                                                
+
                                                 const idsMatch = new URL(adUrl).pathname.match(/-(\d+)-(\d+)\/?$/);
                                                 if (idsMatch) {
                                                     const catId = idsMatch[1];
                                                     const locId = idsMatch[2];
-                                                    
+
                                                     const plzMatch = details.location.match(/\b\d{5}\b/);
                                                     const plz = plzMatch ? plzMatch[0] : '';
-                                                    
+
                                                     if (plz && catId && locId) {
                                                         const catText = categoryHeader.textContent.trim();
-                                                        
+
                                                         let slug = details.catSlug;
                                                         if (!slug) {
                                                             slug = catText.toLowerCase().replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
                                                         }
-                                                        
+
                                                         const catLinkUrl = `https://www.kleinanzeigen.de/s-${slug}/${plz}/c${catId}l${locId}r10`;
-                                                        
+
                                                         const lupeSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="#5A33AE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 14px; height: 14px; flex-shrink: 0; margin-top: 1px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
                                                         const tooltipText = "Klicke hier, gelange direkt in die Kategorie & Ort deiner Anzeige und prüfe das aktuelle Ranking.";
                                                         categoryHeader.innerHTML = `<a href="${catLinkUrl}" class="custom-category-link" target="_blank" title="${tooltipText}">${lupeSvg}<span>${catText}</span></a>`;
@@ -2178,7 +2392,7 @@
                             } catch(err) {
                                 console.error("Fehler beim Verarbeiten des Inserats:", err);
                             }
-                            await new Promise(r => setTimeout(r, 400)); 
+                            await new Promise(r => setTimeout(r, 400));
                         }
                     } finally {
                         window.__KL_FETCHING_ADS = false;
@@ -2191,7 +2405,7 @@
         if (isEditPage) {
             const saveBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Anzeige speichern'));
             if (!saveBtn) return;
-            
+
             const container = saveBtn.closest('.flex.gap-small') || saveBtn.parentElement;
             if (!container || container.dataset.klInjected) return;
 
@@ -2212,12 +2426,12 @@
             const btnRelist = createBtn('Neu einstellen', klRelistSvg, (e) => doAction(e, 'relist'));
 
             saveBtn.after(btnDup, btnRelist);
-            
+
             // NEU: Standard-Speichern fangen und auf Übersicht umleiten
             saveBtn.addEventListener('click', () => {
                 if (!window.__KL_ACTION) {
                     localStorage.setItem('__KL_AUTO_REDIRECT', 'true');
-                    
+
                     // Fallback: Falls die Validierung fehlschlägt, den Redirect bei nächster Interaktion abbrechen
                     const resetRedirect = (e) => {
                         // Ignoriere Interaktionen mit dem automatischen Werbe-Popup
@@ -2226,7 +2440,7 @@
                         document.removeEventListener('input', resetRedirect);
                         document.removeEventListener('click', resetRedirect);
                     };
-                    
+
                     setTimeout(() => {
                         document.addEventListener('input', resetRedirect);
                         document.addEventListener('click', resetRedirect);
@@ -2237,7 +2451,7 @@
             container.dataset.klInjected = 'true';
         }
     };
-    
+
     setInterval(inject, 500);
 
     // ==========================================
@@ -2250,7 +2464,7 @@
                 const span = nav.querySelector('span.sr-only');
                 if (span && span.textContent.includes('Seiten-Navigation')) {
                     if (!nav.closest('#custom-top-pagination')) {
-                        return nav.parentElement; 
+                        return nav.parentElement;
                     }
                 }
             }
@@ -2267,7 +2481,7 @@
             if (!topContainer) {
                 topContainer = document.createElement('div');
                 topContainer.id = 'custom-top-pagination';
-                
+
                 topContainer.style.position = 'absolute';
                 topContainer.style.left = '50%';
                 topContainer.style.top = '0px';
@@ -2282,9 +2496,9 @@
                     const headerFlexBox = header.closest('.flex.flex-row.justify-between') || header.parentElement;
                     headerFlexBox.style.display = 'flex';
                     headerFlexBox.style.alignItems = 'center';
-                    headerFlexBox.style.position = 'relative'; 
+                    headerFlexBox.style.position = 'relative';
                     headerFlexBox.style.height = '40px';
-                    
+
                     header.style.marginBottom = '0px';
                     header.after(topContainer);
                 }
@@ -2296,7 +2510,7 @@
                         e.stopPropagation();
                         const cloneButtons = Array.from(topContainer.querySelectorAll('button'));
                         const idx = cloneButtons.indexOf(btn);
-                        
+
                         const realNavContainer = getBottomNavContainer();
                         if (realNavContainer) {
                             const realButtons = Array.from(realNavContainer.querySelectorAll('button'));
@@ -2330,7 +2544,7 @@
             if (!topContainer) {
                 topContainer = document.createElement('div');
                 topContainer.id = 'custom-top-pagination-search';
-                
+
                 // Styling identisch zur unteren Leiste
                 topContainer.className = bottomContainer.className;
                 topContainer.style.paddingTop = '0px';
@@ -2362,13 +2576,13 @@
 
             if (topContainer.dataset.sourceHtml !== currentHTML) {
                 topContainer.dataset.sourceHtml = currentHTML;
-                
+
                 // Scripts blocken, damit Kleinanzeigens Pagination-Skript nicht versehentlich doppelt an den Knoten feuert
                 const tempDiv = document.createElement('div');
                 tempDiv.innerHTML = currentHTML;
                 tempDiv.querySelectorAll('script').forEach(s => s.remove());
                 tempDiv.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
-                
+
                 topContainer.innerHTML = tempDiv.innerHTML;
             }
         }, 500);
@@ -2428,13 +2642,13 @@
     // Abfangen der Zielseiten, um Seiten-Flackern beim Redirect zu verhindern
     if (shouldAutoRedirect && (isConfirmPage || isDetailPage)) {
         document.documentElement.style.opacity = '0'; // Seite sofort unsichtbar schalten
-        
+
         window.addEventListener('DOMContentLoaded', () => {
             document.documentElement.style.opacity = '1';
             const spinner = document.createElement("div");
             Object.assign(spinner.style, {
                 height: '100%', width: '100%', position: 'fixed', top: '0', left: '0',
-                zIndex: '999999', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                zIndex: '999999', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 backgroundColor: 'rgba(255, 255, 255, 0.9)', backdropFilter: 'blur(5px)'
             });
             spinner.innerHTML = '<div style="font-size: 20px; font-weight: bold; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); color: #86B817; text-align: center;">Aktion erfolgreich!<br><span style="font-size: 14px; color: #666; font-weight: normal; margin-top: 10px; display: block;">Rückkehr zur Übersicht...</span></div>';
@@ -2450,7 +2664,7 @@
 
         (async () => {
             let token = document.querySelector('meta[name="_csrf"]')?.content;
-            
+
             // Failsafe: Falls die Zielseite (z.B. Detailseite) keinen CSRF-Token im Head hat,
             // holen wir ihn uns schnell unsichtbar von der Übersichtsseite.
             if (!token) {
@@ -2466,8 +2680,8 @@
 
             if (token) {
                 try {
-                    await fetch(`/m-anzeigen-loeschen.json?ids=${delId}`, { 
-                        method: 'POST', 
+                    await fetch(`/m-anzeigen-loeschen.json?ids=${delId}`, {
+                        method: 'POST',
                         headers: { 'x-csrf-token': token }
                     });
                 } catch(e) {
@@ -2502,5 +2716,35 @@
         }
         return originalFetch.apply(this, args);
     };
+    function filterAds(query) {
+        const searchTerm = query.toLowerCase();
+        const adList = document.querySelectorAll('.aditem'); // Selektor für Anzeigenkarten auf Kleinanzeigen
 
+        adList.forEach(ad => {
+            const title = ad.querySelector('.text-module-begin a')?.innerText.toLowerCase() || '';
+            const id = ad.getAttribute('data-adid') || ''; // Beispiel für ID-Attribut
+
+            if (title.includes(searchTerm) || id.includes(searchTerm)) {
+                ad.style.display = '';
+            } else {
+                ad.style.display = 'none';
+            }
+        });
+    }
+
+    function injectSearchField(targetContainer) {
+        const searchWrapper = document.createElement('div');
+        searchWrapper.id = 'custom-ad-search-wrapper';
+        searchWrapper.style.cssText = 'margin-left: 20px; display: flex; align-items: center;';
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.placeholder = 'Suche nach Titel oder ID...';
+        input.style.cssText = 'padding: 8px 12px; border: 2px solid #f3f4f6; border-radius: 20px; outline: none; font-size: 14px; width: 200px;';
+
+        input.addEventListener('input', (e) => filterAds(e.target.value));
+
+        searchWrapper.appendChild(input);
+        targetContainer.parentNode.insertBefore(searchWrapper, targetContainer.nextSibling);
+    }
 })();

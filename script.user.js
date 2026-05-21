@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.6.100
+// @version       2.6.109
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -67,6 +67,9 @@
         div.mx-auto.mb-small:has([id^="srps-result-list"]):not(:has(#srchrslt-adtable)),
         li[id^="home-teaser-ads-"] { display: none !important; }
 
+        /* Unerwünschte Container ausblenden */
+        [data-testid="revision-container"] { display: none !important; }
+
         /* Schützt den Cookie-Banner zusätzlich explizit */
         #gdpr-banner-container, dialog#gdpr-banner { display: block !important; visibility: visible !important; }
 
@@ -74,6 +77,9 @@
 
         /* Verstecke Kleinanzeigen Original-Elemente (z.B. alte Views/Watchers über den Buttons) */
         .flex.text-bodySmall.my-xsmall.text-onSurface { display: none !important; }
+
+        /* Custom Suchfeld Helper */
+        .kl-search-hidden { display: none !important; }
 
         /* Allgemeine Abstands-Korrekturen nach Nutzer-Wunsch */
         .relative.mb-small.box-border.min-h-\\[10px\\].rounded-xsmall.text-onSurfaceSubdued { margin-bottom: 0px !important; }
@@ -85,9 +91,38 @@
         .mb-xsmall.text-bodySmall.text-onSurfaceNonessential { margin-bottom: 3px !important; }
         .custom-bottom-row { margin-top: 0px !important; }
 
-        /* Container-Padding Fix */
-        .jsx-1105488430.l-page-wrapper.l-container-row { padding-top: 12px !important; }
-        .l-page-wrapper.l-container-row { padding-top: 20px !important; }
+        /* Container-Padding Fix nach Maßgabe */
+        .jsx-1105488430.l-page-wrapper.l-container-row,
+        .l-page-wrapper.l-container-row {
+            padding-bottom: 0px !important;
+            margin-bottom: 0px !important;
+            padding-top: 12px !important;
+        }
+
+        .jsx-1105488430.flex.justify-center.py-small,
+        .flex.justify-center.py-small {
+            height: 45px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* MwSt.-Hinweis und Paginierung in der Reihenfolge tauschen (React-sicher via Flexbox) */
+        div:has(> .align-right.l-container-row.text-bodySmall):has(> .flex.justify-center.py-small) {
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        .align-right.l-container-row.text-bodySmall {
+            order: 2 !important;
+            margin-top: -20px !important;
+        }
+        .flex.justify-center.py-small {
+            order: 1 !important;
+        }
+
+        /* Suchfeld Placeholder Styling */
+        #custom-ad-search-input::placeholder {
+            color: #8c8c8c !important;
+            opacity: 1 !important;
+        }
 
         /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1100px) */
         html.is-wide-page body .site-base,
@@ -526,6 +561,12 @@
             50% { opacity: 0.3; }
             100% { opacity: 1; }
         }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+        .custom-spin {
+            animation: spin 1s linear infinite;
+        }
 
         /* EINHEITLICHE GRÖSSE UND LINIE FÜR ALLE BUTTONS IN SPALTE 6 */
         .is-overview-page .custom-action-area a,
@@ -706,7 +747,7 @@
             max-width: none !important;
         }
 
-        /* Der innere Container (Pille) */
+        /* Der innere Container (Pille) -> Exakt 42px durch feste Höhe und Box-Sizing */
         nav[aria-label*="Seiten-Navigation"] > ul,
         .flex.justify-center.py-small nav > ul,
         #custom-top-pagination ul,
@@ -724,6 +765,8 @@
             list-style: none !important;
             width: auto !important;
             max-width: 100% !important; /* Sicherheit auf mobilen Geräten */
+            height: 42px !important;
+            box-sizing: border-box !important;
         }
 
         /* Listen-Elemente (Wrapper für jeden Button) */
@@ -737,7 +780,7 @@
             display: flex !important;
         }
 
-        /* Alle klickbaren Buttons / Zahlen in der Pagination */
+        /* Alle klickbaren Buttons / Zahlen in der Pagination (34px + Padding/Border des ul = 42px) */
         nav[aria-label*="Seiten-Navigation"] > ul > li > a,
         nav[aria-label*="Seiten-Navigation"] > ul > li > button,
         nav[aria-label*="Seiten-Navigation"] > ul > li > span,
@@ -753,19 +796,19 @@
         #srchrslt-pagination ul > li > a,
         #srchrslt-pagination ul > li > button,
         #srchrslt-pagination ul > li > span {
-            width: 32px !important;
-            min-width: 32px !important;
-            max-width: 32px !important;
-            height: 32px !important;
-            min-height: 32px !important;
-            max-height: 32px !important;
+            width: 34px !important;
+            min-width: 34px !important;
+            max-width: 34px !important;
+            height: 34px !important;
+            min-height: 34px !important;
+            max-height: 34px !important;
             aspect-ratio: 1 / 1 !important;
             padding: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
             border-radius: 50% !important;
-            font-size: 14px !important;
+            font-size: 15px !important;
             font-weight: 800 !important;
             font-family: inherit !important;
             border: none !important;
@@ -870,8 +913,8 @@
         #custom-top-pagination-search ul > li:last-child svg,
         #srchrslt-pagination ul > li:first-child svg,
         #srchrslt-pagination ul > li:last-child svg {
-            width: 16px !important;
-            height: 16px !important;
+            width: 18px !important;
+            height: 18px !important;
             stroke: #326916 !important;
             stroke-width: 3px !important;
             color: #326916 !important;
@@ -1175,6 +1218,14 @@
                 if (parent) parent.remove();
             }
             b.remove();
+        });
+
+        // --- HILFSFUNKTION FÜR FEHLENDE AD-CARD ATTRIBUTE ---
+        // Wenn Kleinanzeigen data-testid="ad-card" entfernt hat, stellen wir es für unsere Such/Filter-Logik wieder her.
+        document.querySelectorAll('ul#my-manageitems-adlist > li, ul[data-testid="ad-list"] > li').forEach(li => {
+            if (!li.hasAttribute('data-testid') && (li.querySelector('article') || li.querySelector('a[href*="/s-anzeige/"]'))) {
+                li.setAttribute('data-testid', 'ad-card');
+            }
         });
 
         // --- SIDEBAR ENTFERNEN UND CONTENT STRECKEN (DETAILSEITE) ---
@@ -1814,7 +1865,7 @@
                     const shareAction = (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        const card = link.closest('li[data-testid="ad-card"]');
+                        const card = link.closest('li');
 
                         const titleLink = card ? card.querySelector('a[href*="/s-anzeige/"]') : null;
                         const url = titleLink ? titleLink.href : window.location.href;
@@ -2021,7 +2072,7 @@
                 // --- 2. ÜBERSICHTS-SEITEN REDESIGN (GRID) ---
                 // ====================================================
                 if (isOverviewPage) {
-                    const card = container.closest('li[data-testid="ad-card"]');
+                    const card = container.closest('li');
                     if (card) {
                         const footer = card.querySelector('footer');
                         const infoCol = card.querySelector('.pl-medium.align-top');
@@ -2156,7 +2207,10 @@
 
         // --- BACKGROUND FETCH FÜR DATUM, ORT & VERSAND AUF ÜBERSICHTSSEITE ---
         if (isOverviewPage && !window.__KL_FETCHING_ADS) {
-            const pendingCards = document.querySelectorAll('li[data-testid="ad-card"]:not([data-kl-details-injected])');
+            // Definiert alle Ads dynamisch (robuster Selector ohne data-testid Zwang)
+            const allValidCards = Array.from(document.querySelectorAll('ul#my-manageitems-adlist > li, ul[data-testid="ad-list"] > li, li[data-testid="ad-card"]')).filter(c => c.querySelector('article') || c.querySelector('a[href*="/s-anzeige/"]'));
+            const pendingCards = allValidCards.filter(c => !c.dataset.klDetailsInjected);
+
             if (pendingCards.length > 0) {
                 window.__KL_FETCHING_ADS = true;
 
@@ -2455,7 +2509,7 @@
     setInterval(inject, 500);
 
     // ==========================================
-    // PAGINIERUNG (Übersicht) SYNC & ZENTRIERUNG
+    // PAGINIERUNG (Übersicht) SYNC, ZENTRIERUNG & SEITENÜBERGREIFENDE SUCHE
     // ==========================================
     if (isOverviewPage) {
         function getBottomNavContainer() {
@@ -2469,6 +2523,114 @@
                 }
             }
             return null;
+        }
+
+        let hasFetchedAllPages = false;
+        let fetchAdsPromise = null;
+
+        async function fetchAllUserAds() {
+            let maxPage = 1;
+
+            // Zuverlässige Bestimmung der maximalen Seitenanzahl (Robuster gegen React-Umbauten)
+            document.querySelectorAll('nav').forEach(nav => {
+                const text = nav.textContent.toLowerCase();
+                if (text.includes('seite') || text.includes('page')) {
+                    nav.querySelectorAll('button, a, span').forEach(el => {
+                        const elText = el.textContent.trim();
+                        if (/^\d+$/.test(elText) || elText.toLowerCase().includes('seite')) {
+                            const match = elText.match(/\d+/);
+                            if (match) {
+                                const num = parseInt(match[0], 10);
+                                if (num > maxPage) maxPage = num;
+                            }
+                        }
+                    });
+                }
+            });
+
+            const currentUrl = new URL(window.location.href);
+            // Kleinanzeigen nutzt pageNum= im neuen React-Design
+            const currentPage = parseInt(currentUrl.searchParams.get('pageNum') || currentUrl.searchParams.get('page') || '1');
+
+            // Finde die UL dynamisch
+            const firstAd = document.querySelector('[data-testid="ad-card"]') || document.querySelector('a[href*="/s-anzeige/"]')?.closest('li');
+            const mainUl = firstAd ? firstAd.closest('ul') : null;
+
+            if (maxPage > 1 && mainUl) {
+                const fetchPromises = [];
+                for (let p = 1; p <= maxPage; p++) {
+                    if (p === currentPage) continue;
+                    fetchPromises.push(
+                        fetch('/m-meine-anzeigen.html?pageNum=' + p)
+                            .then(res => res.text())
+                            .then(html => {
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(html, 'text/html');
+                                // Robuster Filter für alle LIs, die Anzeigen sind
+                                return Array.from(doc.querySelectorAll('li')).filter(li => {
+                                    return li.querySelector('a[href*="/s-anzeige/"]') && (li.querySelector('h2') || li.querySelector('.text-title4'));
+                                });
+                            })
+                            .catch(e => { console.error("Fetch Fehler:", e); return []; })
+                    );
+                }
+
+                const results = await Promise.all(fetchPromises);
+                results.forEach(adsArray => {
+                    adsArray.forEach(ad => {
+                        // Standardisieren für die weiteren Such-Filter
+                        ad.setAttribute('data-testid', 'ad-card');
+
+                        // Bilder Lazy-Load auflösen, damit sie direkt sichtbar sind
+                        const imgs = ad.querySelectorAll('img[data-src]');
+                        imgs.forEach(img => { img.src = img.dataset.src; });
+
+                        ad.classList.add('custom-fetched-ad');
+                        ad.classList.add('kl-search-hidden'); // Zuerst einmal unsichtbar anhängen
+                        ad.style.display = 'none';
+                        mainUl.appendChild(ad);
+                    });
+                });
+            }
+
+            hasFetchedAllPages = true;
+        }
+
+        function applySearchFilter(term) {
+            // Sucht nach allen möglichen Anzeigen-Elementen, egal ob Kleinanzeigen das Test-ID Attribut entfernt hat
+            const adCards = Array.from(document.querySelectorAll('ul#my-manageitems-adlist > li, ul[data-testid="ad-list"] > li, li[data-testid="ad-card"]'))
+                                 .filter(c => c.querySelector('article') || c.querySelector('a[href*="/s-anzeige/"]'));
+
+            adCards.forEach(card => {
+                // BUGFIX: Titel sicher auslesen ohne den img-Link abzugreifen, der leeren Text hat!
+                let title = '';
+                const titleHeading = card.querySelector('h2, .text-title4');
+                if (titleHeading) {
+                    const clone = titleHeading.cloneNode(true);
+                    const srOnly = clone.querySelector('.sr-only');
+                    if (srOnly) srOnly.remove();
+                    title = clone.textContent.toLowerCase().trim();
+                } else {
+                    const titleLink = card.querySelector('a[href*="/s-anzeige/"]:not(:has(img)):not(.imagebox-link)');
+                    if (titleLink) {
+                        title = titleLink.textContent.toLowerCase().trim();
+                    } else {
+                        title = card.textContent.toLowerCase(); // Fallback
+                    }
+                }
+
+                const idLink = card.querySelector('a[href*="adId="]');
+                const idMatch = idLink ? idLink.href.match(/adId=(\d+)/) : null;
+                const id = idMatch ? idMatch[1] : '';
+
+                if (title.includes(term) || id.includes(term)) {
+                    card.classList.remove('kl-search-hidden');
+                    card.style.display = ''; // Zurücksetzen auf Standard (wird durch CSS Flex gesteuert)
+                } else {
+                    card.classList.add('kl-search-hidden');
+                    card.style.display = 'none'; // Hartes Verstecken
+                }
+            });
         }
 
         setInterval(() => {
@@ -2497,10 +2659,122 @@
                     headerFlexBox.style.display = 'flex';
                     headerFlexBox.style.alignItems = 'center';
                     headerFlexBox.style.position = 'relative';
-                    headerFlexBox.style.height = '40px';
+                    // Exakte Pixel-Höhe
+                    headerFlexBox.style.height = '42px';
+                    headerFlexBox.style.justifyContent = 'space-between';
 
                     header.style.marginBottom = '0px';
                     header.after(topContainer);
+
+                    // ==========================================
+                    // SEITENÜBERGREIFENDE SUCHE (RECHTSBÜNDIG)
+                    // ==========================================
+                    if (!document.getElementById('custom-ad-search-wrapper')) {
+                        const searchWrapper = document.createElement('div');
+                        searchWrapper.id = 'custom-ad-search-wrapper';
+                        searchWrapper.style.cssText = 'position: relative; margin-left: auto; display: inline-flex; align-items: center; z-index: 10; background: #ffffff; border: 2px solid #f3f4f6; border-radius: 9999px; height: 42px; padding: 0 12px 0 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box; cursor: text;';
+
+                        const svgSearch = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
+                        const spinnerSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#326916" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="custom-spin" style="flex-shrink: 0;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`;
+
+                        const iconContainer = document.createElement('div');
+                        iconContainer.innerHTML = svgSearch;
+                        iconContainer.style.display = 'flex';
+                        searchWrapper.appendChild(iconContainer);
+
+                        const input = document.createElement('input');
+                        input.id = 'custom-ad-search-input';
+                        input.type = 'text';
+                        input.placeholder = 'Anzeigen durchsuchen';
+                        input.style.cssText = 'border: none; outline: none; background: transparent; font-size: 14px; width: 220px; margin-left: 10px; color: #333; font-family: inherit;';
+
+                        // Fokus Effekte
+                        input.addEventListener('focus', () => {
+                            searchWrapper.style.borderColor = '#326916';
+                            searchWrapper.style.boxShadow = '0 4px 12px rgba(50, 105, 22, 0.15)';
+                        });
+                        input.addEventListener('blur', () => {
+                            searchWrapper.style.borderColor = '#f3f4f6';
+                            searchWrapper.style.boxShadow = '0 4px 10px rgba(0,0,0,0.06)';
+                        });
+
+                        // Klick in die ganze Pill fokussiert das Inputfeld
+                        searchWrapper.addEventListener('click', () => input.focus());
+
+                        searchWrapper.appendChild(input);
+
+                        // --- NEU: X-Button zum leeren des Suchfeldes ---
+                        const clearBtn = document.createElement('div');
+                        clearBtn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+                        clearBtn.title = "Suche leeren";
+                        clearBtn.style.cssText = 'display: none; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; margin-left: 4px; transition: background 0.2s;';
+                        clearBtn.addEventListener('mouseover', () => clearBtn.style.backgroundColor = '#f3f4f6');
+                        clearBtn.addEventListener('mouseout', () => clearBtn.style.backgroundColor = 'transparent');
+
+                        clearBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            input.value = '';
+                            input.dispatchEvent(new Event('input')); // Filter-Update erzwingen
+                            input.focus(); // Fokus im Suchfeld behalten
+                        });
+                        searchWrapper.appendChild(clearBtn);
+
+                        // Event Listener: Laden & Filtern (Mit Promise Queue)
+                        input.addEventListener('input', (e) => {
+                            const searchTerm = e.target.value.toLowerCase().trim();
+                            const topPag = document.getElementById('custom-top-pagination');
+                            const bottomPag = getBottomNavContainer();
+
+                            if (searchTerm.length > 0) {
+                                clearBtn.style.display = 'flex'; // X-Button anzeigen
+
+                                // Paginierung ausblenden während gesucht wird
+                                if (topPag) topPag.style.display = 'none';
+                                if (bottomPag) bottomPag.style.display = 'none';
+
+                                if (!hasFetchedAllPages) {
+                                    if (!fetchAdsPromise) {
+                                        iconContainer.innerHTML = spinnerSvg; // Spinner anzeigen
+                                        fetchAdsPromise = fetchAllUserAds().then(() => {
+                                            iconContainer.innerHTML = svgSearch; // Lupe wiederherstellen
+                                        });
+                                    }
+
+                                    // Wir warten, bis der Fetch fertig ist, und wenden dann den *aktuellsten* Begriff an
+                                    fetchAdsPromise.then(() => {
+                                        const currentTerm = input.value.toLowerCase().trim();
+                                        if (currentTerm.length > 0) {
+                                            applySearchFilter(currentTerm);
+                                        }
+                                    });
+                                } else {
+                                    applySearchFilter(searchTerm);
+                                }
+                            } else {
+                                clearBtn.style.display = 'none'; // X-Button verstecken
+
+                                // Paginierung wieder einblenden
+                                if (topPag) topPag.style.display = 'flex';
+                                if (bottomPag) bottomPag.style.display = '';
+
+                                // Ursprungszustand wiederherstellen
+                                const allCards = Array.from(document.querySelectorAll('ul#my-manageitems-adlist > li, ul[data-testid="ad-list"] > li, li[data-testid="ad-card"]'))
+                                                     .filter(c => c.querySelector('article') || c.querySelector('a[href*="/s-anzeige/"]'));
+
+                                allCards.forEach(card => {
+                                    if (card.classList.contains('custom-fetched-ad')) {
+                                        card.classList.add('kl-search-hidden');
+                                        card.style.display = 'none'; // Heruntergeladene Seiten wieder verstecken
+                                    } else {
+                                        card.classList.remove('kl-search-hidden');
+                                        card.style.display = ''; // Originalseite normal anzeigen
+                                    }
+                                });
+                            }
+                        });
+
+                        topContainer.after(searchWrapper);
+                    }
                 }
 
                 topContainer.addEventListener('click', (e) => {
@@ -2716,35 +2990,5 @@
         }
         return originalFetch.apply(this, args);
     };
-    function filterAds(query) {
-        const searchTerm = query.toLowerCase();
-        const adList = document.querySelectorAll('.aditem'); // Selektor für Anzeigenkarten auf Kleinanzeigen
 
-        adList.forEach(ad => {
-            const title = ad.querySelector('.text-module-begin a')?.innerText.toLowerCase() || '';
-            const id = ad.getAttribute('data-adid') || ''; // Beispiel für ID-Attribut
-
-            if (title.includes(searchTerm) || id.includes(searchTerm)) {
-                ad.style.display = '';
-            } else {
-                ad.style.display = 'none';
-            }
-        });
-    }
-
-    function injectSearchField(targetContainer) {
-        const searchWrapper = document.createElement('div');
-        searchWrapper.id = 'custom-ad-search-wrapper';
-        searchWrapper.style.cssText = 'margin-left: 20px; display: flex; align-items: center;';
-
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.placeholder = 'Suche nach Titel oder ID...';
-        input.style.cssText = 'padding: 8px 12px; border: 2px solid #f3f4f6; border-radius: 20px; outline: none; font-size: 14px; width: 200px;';
-
-        input.addEventListener('input', (e) => filterAds(e.target.value));
-
-        searchWrapper.appendChild(input);
-        targetContainer.parentNode.insertBefore(searchWrapper, targetContainer.nextSibling);
-    }
 })();

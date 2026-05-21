@@ -1,7 +1,7 @@
 # 🚀 Kleinanzeigen - Anzeige duplizieren & neu einstellen
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/Version-2.6.100-blue.svg)]()
+[![Version](https://img.shields.io/badge/Version-2.6.109-blue.svg)]()
 [![Plattform](https://img.shields.io/badge/Plattform-Kleinanzeigen.de-green.svg)]()
 
 Das Userscript, das dir auf **Kleinanzeigen.de** viel Zeit und Nerven spart. Es verwandelt deine "Meine Anzeigen"-Übersicht in ein smartes Dashboard: Ohne eine Anzeige erst öffnen oder auf "Bearbeiten" klicken zu müssen, hast du direkt in der Übersicht Zugriff auf zwei neue Buttons, mit denen du deine Anzeigen mit nur einem Klick duplizieren oder löschen und direkt wieder ganz oben neu einstellen kannst. Gleichzeitig zeigt dir das Dashboard alle wichtigen Infos (wie das Einstelldatum und Ablaufdatum deiner Anzeige sowie der errechneten Onlinezeit in Tagen, Ort, Anzeige-ID und Versand) auf einen Blick, für die du sonst ins Inserat klicken müsstest!

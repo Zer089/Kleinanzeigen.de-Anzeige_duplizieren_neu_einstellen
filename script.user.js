@@ -5,7 +5,7 @@
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.6.135
+// @version       2.6.138
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -17,7 +17,6 @@
 (function () {
     'use strict';
 
-    // Seitenerkennung
     const isOverviewPage = window.location.href.includes('m-meine-anzeigen.html');
     const isEditPage = window.location.href.includes('p-anzeige-bearbeiten.html') || window.location.href.includes('p-anzeige-aufgeben.html');
     const isConfirmPage = window.location.href.includes('bestaetigung.html') || window.location.href.includes('erfolgreich.html');
@@ -36,12 +35,10 @@
     if (isSettingsPage) document.documentElement.classList.add('is-settings-page');
     if (isWidePage) document.documentElement.classList.add('is-wide-page');
 
-    // Globale Filter-Status
     window.__KL_ACTIVE_AGE_FILTER = 'all';
 
     let pristineTemplate = null;
 
-    // Robuste Erkennung von Anzeigekarten ohne IDs
     function __getKLAds(context = document) {
         const ads = Array.from(context.querySelectorAll('li')).filter(li => {
             const hasAdLink = li.querySelector('a[href*="/s-anzeige/"]');
@@ -58,7 +55,6 @@
         return ads;
     }
 
-    // Original Kleinanzeigen & Eigene SVGs
     const klPrinterSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>`;
     const klFlagSvg = `<svg viewBox="0 0 24 24" fill="none" data-title="reservedOutline" stroke="none" role="img" aria-hidden="true" focusable="false" class="shrink-0 fill-current block align-middle" style="width: 14px; height: 14px;"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.97961 2H18.187C18.5696 2 18.9172 2.22734 19.077 2.58214C19.2369 2.93694 19.1798 3.35428 18.9308 3.65079L15.4081 7.84615L18.9308 12.0415C19.1798 12.338 19.2369 12.7554 19.077 13.1102C18.9172 13.465 18.5696 13.6923 18.187 13.6923H5.95922V21C5.95922 21.5523 5.52063 22 4.97961 22C4.43859 22 4 21.5523 4 21V3C4 2.44772 4.43859 2 4.97961 2ZM5.95922 11.6923H16.0572L13.3741 8.49694C13.0597 8.12245 13.0597 7.56985 13.3741 7.19536L16.0572 4H5.95922V11.6923Z" fill="currentColor"></path></svg>`;
     const klReactivateSvg = `<svg viewBox="0 0 24 24" fill="none" data-title="reactivate" stroke="none" role="img" aria-hidden="true" focusable="false" class="shrink-0 fill-current block align-middle" style="width: 14px; height: 14px;"><path d="M14.7071 5.70711C14.9032 5.51106 15.0008 5.25386 15 4.99691C14.9993 4.74196 14.9016 4.48723 14.7071 4.29271L14.6954 4.28122L12.7071 2.29289C12.3166 1.90237 11.6834 1.90237 11.2929 2.29289C10.9024 2.68342 10.9024 3.31658 11.2929 3.70711L11.5947 4.00896C6.81226 4.22089 3 8.16524 3 13C3 17.9706 7.02944 22 12 22C16.2413 22 19.7973 19.0663 20.7495 15.1174C20.8914 14.5288 20.4158 14 19.8103 14C19.3047 14 18.8838 14.3748 18.7495 14.8624C17.9341 17.8243 15.2211 20 12 20C8.13401 20 5 16.866 5 13C5 9.27746 7.90573 6.2336 11.5728 6.01282L11.2929 6.29271C10.9024 6.68323 10.9024 7.3164 11.2929 7.70692C11.6834 8.09745 12.3166 8.09745 12.7071 7.70692L14.6954 5.71862L14.7071 5.70711Z" fill="currentColor"></path></svg>`;
@@ -66,12 +62,8 @@
     const klRelistSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>`;
     const klShareSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`;
 
-    // ==========================================
-    // CSS INJECTION (Design & Layout)
-    // ==========================================
     const style = document.createElement('style');
     style.textContent = `
-        /* Werbe- & Upsell-Säuberung (Sicher, blockiert keine Filter!) */
         fieldset:has(#ad-feature-group), #feature-offer-section,
         .site-base--left-banner--full, .site-base--right-banner--full,
         #vip-billboard, #vip-belly, #vip-middle, #vip-bottom, #btf-billboard, #home-billboard,
@@ -84,14 +76,11 @@
         ul#srchrslt-adtable > li:has([id^="srps-result-list"]),
         li[id^="home-teaser-ads-"] { display: none !important; }
 
-        /* Schützt den Cookie-Banner zusätzlich explizit */
         #gdpr-banner-container, dialog#gdpr-banner { display: block !important; visibility: visible !important; }
-        section[data-testid="page-container"] { margin-bottom: 0px !important; }
+        section[data-testid="page-container"] { margin-bottom: 0px !important; display: none !important; }
 
-        /* Verstecke Kleinanzeigen Original-Elemente (z.B. alte Views/Watchers über den Buttons) */
         li[data-testid="ad-card"] .flex.text-bodySmall.my-xsmall.text-onSurface { display: none !important; }
 
-        /* Allgemeine Abstands-Korrekturen nach Nutzer-Wunsch */
         .relative.mb-small.box-border.min-h-\\[10px\\].rounded-xsmall.text-onSurfaceSubdued { margin-bottom: 0px !important; }
         #tab-panel-all, [aria-labelledby="tabs-all"] { margin-top: 6px !important; }
         .text-left.text-bodySmall.text-onSurfaceNonessential { row-gap: 3px !important; }
@@ -99,15 +88,12 @@
         .mb-xsmall.text-bodySmall.text-onSurfaceNonessential { margin-bottom: 3px !important; }
         .custom-bottom-row { margin-top: 0px !important; }
 
-        /* Container-Padding Fix */
         .jsx-1105488430.l-page-wrapper.l-container-row { padding-top: 12px !important; }
         .l-page-wrapper.l-container-row { padding-top: 20px !important; }
 
-        /* Das harte Grid von Kleinanzeigen aufbrechen (ersetzt 1fr 970px 1fr durch 1100px) */
         html.is-wide-page body .site-base,
         html.is-wide-page body .grid-cols-\\[1fr_970px_1fr\\] { grid-template-columns: 1fr minmax(auto, 1100px) 1fr !important; }
 
-        /* Container-Breite anpassen und zentrieren */
         html.is-wide-page body .site-base--content,
         html.is-wide-page body .l-page-wrapper,
         html.is-wide-page body .l-container,
@@ -123,11 +109,9 @@
             width: 100% !important; max-width: 1100px !important; margin-left: auto !important; margin-right: auto !important; box-sizing: border-box !important;
         }
 
-        /* Feste 970px Container überschreiben */
         html.is-wide-page body main .w-\\[970px\\],
         html.is-wide-page body main div[class*="w-[970px]"] { width: 100% !important; max-width: 1100px !important; margin-left: auto !important; margin-right: auto !important; }
 
-        /* Startseiten-Feed Flexibilität */
         html.is-wide-page body #homepage-main, html.is-wide-page body #srchrslt-content,
         html.is-wide-page body main .w-\\[700px\\], html.is-wide-page body main .w-\\[728px\\],
         html.is-wide-page body main div[class*="w-[700px]"], html.is-wide-page body main main[class*="w-[728px]"],
@@ -136,20 +120,15 @@
         html.is-wide-page body ul#my-manageitems-adlist,
         html.is-wide-page body li[data-testid="ad-card"] { width: 100% !important; max-width: 1100px !important; margin-left: 0 !important; margin-right: 0 !important; box-sizing: border-box !important; }
 
-        /* Titel Limitierung */
         .is-overview-page .custom-ad-grid .text-title4 { display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: normal !important; line-height: 1.3 !important; height: 2.6em !important; min-height: 2.6em !important; }
-
         .is-overview-page .custom-ad-grid .text-title3.has-custom-btn { display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; margin-top: 0px !important; margin-bottom: 0px !important; flex-shrink: 0 !important; }
 
-        /* KATEGORIE LINK */
         .custom-category-link { color: inherit !important; text-decoration: underline !important; transition: color 0.2s; display: inline-flex !important; align-items: flex-start !important; gap: 4px !important; }
         .custom-category-link svg { flex-shrink: 0 !important; margin-top: 1px !important; }
         .custom-category-link:hover { color: #5A33AE !important; }
 
-        /* Galerie-Breite Detailseite */
         .is-detail-page .vip-image-gallery.galleryimage-large { max-width: 970px !important; width: 100% !important; margin-left: 0 !important; }
 
-        /* MOCKUP PROFIL DASHBOARD */
         .kl-hidden-original { display: none !important; }
         .ownprofile-main.custom-replaced { background: transparent !important; padding: 0 !important; margin-bottom: 0px !important; border: none !important; box-shadow: none !important; }
         .custom-profile-dashboard { display: flex; flex-direction: row; column-gap: 18px; background: #ffffff; border: 1px solid #e0e0e0; border-radius: 12px; padding: 16px !important; position: relative; overflow: hidden; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); box-sizing: border-box; width: 100%; height: 127px !important; }
@@ -199,7 +178,6 @@
         .cpd-action-btn.secondary:hover { color: #666 !important; }
         .cpd-action-btn.secondary svg { display: block !important; flex-shrink: 0 !important; overflow: visible !important; }
 
-        /* BUTTONS */
         .custom-purple-btn { background-color: #5A33AE !important; border-color: #5A33AE !important; color: #ffffff !important; border-radius: 9999px !important; font-weight: bold !important; cursor: pointer !important; gap: 6px !important; text-decoration: none !important; transition: all 0.2s ease-in-out; }
         .custom-purple-btn:hover { background-color: #D1C4E9 !important; border-color: #D1C4E9 !important; color: #5A33AE !important; }
 
@@ -252,7 +230,6 @@
 
         .is-edit-page .custom-purple-btn { height: 44px !important; min-height: 44px !important; padding: 0 16px !important; font-size: 14px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; border-width: 2px !important; border-style: solid !important; }
 
-        /* PAGINIERUNG, FILTER & SUCHE IN EINER ZEILE (Master-Toolbar) */
         nav[aria-label*="Seiten-Navigation"], #srchrslt-pagination { display: flex !important; justify-content: center !important; width: 100% !important; margin-top: 16px !important; margin-bottom: 16px !important; }
         nav[aria-label*="Seiten-Navigation"] > ul, #custom-top-pagination ul, #custom-top-pagination-search ul, #srchrslt-pagination ul { background-color: #ffffff !important; border: 2px solid #f3f4f6 !important; border-radius: 9999px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important; padding: 4px !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; margin: 0 auto !important; width: max-content !important; list-style: none !important; }
 
@@ -273,7 +250,6 @@
         nav[aria-label*="Seiten-Navigation"] > ul > li:first-child svg, nav[aria-label*="Seiten-Navigation"] > ul > li:last-child svg, #custom-top-pagination ul > li:first-child svg, #custom-top-pagination ul > li:last-child svg, #custom-top-pagination-search ul > li:first-child svg, #custom-top-pagination-search ul > li:last-child svg, #srchrslt-pagination ul > li:first-child svg, #srchrslt-pagination ul > li:last-child svg { width: 20px !important; height: 20px !important; stroke: #326916 !important; stroke-width: 3px !important; color: #326916 !important; fill: none !important; display: block !important; }
         nav[aria-label*="Seiten-Navigation"] > ul > li > span.text-onSurfaceNonessential, #custom-top-pagination ul > li > span.text-onSurfaceNonessential, #custom-top-pagination-search ul > li > span.text-onSurfaceNonessential, #srchrslt-pagination ul > li > span.text-onSurfaceNonessential { width: 20px !important; background: transparent !important; box-shadow: none !important; cursor: default !important; font-weight: bold !important; }
 
-        /* SUCHLEISTE & FILTER BAR */
         .kit-filter-bar { background: #ffffff; padding: 6px !important; border-radius: 9999px; border: 2px solid #f3f4f6; display: flex; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); font-family: inherit; height: 46px !important; box-sizing: border-box; z-index: 1 !important; }
         .kit-btn { padding: 0 16px !important; height: 34px !important; min-height: 34px !important; max-height: 34px !important; margin: 0 !important; border-radius: 9999px !important; font-size: 13px !important; font-weight: 800 !important; cursor: pointer !important; background: transparent !important; color: #9ca3af !important; transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; box-sizing: border-box !important; line-height: 1 !important; border: none !important; flex-shrink: 0 !important; }
         .kit-btn:hover { color: #4b5563 !important; background: transparent !important; }
@@ -290,9 +266,6 @@
     `;
     document.head ? document.head.appendChild(style) : document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
 
-    // ==========================================
-    // UI FEEDBACK (Ladebildschirm)
-    // ==========================================
     function showLoading(customMsg) {
         if (document.getElementById('custom-loading-overlay')) return;
         const spinnerContainer = document.createElement("div");
@@ -308,9 +281,6 @@
         else window.addEventListener('DOMContentLoaded', () => document.body.appendChild(spinnerContainer));
     }
 
-    // ==========================================
-    // POST ACTION HANDLER (Erfolg & Aufräumen)
-    // ==========================================
     const postActionStr = localStorage.getItem('__KL_POST_ACTION');
 
     if (isOverviewPage && postActionStr) {
@@ -357,9 +327,6 @@
         }
     }
 
-    // ==========================================
-    // CUSTOM TEILEN-MODAL
-    // ==========================================
     function showCustomShareModal(url, title, imgUrl) {
         let overlay = document.getElementById('custom-share-overlay');
         const closeModal = () => {
@@ -471,9 +438,6 @@
         document.body.style.overflow = 'hidden';
     }
 
-    // ==========================================
-    // BUTTON LOGIK & METADATEN FETCHING
-    // ==========================================
     function createBtn(text, iconStr, click) {
         const b = document.createElement('button');
         b.className = 'custom-purple-btn';
@@ -483,7 +447,7 @@
     }
 
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V12_${adId}`;
+        const cacheKey = `__KL_AD_DETAILS_V13_${adId}`;
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
@@ -497,12 +461,15 @@
 
             const locationEl = doc.querySelector('#viewad-locality');
             const dateIcon = doc.querySelector('.icon-calendar-gray-simple');
+            const newDateIcon = doc.querySelector('svg[data-title="calendarOutline"]');
             const shippingEl = doc.querySelector('.boxedarticle--details--shipping');
 
             let location = locationEl ? locationEl.textContent.replace(/\s+/g, ' ').trim() : 'Unbekannt';
 
             let date = 'Unbekannt';
-            if (dateIcon && dateIcon.nextElementSibling) {
+            if (newDateIcon && newDateIcon.nextElementSibling) {
+                date = newDateIcon.nextElementSibling.textContent.trim();
+            } else if (dateIcon && dateIcon.nextElementSibling) {
                 date = dateIcon.nextElementSibling.textContent.trim();
             } else if (dateIcon && dateIcon.parentElement.textContent) {
                 date = dateIcon.parentElement.textContent.replace(/\s+/g, ' ').trim();
@@ -539,9 +506,6 @@
         }
     }
 
-    // ==========================================
-    // 30-TAGE STATISTIK SCRAPER
-    // ==========================================
     const CACHE_KEY_30D = '__KL_ACTIVITY_30D_V9';
 
     async function fetchBackgroundStats() {
@@ -596,7 +560,6 @@
     }
 
     const inject = () => {
-        // --- DOM CLEANUP: Banner physisch entfernen ---
         const banners = document.querySelectorAll(`
             .site-base--left-banner--full, .site-base--right-banner--full,
             #btf-billboard, #home-billboard, #my-watchlist-atf, #my-msgbox-atf, #my-atf,
@@ -618,7 +581,6 @@
             b.remove();
         });
 
-        // --- SIDEBAR ENTFERNEN UND CONTENT STRECKEN (DETAILSEITE) ---
         if (isDetailPage) {
             const sidebar = document.getElementById('viewad-sidebar');
             if (sidebar && !sidebar.dataset.removedSafely) {
@@ -652,12 +614,17 @@
             }
         }
 
-        // --- VISUAL FIXES FÜR DIE DETAILSEITE ---
         if (isDetailPage) {
             const calIcon = document.querySelector('.icon-calendar-gray-simple');
             if (calIcon && !calIcon.dataset.replaced) {
                 calIcon.dataset.replaced = 'true';
                 calIcon.outerHTML = `<span title="Erstellt am" style="display: inline-flex; align-items: center;"><svg viewBox="0 0 24 24" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 16px !important; height: 16px !important; margin-right: 6px;"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg></span>`;
+            }
+
+            const newCalIcon = document.querySelector('svg[data-title="calendarOutline"]');
+            if (newCalIcon && !newCalIcon.dataset.replaced) {
+                newCalIcon.dataset.replaced = 'true';
+                newCalIcon.outerHTML = `<span title="Erstellt am" style="display: inline-flex; align-items: center;"><svg viewBox="0 0 24 24" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 16px !important; height: 16px !important; margin-right: 6px;"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg></span>`;
             }
 
             const locIcons = document.querySelectorAll('.icon-location-pin-filled, .icon-pin-gray-simple');
@@ -818,7 +785,6 @@
             }
         }
 
-        // --- MOCKUP PROFIL REDESIGN INJECTOR ---
         if (isOverviewPage) {
             const profileBox = document.querySelector('.ownprofile-main');
 
@@ -1088,7 +1054,6 @@
             }
         }
 
-        // --- BEARBEITEN/DUPLIZIEREN BUTTONS BEI ANZEIGEN (DETAIL & ÜBERSICHT) ---
         if (isOverviewPage || isDetailPage) {
             const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
             editLinks.forEach(link => {
@@ -1389,11 +1354,34 @@
                                     const leftContent = document.createElement('div');
                                     leftContent.style.display = 'flex';
                                     leftContent.style.alignItems = 'center';
-                                    leftContent.style.gap = '4px';
+                                    leftContent.style.gap = '8px';
                                     leftContent.style.flexWrap = 'nowrap';
                                     while (priceEl.firstChild) {
                                         leftContent.appendChild(priceEl.firstChild);
                                     }
+
+                                    if (priceEl.parentElement) {
+                                        const siblingLis = Array.from(priceEl.parentElement.children);
+                                        const badgeLi = siblingLis.find(li =>
+                                            li !== priceEl &&
+                                            li.querySelector('span') &&
+                                            (li.querySelector('svg[data-title="sendMoneyOutline"]') || li.textContent.includes('Direkt kaufen') || li.textContent.includes('Sicher bezahlen'))
+                                        );
+
+                                        if (badgeLi) {
+                                            const badgeSpan = badgeLi.querySelector('span');
+                                            if (badgeSpan) {
+                                                badgeSpan.style.height = '24px';
+                                                badgeSpan.style.minHeight = '24px';
+                                                badgeSpan.style.padding = '0 8px';
+                                                badgeSpan.style.fontSize = '12px';
+                                                badgeSpan.style.whiteSpace = 'nowrap';
+                                                leftContent.appendChild(badgeSpan);
+                                            }
+                                            badgeLi.style.display = 'none';
+                                        }
+                                    }
+
                                     priceEl.appendChild(leftContent);
                                     priceEl.appendChild(shareBtnEl);
                                 } else {
@@ -1492,7 +1480,6 @@
             });
         }
 
-        // --- BACKGROUND FETCH FÜR DATUM, ORT & VERSAND ---
         if (isOverviewPage && !window.__KL_FETCHING_ADS) {
             const pendingCards = document.querySelectorAll('li[data-testid="ad-card"]:not([data-kl-details-injected])');
             if (pendingCards.length > 0) {
@@ -1569,7 +1556,6 @@
                                                     }
                                                 }
 
-                                                // Filter-Status direkt auf die Karte schreiben
                                                 card.dataset.daysOnline = daysOnline;
                                                 let daysColor = '#008000';
                                                 card.dataset.ageStatus = 'normal';
@@ -1732,7 +1718,6 @@
             }
         }
 
-        // --- BEARBEITEN-SEITE: NEU EINSTELLEN BUTTONS ---
         if (isEditPage) {
             const saveBtn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.includes('Anzeige speichern') || b.textContent.includes('aufgeben'));
             if (!saveBtn) return;
@@ -1753,7 +1738,6 @@
                     timestamp: Date.now()
                 }));
 
-                // WICHTIG: Das Löschen der ID erzwingt in Kleinanzeigens React App eine Neuanlage
                 document.querySelectorAll('input[name="adId"], input[name="id"]').forEach(el => el.remove());
 
                 showLoading();
@@ -1771,14 +1755,10 @@
 
     setInterval(inject, 500);
 
-    // ==========================================
-    // SUCHLEISTE, FILTER & PAGINIERUNG (Übersicht)
-    // ==========================================
     if (isOverviewPage) {
         let hasFetchedAllPages = false;
         let fetchAdsPromise = null;
 
-        // Lädt alle weiteren Seiten verdeckt im Hintergrund, um sie filterbar/suchbar zu machen
         async function fetchAllUserAds() {
             try {
                 const mainUl = document.getElementById('my-manageitems-adlist') || document.querySelector('ul[data-testid="ad-list"]');
@@ -1945,7 +1925,6 @@
             }
         }
 
-        // --- Filter Logik ---
         window.applyCustomFilters = function() {
             const searchInput = document.getElementById('custom-ad-search-input');
             const term = (searchInput ? searchInput.value : '').toLowerCase().trim();
@@ -2000,7 +1979,6 @@
             });
         };
 
-        // Hilfsfunktion: Sucht die originale Paginierung am Seitenende
         function getBottomNavContainer() {
             const navs = Array.from(document.querySelectorAll('nav'));
             for (const nav of navs) {
@@ -2018,20 +1996,33 @@
             const adList = document.querySelector('ul#my-manageitems-adlist') || document.querySelector('ul[data-testid="ad-list"]');
 
             if (adList && adList.parentNode) {
-
-                // --- 1. Master-Toolbar erstellen (Zusammenfassung von Paginierung, Filter & Suche in einer Zeile) ---
                 let masterToolbar = document.getElementById('kl-master-toolbar');
 
                 if (!masterToolbar) {
                     masterToolbar = document.createElement('div');
                     masterToolbar.id = 'kl-master-toolbar';
 
-                    // Paginierung Container (Linksbündig)
+                    // Linker Bereich: Titel "Meine Anzeigen" gefolgt von der Paginierung
+                    const leftGroup = document.createElement('div');
+                    leftGroup.style.display = 'flex';
+                    leftGroup.style.alignItems = 'center';
+                    leftGroup.style.gap = '16px';
+
+                    const titleHeader = document.createElement('h2');
+                    titleHeader.id = 'my-ads-header';
+                    titleHeader.className = 'text-title2 text-onSurfaceSubdued';
+                    titleHeader.style.margin = '0';
+                    titleHeader.style.whiteSpace = 'nowrap';
+                    titleHeader.textContent = 'Meine Anzeigen';
+                    leftGroup.appendChild(titleHeader);
+
                     const pagContainer = document.createElement('div');
                     pagContainer.id = 'custom-top-pagination';
-                    masterToolbar.appendChild(pagContainer);
+                    leftGroup.appendChild(pagContainer);
 
-                    // Filter & Search Wrapper (Rechtsbündig)
+                    masterToolbar.appendChild(leftGroup);
+
+                    // Rechter Bereich: Filter & Suche
                     const controlsWrapper = document.createElement('div');
                     controlsWrapper.id = 'custom-controls-wrapper';
                     controlsWrapper.style.display = 'flex';
@@ -2042,7 +2033,6 @@
                     const spinnerSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#326916" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="custom-spin" style="flex-shrink: 0;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`;
                     const svgSearch = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
 
-                    // -- FILTER --
                     const filterWrapper = document.createElement('div');
                     filterWrapper.id = 'custom-age-filter';
                     filterWrapper.className = 'kit-filter-bar';
@@ -2085,10 +2075,9 @@
 
                     controlsWrapper.appendChild(filterWrapper);
 
-                    // -- SUCHLEISTE --
                     const searchWrapper = document.createElement('div');
                     searchWrapper.id = 'custom-ad-search-wrapper';
-                    searchWrapper.style.cssText = 'position: relative; display: flex; align-items: center; z-index: 1; background: #ffffff; border: 2px solid #f3f4f6; border-radius: 9999px; height: 46px; width: 280px; padding: 0 36px 0 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box; cursor: text; flex-shrink: 0;';
+                    searchWrapper.style.cssText = 'position: relative; display: flex; align-items: center; z-index: 1; background: #ffffff; border: 2px solid #f3f4f6; border-radius: 9999px; height: 46px; width: 220px; padding: 0 16px 0 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.06); transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box; cursor: text; flex-shrink: 0;';
 
                     const iconContainer = document.createElement('div');
                     iconContainer.innerHTML = svgSearch;
@@ -2146,10 +2135,8 @@
 
                     controlsWrapper.appendChild(searchWrapper);
 
-                    // Exakt VOR der Liste platzieren (Sicherste Methode, bricht kein Grid)
                     adList.parentNode.insertBefore(masterToolbar, adList);
 
-                    // EventListener für Klicks auf die gespiegelte Paginierung
                     pagContainer.addEventListener('click', (e) => {
                         const btn = e.target.closest('button, a');
                         if (btn && btn.tagName === 'BUTTON') {
@@ -2165,7 +2152,6 @@
                     });
                 }
 
-                // --- 2. HTML der Paginierung synchron halten ---
                 const bottomContainer = getBottomNavContainer();
                 const topPagContainer = document.getElementById('custom-top-pagination');
                 if (bottomContainer && topPagContainer) {
@@ -2173,7 +2159,6 @@
                     if (topPagContainer.dataset.sourceHtml !== currentHTML) {
                         topPagContainer.dataset.sourceHtml = currentHTML;
                         topPagContainer.innerHTML = currentHTML;
-                        // Bereinigen von doppelten IDs
                         topPagContainer.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
                     }
                 }
@@ -2181,9 +2166,6 @@
         }, 500);
     }
 
-    // ==========================================
-    // AUTO-SAVE VERARBEITUNG & LÖSCHEN DER ID
-    // ==========================================
     if (isEditPage) {
         const startSkipObserver = () => {
             if (!document.body) { requestAnimationFrame(startSkipObserver); return; }
@@ -2225,7 +2207,6 @@
         }
     }
 
-    // Globaler Interceptor, der die adId zuverlässig aus dem Payload löscht, bevor die Anfrage rausgeht
     const originalFetch = window.fetch;
     window.fetch = async function(...args) {
         const actionStr = localStorage.getItem('__KL_POST_ACTION');
@@ -2249,5 +2230,61 @@
         }
         return originalFetch.apply(this, args);
     };
+
+    (function() {
+        'use strict';
+
+        function injectScriptInfo() {
+            const targetHeader = document.getElementById('site-searchbar');
+
+            if (targetHeader && !document.getElementById('zer089-script-info')) {
+                const infoBox = document.createElement('div');
+                infoBox.id = 'zer089-script-info';
+
+                infoBox.style.cssText = `
+                    position: absolute;
+                    top: -20px;
+                    right: 0;
+                    font-size: 12px;
+                    z-index: 9999;
+                    color: #555;
+                    pointer-events: auto;
+                `;
+
+                const scriptVersion = typeof GM_info !== 'undefined' ? GM_info.script.version : '2.6.138';
+
+                infoBox.innerHTML = `
+                    Script von Zer089
+                    &nbsp;|&nbsp;
+                    <a href="https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/" target="_blank" style="color: #555; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Github</a>
+                    &nbsp;|&nbsp;
+                    <a href="https://greasyfork.org/de/scripts/577302-kleinanzeigen-anzeige-duplizieren-neu-einstellen" target="_blank" style="color: #555; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">Greasy Fork</a>
+                    &nbsp;|&nbsp;
+                    Version ${scriptVersion}
+                `;
+
+                if (window.getComputedStyle(targetHeader).position === 'static') {
+                    targetHeader.style.position = 'relative';
+                }
+
+                targetHeader.appendChild(infoBox);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', injectScriptInfo);
+        } else {
+            injectScriptInfo();
+        }
+
+        const observer = new MutationObserver((mutations) => {
+            if (!document.getElementById('zer089-script-info') && document.getElementById('site-searchbar')) {
+                injectScriptInfo();
+            }
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+
+    })();
 
 })();

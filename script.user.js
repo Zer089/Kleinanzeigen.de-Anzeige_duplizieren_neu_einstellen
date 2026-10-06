@@ -1,11 +1,11 @@
 // ==UserScript==
-// @name          Kleinanzeigen - Anzeige duplizieren / neu einstellen
+// @name          Kleinanzeigen - Anzeige duplizieren / neu einstellen BACKUP
 // @namespace     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @description   Bietet eine "Anzeige duplizieren / neu einstellen" Funktion beim Bearbeiten einer vorhandenen Anzeige in Kleinanzeigen.
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
 // @copyright     2026, Andi (Zer089)
 // @license       MIT
-// @version       2.6.138
+// @version       2.6.150
 // @homepage      https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @updateURL     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
 // @downloadURL   https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen/raw/main/script.user.js
@@ -61,23 +61,56 @@
     const klDupSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
     const klRelistSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>`;
     const klShareSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`;
+    const klEditSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`;
+    const klTrashSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="width: 14px; height: 14px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`;
 
     const style = document.createElement('style');
     style.textContent = `
+        /* General Hiding - Ad modules and banners */
         fieldset:has(#ad-feature-group), #feature-offer-section,
         .site-base--left-banner--full, .site-base--right-banner--full,
         #vip-billboard, #vip-belly, #vip-middle, #vip-bottom, #btf-billboard, #home-billboard,
         #srchrslt-adtop, #srchrslt-adtop--flex, [data-testid="top-banner"],
         #srpb-top-banner,
         #my-watchlist-atf, #my-msgbox-atf, #my-atf, .liberty-filled, .j-liberty-wrapper,
-        [id^="vip-similar-ads-"], #pvap-featrs, .is-detail-page .icon-info-blue,
+        #pvap-featrs, .is-detail-page .icon-info-blue,
         .ad-module, div[data-testid*="banner"]:not([data-testid*="gdpr"]), div[data-testid*="ad-wrapper"],
         ul#srchrslt-adtable > li:has([data-liberty-position-name]),
         ul#srchrslt-adtable > li:has([id^="srps-result-list"]),
         li[id^="home-teaser-ads-"] { display: none !important; }
 
+        /* Conditional Hiding - ONLY FOR OWN ADS */
+        html.is-own-ad aside.space-y-medium,
+        html.is-own-ad .space-y-medium.print\\:order-last,
+        html.is-own-ad aside.w-full.space-y-medium { display: none !important; }
+
+        html.is-own-ad astro-island[component-export="ContactForm"],
+        html.is-own-ad div:has(> astro-island[component-export="ContactForm"]),
+        html.is-own-ad #viewad-contact-form-container { display: none !important; }
+
+        html.is-own-ad #vip-seller-other-ads,
+        html.is-own-ad #vip-similar-ads,
+        html.is-own-ad [id^="vip-similar-ads-"] { display: none !important; }
+
+        /* Width Expansions - ONLY FOR OWN ADS */
+        html.is-own-ad .is-detail-page .lg\\:max-w-\\[642px\\] { max-width: none !important; }
+
+        /* Targeted overrides to expand main container and image box */
+        html.is-own-ad .is-detail-page .print\\:mb-0.relative.mb-medium.h-\\[481px\\].w-\\[642px\\] { width: 970px !important; max-width: 100% !important; }
+        html.is-own-ad .is-detail-page .w-\\[642px\\],
+        html.is-own-ad .is-detail-page div[class*="w-[642px]"],
+        html.is-own-ad .is-detail-page .h-\\[481px\\].w-\\[642px\\] { width: 970px !important; max-width: 100% !important; }
+        html.is-own-ad .is-detail-page .vip-image-gallery.galleryimage-large { max-width: 970px !important; width: 100% !important; margin-left: 0 !important; }
+
+        [data-testid="revision-container"] { display: none !important; }
+        section[data-testid="page-container"] { display: none !important; }
+        svg[data-title="visitorsOutline"],
+        astro-island[component-export="ProFeaturesCart"] { display: none !important; }
+
         #gdpr-banner-container, dialog#gdpr-banner { display: block !important; visibility: visible !important; }
-        section[data-testid="page-container"] { margin-bottom: 0px !important; display: none !important; }
+
+        [data-testid="site-content"] { padding-top: 6px !important; padding-bottom: 0px !important; margin-bottom: 0px !important; }
+        #site-content { padding-top: 16px !important; padding-bottom: 3px !important; }
 
         li[data-testid="ad-card"] .flex.text-bodySmall.my-xsmall.text-onSurface { display: none !important; }
 
@@ -91,8 +124,39 @@
         .jsx-1105488430.l-page-wrapper.l-container-row { padding-top: 12px !important; }
         .l-page-wrapper.l-container-row { padding-top: 20px !important; }
 
+        html.is-wide-page { overflow-x: hidden !important; }
+        html.is-wide-page body { overflow-x: hidden !important; }
+
+        /* HORIZONTAL ROW LAYOUT FOR BUTTONS ON DETAIL PAGE */
+        .is-detail-page .kl-button-container {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            gap: 8px !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+        }
+        .is-detail-page .kl-button-container > li,
+        .is-detail-page .kl-button-container > span {
+            margin-top: 12px !important;
+            margin-bottom: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            display: inline-flex !important;
+        }
+        /* Invisible spacer to push right aligned buttons */
+        .is-detail-page .kl-button-container > .kl-spacer {
+            flex-grow: 1 !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            margin: 0 !important;
+        }
+
         html.is-wide-page body .site-base,
-        html.is-wide-page body .grid-cols-\\[1fr_970px_1fr\\] { grid-template-columns: 1fr minmax(auto, 1100px) 1fr !important; }
+        html.is-wide-page body .grid-cols-\\[1fr_970px_1fr\\] { grid-template-columns: 1fr minmax(0, 1100px) 1fr !important; }
 
         html.is-wide-page body .site-base--content,
         html.is-wide-page body .l-page-wrapper,
@@ -121,13 +185,12 @@
         html.is-wide-page body li[data-testid="ad-card"] { width: 100% !important; max-width: 1100px !important; margin-left: 0 !important; margin-right: 0 !important; box-sizing: border-box !important; }
 
         .is-overview-page .custom-ad-grid .text-title4 { display: -webkit-box !important; -webkit-line-clamp: 2 !important; -webkit-box-orient: vertical !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: normal !important; line-height: 1.3 !important; height: 2.6em !important; min-height: 2.6em !important; }
+
         .is-overview-page .custom-ad-grid .text-title3.has-custom-btn { display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important; margin-top: 0px !important; margin-bottom: 0px !important; flex-shrink: 0 !important; }
 
         .custom-category-link { color: inherit !important; text-decoration: underline !important; transition: color 0.2s; display: inline-flex !important; align-items: flex-start !important; gap: 4px !important; }
         .custom-category-link svg { flex-shrink: 0 !important; margin-top: 1px !important; }
         .custom-category-link:hover { color: #5A33AE !important; }
-
-        .is-detail-page .vip-image-gallery.galleryimage-large { max-width: 970px !important; width: 100% !important; margin-left: 0 !important; }
 
         .kl-hidden-original { display: none !important; }
         .ownprofile-main.custom-replaced { background: transparent !important; padding: 0 !important; margin-bottom: 0px !important; border: none !important; box-shadow: none !important; }
@@ -143,6 +206,7 @@
         .cpd-usertype-tag svg { width: 14px !important; height: 14px !important; }
         .cpd-badges-row { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
         .custom-badge-wrapper { margin: 0 !important; padding: 0 !important; }
+
         .custom-badge-item { background-color: #f3e8ff !important; color: #6b21a8 !important; font-size: 11px !important; padding: 0 8px !important; border-radius: 9999px !important; font-weight: 400 !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 4px !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; white-space: nowrap; border: none !important; font-family: inherit !important; height: 24px !important; min-height: 24px !important; line-height: 1 !important; box-sizing: border-box !important; transition: background-color 0.2s !important; }
         .custom-badge-item svg { width: 14px !important; height: 14px !important; flex-shrink: 0 !important; }
         button.custom-badge-item { cursor: pointer !important; }
@@ -203,15 +267,16 @@
         .custom-spin { animation: spin 1s linear infinite; }
 
         .is-overview-page .custom-action-area a, .is-overview-page .custom-action-area button, .is-overview-page .custom-purple-btn, .is-overview-page .custom-native-btn { height: 32px !important; min-height: 32px !important; max-height: 32px !important; padding: 0 12px 0 10px !important; font-size: 12px !important; line-height: 1 !important; margin: 0 !important; box-sizing: border-box !important; border-width: 2px !important; border-radius: 9999px !important; display: inline-flex !important; align-items: center !important; justify-content: flex-start !important; width: 100% !important; gap: 6px !important; text-align: left !important; }
-        .is-overview-page .custom-icon-only-btn, .custom-icon-only-btn { width: 24px !important; min-width: 24px !important; max-width: 24px !important; height: 24px !important; min-height: 24px !important; max-height: 24px !important; padding: 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; flex-shrink: 0 !important; gap: 0 !important; border-radius: 9999px !important; border-width: 1px !important; }
+        .is-overview-page .custom-icon-only-btn, .custom-icon-only-btn { width: 32px !important; min-width: 32px !important; max-width: 32px !important; height: 32px !important; min-height: 32px !important; max-height: 32px !important; padding: 0 !important; display: flex !important; justify-content: center !important; align-items: center !important; flex-shrink: 0 !important; gap: 0 !important; border-radius: 9999px !important; border-width: 2px !important; }
         .custom-icon-only-btn span { display: none !important; }
-        .custom-icon-only-btn svg { margin: 0 !important; width: 14px !important; height: 14px !important; }
-        .has-custom-btn .custom-icon-only-btn { margin-top: -2px !important; transform: translateY(-4px) !important; }
+        .custom-icon-only-btn svg { margin: 0 !important; width: 16px !important; height: 16px !important; }
+        .has-custom-btn .custom-icon-only-btn { margin-top: -2px !important; transform: translateY(-4px) !important; width: 24px !important; min-width: 24px !important; height: 24px !important; min-height: 24px !important; border-width: 1px !important; }
+        .has-custom-btn .custom-icon-only-btn svg { width: 14px !important; height: 14px !important; }
 
         .is-detail-page .custom-purple-btn, .is-detail-page .custom-native-btn-detail { height: 32px !important; min-height: 32px !important; max-height: 32px !important; padding: 0 12px !important; font-size: 12px !important; line-height: 1 !important; margin: 0 !important; box-sizing: border-box !important; border-width: 2px !important; border-radius: 9999px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; }
         .is-detail-page .custom-native-btn-detail { border: 2px solid #95958E !important; background: transparent !important; color: #326916 !important; font-weight: 700 !important; text-decoration: none !important; transition: all 0.2s !important; gap: 6px !important; }
         .is-detail-page .custom-native-btn-detail:not([disabled]):not([aria-disabled="true"]):not(.is-disabled):hover { background-color: #D3F28D !important; border-color: #1D4B00 !important; color: #1D4B00 !important; }
-        .is-detail-page .custom-native-btn-detail[disabled], .is-detail-page .custom-native-btn-detail[aria-disabled="true"], .is-detail-page .custom-native-btn-detail.is-disabled { color: rgba(50, 105, 22, 0.5) !important; border-color: rgba(149, 149, 142, 0.5) !important; cursor: not-allowed !important; background: transparent !important; pointer-events: auto !important; }
+        .is-detail-page .custom-native-btn-detail[disabled], .is-detail-page .custom-native-btn-detail[aria-disabled="true"], .is-detail-page .custom-native-btn-detail.is-disabled, .is-detail-page span.custom-native-btn-detail { color: rgba(50, 105, 22, 0.5) !important; border-color: rgba(149, 149, 142, 0.5) !important; cursor: not-allowed !important; background: transparent !important; pointer-events: auto !important; }
         .is-detail-page .custom-native-btn-detail.is-hidden, .is-detail-page .custom-native-btn-detail.hidden, .is-detail-page .custom-native-btn-detail.hide, .is-detail-page li.is-hidden .custom-native-btn-detail, .is-detail-page li.hidden .custom-native-btn-detail { display: none !important; }
 
         #pvap-mngad-actns.list, #pvap-mngad-actns { margin-top: 12px !important; margin-bottom: 6px !important; }
@@ -230,8 +295,11 @@
 
         .is-edit-page .custom-purple-btn { height: 44px !important; min-height: 44px !important; padding: 0 16px !important; font-size: 14px !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; border-width: 2px !important; border-style: solid !important; }
 
-        nav[aria-label*="Seiten-Navigation"], #srchrslt-pagination { display: flex !important; justify-content: center !important; width: 100% !important; margin-top: 16px !important; margin-bottom: 16px !important; }
-        nav[aria-label*="Seiten-Navigation"] > ul, #custom-top-pagination ul, #custom-top-pagination-search ul, #srchrslt-pagination ul { background-color: #ffffff !important; border: 2px solid #f3f4f6 !important; border-radius: 9999px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important; padding: 4px !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; margin: 0 auto !important; width: max-content !important; list-style: none !important; }
+        #srchrslt-pagination { display: flex !important; justify-content: center !important; width: 100% !important; margin-top: 16px !important; margin-bottom: 16px !important; }
+        #custom-bottom-pagination { padding-top: 0px !important; padding-bottom: 0px !important; display: flex !important; justify-content: center !important; width: 100% !important; margin-bottom: 16px !important; }
+        #custom-bottom-pagination nav { display: flex !important; justify-content: center !important; width: 100% !important; margin-top: 0px !important; margin-bottom: 0px !important; }
+
+        #custom-top-pagination ul, #custom-top-pagination-search ul, #srchrslt-pagination ul, #custom-bottom-pagination nav > ul { background-color: #ffffff !important; border: 2px solid #f3f4f6 !important; border-radius: 9999px !important; box-shadow: 0 4px 10px rgba(0,0,0,0.06) !important; padding: 4px !important; display: inline-flex !important; align-items: center !important; gap: 4px !important; margin: 0 auto !important; width: max-content !important; list-style: none !important; }
 
         #kl-master-toolbar { display: flex !important; flex-wrap: nowrap !important; align-items: center !important; justify-content: space-between !important; gap: 16px !important; width: 100% !important; margin-top: 12px !important; margin-bottom: 16px !important; background: transparent !important; }
         #custom-top-pagination { display: flex !important; align-items: center !important; margin: 0 !important; padding: 0 !important; width: auto !important; }
@@ -240,15 +308,15 @@
 
         @media (max-width: 1000px) { #kl-master-toolbar { flex-wrap: wrap !important; justify-content: center !important; } }
 
-        nav[aria-label*="Seiten-Navigation"] > ul > li, #custom-top-pagination ul > li, #custom-top-pagination-search ul > li, #srchrslt-pagination ul > li { margin: 0 !important; padding: 0 !important; display: flex !important; }
-        nav[aria-label*="Seiten-Navigation"] > ul > li > a, nav[aria-label*="Seiten-Navigation"] > ul > li > button, nav[aria-label*="Seiten-Navigation"] > ul > li > span, #custom-top-pagination ul > li > a, #custom-top-pagination ul > li > button, #custom-top-pagination ul > li > span, #custom-top-pagination-search ul > li > a, #custom-top-pagination-search ul > li > button, #custom-top-pagination-search ul > li > span, #srchrslt-pagination ul > li > a, #srchrslt-pagination ul > li > button, #srchrslt-pagination ul > li > span { width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px !important; min-height: 38px !important; max-height: 38px !important; padding: 0 !important; flex-shrink: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 50% !important; font-size: 16px !important; font-weight: 800 !important; font-family: inherit !important; border: none !important; background: transparent !important; color: #326916 !important; text-decoration: none !important; transition: all 0.2s ease !important; box-sizing: border-box !important; line-height: 1 !important; }
-        nav[aria-label*="Seiten-Navigation"] > ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover, #custom-top-pagination ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover, #custom-top-pagination-search ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover, #srchrslt-pagination ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover { background-color: #f5f5f5 !important; }
-        nav[aria-label*="Seiten-Navigation"] > ul > li > [aria-current="page"], nav[aria-label*="Seiten-Navigation"] > ul > li > .bg-accent, nav[aria-label*="Seiten-Navigation"] > ul > li > .bg-accentContainer, #custom-top-pagination ul > li > [aria-current="page"], #custom-top-pagination ul > li > .bg-accent, #custom-top-pagination-search ul > li > [aria-current="page"], #custom-top-pagination-search ul > li > .bg-accent, #srchrslt-pagination ul > li > [aria-current="page"], #srchrslt-pagination ul > li > .bg-accent { background-color: #326916 !important; color: #ffffff !important; box-shadow: 0 4px 10px rgba(50, 105, 22, 0.3) !important; }
-        nav[aria-label*="Seiten-Navigation"] > ul > li:first-child > *, nav[aria-label*="Seiten-Navigation"] > ul > li:last-child > *, #custom-top-pagination ul > li:first-child > *, #custom-top-pagination ul > li:last-child > *, #custom-top-pagination-search ul > li:first-child > *, #custom-top-pagination-search ul > li:last-child > *, #srchrslt-pagination ul > li:first-child > *, #srchrslt-pagination ul > li:last-child > * { background-color: #cfff00 !important; color: #326916 !important; opacity: 1 !important; }
-        nav[aria-label*="Seiten-Navigation"] > ul > li:first-child > *:not([disabled]):hover, nav[aria-label*="Seiten-Navigation"] > ul > li:last-child > *:not([disabled]):hover, #custom-top-pagination ul > li:first-child > *:not([disabled]):hover, #custom-top-pagination ul > li:last-child > *:not([disabled]):hover, #custom-top-pagination-search ul > li:first-child > *:not([disabled]):hover, #custom-top-pagination-search ul > li:last-child > *:not([disabled]):hover, #srchrslt-pagination ul > li:first-child > *:not([disabled]):hover, #srchrslt-pagination ul > li:last-child > *:not([disabled]):hover { background-color: #b8e600 !important; }
-        nav[aria-label*="Seiten-Navigation"] > ul > li:first-child > [disabled], nav[aria-label*="Seiten-Navigation"] > ul > li:first-child > [aria-disabled="true"], nav[aria-label*="Seiten-Navigation"] > ul > li:last-child > [disabled], nav[aria-label*="Seiten-Navigation"] > ul > li:last-child > [aria-disabled="true"], #custom-top-pagination ul > li:first-child > [disabled], #custom-top-pagination ul > li:first-child > [aria-disabled="true"], #custom-top-pagination ul > li:last-child > [disabled], #custom-top-pagination ul > li:last-child > [aria-disabled="true"], #custom-top-pagination-search ul > li:first-child > [disabled], #custom-top-pagination-search ul > li:first-child > [aria-disabled="true"], #custom-top-pagination-search ul > li:last-child > [disabled], #custom-top-pagination-search ul > li:last-child > [aria-disabled="true"], #srchrslt-pagination ul > li:first-child > [disabled], #srchrslt-pagination ul > li:first-child > [aria-disabled="true"], #srchrslt-pagination ul > li:last-child > [disabled], #srchrslt-pagination ul > li:last-child > [aria-disabled="true"] { background-color: #dcf2b0 !important; cursor: not-allowed !important; opacity: 1 !important; }
-        nav[aria-label*="Seiten-Navigation"] > ul > li:first-child svg, nav[aria-label*="Seiten-Navigation"] > ul > li:last-child svg, #custom-top-pagination ul > li:first-child svg, #custom-top-pagination ul > li:last-child svg, #custom-top-pagination-search ul > li:first-child svg, #custom-top-pagination-search ul > li:last-child svg, #srchrslt-pagination ul > li:first-child svg, #srchrslt-pagination ul > li:last-child svg { width: 20px !important; height: 20px !important; stroke: #326916 !important; stroke-width: 3px !important; color: #326916 !important; fill: none !important; display: block !important; }
-        nav[aria-label*="Seiten-Navigation"] > ul > li > span.text-onSurfaceNonessential, #custom-top-pagination ul > li > span.text-onSurfaceNonessential, #custom-top-pagination-search ul > li > span.text-onSurfaceNonessential, #srchrslt-pagination ul > li > span.text-onSurfaceNonessential { width: 20px !important; background: transparent !important; box-shadow: none !important; cursor: default !important; font-weight: bold !important; }
+        #custom-bottom-pagination nav > ul > li, #custom-top-pagination ul > li, #custom-top-pagination-search ul > li, #srchrslt-pagination ul > li { margin: 0 !important; padding: 0 !important; display: flex !important; }
+        #custom-bottom-pagination nav > ul > li > a, #custom-bottom-pagination nav > ul > li > button, #custom-bottom-pagination nav > ul > li > span, #custom-top-pagination ul > li > a, #custom-top-pagination ul > li > button, #custom-top-pagination ul > li > span, #custom-top-pagination-search ul > li > a, #custom-top-pagination-search ul > li > button, #custom-top-pagination-search ul > li > span, #srchrslt-pagination ul > li > a, #srchrslt-pagination ul > li > button, #srchrslt-pagination ul > li > span { width: 38px !important; min-width: 38px !important; max-width: 38px !important; height: 38px !important; min-height: 38px !important; max-height: 38px !important; padding: 0 !important; flex-shrink: 0 !important; display: flex !important; align-items: center !important; justify-content: center !important; border-radius: 50% !important; font-size: 16px !important; font-weight: 800 !important; font-family: inherit !important; border: none !important; background: transparent !important; color: #326916 !important; text-decoration: none !important; transition: all 0.2s ease !important; box-sizing: border-box !important; line-height: 1 !important; }
+        #custom-bottom-pagination nav > ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover, #custom-top-pagination ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover, #custom-top-pagination-search ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover, #srchrslt-pagination ul > li:not(:first-child):not(:last-child) > *:not([aria-current="page"]):hover { background-color: #f5f5f5 !important; }
+        #custom-bottom-pagination nav > ul > li > [aria-current="page"], #custom-bottom-pagination nav > ul > li > .bg-accent, #custom-bottom-pagination nav > ul > li > .bg-accentContainer, #custom-top-pagination ul > li > [aria-current="page"], #custom-top-pagination ul > li > .bg-accent, #custom-top-pagination-search ul > li > [aria-current="page"], #custom-top-pagination-search ul > li > .bg-accent, #srchrslt-pagination ul > li > [aria-current="page"], #srchrslt-pagination ul > li > .bg-accent { background-color: #326916 !important; color: #ffffff !important; box-shadow: 0 4px 10px rgba(50, 105, 22, 0.3) !important; }
+        #custom-bottom-pagination nav > ul > li:first-child > *, #custom-bottom-pagination nav > ul > li:last-child > *, #custom-top-pagination ul > li:first-child > *, #custom-top-pagination ul > li:last-child > *, #custom-top-pagination-search ul > li:first-child > *, #custom-top-pagination-search ul > li:last-child > *, #srchrslt-pagination ul > li:first-child > *, #srchrslt-pagination ul > li:last-child > * { background-color: #cfff00 !important; color: #326916 !important; opacity: 1 !important; }
+        #custom-bottom-pagination nav > ul > li:first-child > *:not([disabled]):hover, #custom-bottom-pagination nav > ul > li:last-child > *:not([disabled]):hover, #custom-top-pagination ul > li:first-child > *:not([disabled]):hover, #custom-top-pagination ul > li:last-child > *:not([disabled]):hover, #custom-top-pagination-search ul > li:first-child > *:not([disabled]):hover, #custom-top-pagination-search ul > li:last-child > *:not([disabled]):hover, #srchrslt-pagination ul > li:first-child > *:not([disabled]):hover, #srchrslt-pagination ul > li:last-child > *:not([disabled]):hover { background-color: #b8e600 !important; }
+        #custom-bottom-pagination nav > ul > li:first-child > [disabled], #custom-bottom-pagination nav > ul > li:first-child > [aria-disabled="true"], #custom-bottom-pagination nav > ul > li:last-child > [disabled], #custom-bottom-pagination nav > ul > li:last-child > [aria-disabled="true"], #custom-top-pagination ul > li:first-child > [disabled], #custom-top-pagination ul > li:first-child > [aria-disabled="true"], #custom-top-pagination ul > li:last-child > [disabled], #custom-top-pagination ul > li:last-child > [aria-disabled="true"], #custom-top-pagination-search ul > li:first-child > [disabled], #custom-top-pagination-search ul > li:first-child > [aria-disabled="true"], #custom-top-pagination-search ul > li:last-child > [disabled], #custom-top-pagination-search ul > li:last-child > [aria-disabled="true"], #srchrslt-pagination ul > li:first-child > [disabled], #srchrslt-pagination ul > li:first-child > [aria-disabled="true"], #srchrslt-pagination ul > li:last-child > [disabled], #srchrslt-pagination ul > li:last-child > [aria-disabled="true"] { background-color: #dcf2b0 !important; cursor: not-allowed !important; opacity: 1 !important; }
+        #custom-bottom-pagination nav > ul > li:first-child svg, #custom-bottom-pagination nav > ul > li:last-child svg, #custom-top-pagination ul > li:first-child svg, #custom-top-pagination ul > li:last-child svg, #custom-top-pagination-search ul > li:first-child svg, #custom-top-pagination-search ul > li:last-child svg, #srchrslt-pagination ul > li:first-child svg, #srchrslt-pagination ul > li:last-child svg { width: 20px !important; height: 20px !important; stroke: #326916 !important; stroke-width: 3px !important; color: #326916 !important; fill: none !important; display: block !important; }
+        #custom-bottom-pagination nav > ul > li > span.text-onSurfaceNonessential, #custom-top-pagination ul > li > span.text-onSurfaceNonessential, #custom-top-pagination-search ul > li > span.text-onSurfaceNonessential, #srchrslt-pagination ul > li > span.text-onSurfaceNonessential { width: 20px !important; background: transparent !important; box-shadow: none !important; cursor: default !important; font-weight: bold !important; }
 
         .kit-filter-bar { background: #ffffff; padding: 6px !important; border-radius: 9999px; border: 2px solid #f3f4f6; display: flex; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.06); font-family: inherit; height: 46px !important; box-sizing: border-box; z-index: 1 !important; }
         .kit-btn { padding: 0 16px !important; height: 34px !important; min-height: 34px !important; max-height: 34px !important; margin: 0 !important; border-radius: 9999px !important; font-size: 13px !important; font-weight: 800 !important; cursor: pointer !important; background: transparent !important; color: #9ca3af !important; transition: color 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; box-sizing: border-box !important; line-height: 1 !important; border: none !important; flex-shrink: 0 !important; }
@@ -263,6 +331,11 @@
         .kit-separator { width: 1px; height: 16px; background-color: #f3f4f6; margin: 0 4px; }
         .kl-filter-hidden { display: none !important; }
         .kl-search-hidden { display: none !important; }
+
+        div[data-vrt-hide]:has([aria-label="Registerkarten im Footer"]),
+        div[role="tablist"][aria-label="Registerkarten im Footer"],
+        #site-footer-tbs-browseloc,
+        #site-footer-tbs-partner { display: none !important; }
     `;
     document.head ? document.head.appendChild(style) : document.addEventListener('DOMContentLoaded', () => document.head.appendChild(style));
 
@@ -447,7 +520,7 @@
     }
 
     async function fetchAdDetails(adUrl, adId) {
-        const cacheKey = `__KL_AD_DETAILS_V13_${adId}`;
+        const cacheKey = `__KL_AD_DETAILS_V15_${adId}`;
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) return JSON.parse(cached);
 
@@ -462,7 +535,8 @@
             const locationEl = doc.querySelector('#viewad-locality');
             const dateIcon = doc.querySelector('.icon-calendar-gray-simple');
             const newDateIcon = doc.querySelector('svg[data-title="calendarOutline"]');
-            const shippingEl = doc.querySelector('.boxedarticle--details--shipping');
+
+            const shippingElOld = doc.querySelector('.boxedarticle--details--shipping');
 
             let location = locationEl ? locationEl.textContent.replace(/\s+/g, ' ').trim() : 'Unbekannt';
 
@@ -475,7 +549,21 @@
                 date = dateIcon.parentElement.textContent.replace(/\s+/g, ' ').trim();
             }
 
-            let shipping = shippingEl ? shippingEl.textContent.trim() : '';
+            let shipping = 'Nur Abholung';
+            const priceHeader = doc.querySelector('#viewad-price');
+            if (priceHeader && priceHeader.parentElement) {
+                const parent = priceHeader.parentElement;
+                const spans = Array.from(parent.querySelectorAll('span'));
+                for (let span of spans) {
+                    const txt = span.textContent.trim();
+                    if (txt.toLowerCase().includes('versand') || txt.toLowerCase().includes('abholung')) {
+                        shipping = txt;
+                        break;
+                    }
+                }
+            } else if (shippingElOld) {
+                shipping = shippingElOld.textContent.trim();
+            }
 
             let catSlug = '';
             const breadcrumbLinks = doc.querySelectorAll('#viewad-breadcrumb a[href*="/s-"]');
@@ -560,6 +648,14 @@
     }
 
     const inject = () => {
+        // Detect if we are on one of OUR OWN ads vs. a foreign ad
+        const isOwnAdCurrent = document.getElementById('pvap-mngad-actns') !== null || document.querySelector('a[href*="/p-anzeige-bearbeiten.html"]') !== null;
+        if (isOwnAdCurrent) {
+            document.documentElement.classList.add('is-own-ad');
+        } else {
+            document.documentElement.classList.remove('is-own-ad');
+        }
+
         const banners = document.querySelectorAll(`
             .site-base--left-banner--full, .site-base--right-banner--full,
             #btf-billboard, #home-billboard, #my-watchlist-atf, #my-msgbox-atf, #my-atf,
@@ -581,35 +677,200 @@
             b.remove();
         });
 
+        const mwstText = Array.from(document.querySelectorAll('.align-right.l-container-row.text-bodySmall')).filter(el => el.textContent.includes('MwSt.'));
+        mwstText.forEach(el => {
+            el.style.setProperty('margin-bottom', '0px', 'important');
+            const br = el.querySelector('br');
+            if (br) br.remove();
+        });
+
         if (isDetailPage) {
-            const sidebar = document.getElementById('viewad-sidebar');
-            if (sidebar && !sidebar.dataset.removedSafely) {
+            if (isOwnAdCurrent) {
+                const sidebar = document.getElementById('viewad-sidebar');
+                if (sidebar && !sidebar.dataset.removedSafely) {
 
-                const shareBtnOriginal = sidebar.querySelector('.j-share-ad, [href="#viewad-share-ad"], [data-mfp-src="#viewad-share-ad"]');
-                if (shareBtnOriginal) {
-                    shareBtnOriginal.id = 'custom-rescued-share-btn';
-                    shareBtnOriginal.style.display = 'none';
-                    document.body.appendChild(shareBtnOriginal);
+                    const shareBtnOriginal = sidebar.querySelector('.j-share-ad, [href="#viewad-share-ad"], [data-mfp-src="#viewad-share-ad"]');
+                    if (shareBtnOriginal) {
+                        shareBtnOriginal.id = 'custom-rescued-share-btn';
+                        shareBtnOriginal.style.display = 'none';
+                        document.body.appendChild(shareBtnOriginal);
+                    }
+                    const shareModal = sidebar.querySelector('#viewad-share-ad');
+                    if (shareModal) document.body.appendChild(shareModal);
+
+                    const adIdBoxOriginal = sidebar.querySelector('#viewad-ad-id-box');
+                    if (adIdBoxOriginal) {
+                        adIdBoxOriginal.id = 'custom-rescued-ad-id-box';
+                        adIdBoxOriginal.style.display = 'none';
+                        document.body.appendChild(adIdBoxOriginal);
+                    }
+
+                    sidebar.dataset.removedSafely = 'true';
+                    sidebar.remove();
+
+                    const mainCol = document.querySelector('#viewad-cntnt .a-span-16');
+                    if (mainCol) {
+                        mainCol.classList.remove('a-span-16');
+                        mainCol.classList.add('a-span-24');
+                        mainCol.style.setProperty('width', '100%', 'important');
+                        mainCol.style.setProperty('max-width', '100%', 'important');
+                    }
                 }
-                const shareModal = sidebar.querySelector('#viewad-share-ad');
-                if (shareModal) document.body.appendChild(shareModal);
+            }
 
-                const adIdBoxOriginal = sidebar.querySelector('#viewad-ad-id-box');
-                if (adIdBoxOriginal) {
-                    adIdBoxOriginal.id = 'custom-rescued-ad-id-box';
-                    adIdBoxOriginal.style.display = 'none';
-                    document.body.appendChild(adIdBoxOriginal);
-                }
+            const mainInfoBox = document.getElementById('viewad-main-info');
+            if (mainInfoBox) {
+                const infoContainer = mainInfoBox.querySelector('.flex.flex-col.gap-xxsmall');
+                if (infoContainer && !infoContainer.dataset.statsInjected) {
+                    infoContainer.dataset.statsInjected = 'true';
 
-                sidebar.dataset.removedSafely = 'true';
-                sidebar.remove();
+                    let ortText = 'Unbekannt';
+                    const locSpan = infoContainer.querySelector('#viewad-locality');
+                    if (locSpan) ortText = locSpan.textContent.trim();
+                    else {
+                        const locDiv = infoContainer.querySelector('[itemprop="address"]');
+                        if (locDiv) ortText = locDiv.textContent.trim();
+                    }
 
-                const mainCol = document.querySelector('#viewad-cntnt .a-span-16');
-                if (mainCol) {
-                    mainCol.classList.remove('a-span-16');
-                    mainCol.classList.add('a-span-24');
-                    mainCol.style.setProperty('width', '100%', 'important');
-                    mainCol.style.setProperty('max-width', '100%', 'important');
+                    let erstelltDateStr = 'Unbekannt';
+                    const dateNodes = infoContainer.querySelectorAll('span, div');
+                    dateNodes.forEach(n => {
+                       const text = (n.textContent || '').trim();
+                       if (text.match(/^\d{2}\.\d{2}\.\d{4}$/) && !text.includes('Endet')) {
+                           erstelltDateStr = text;
+                       }
+                    });
+
+                    let besucherVal = 0;
+                    const cntrNum = document.getElementById('viewad-cntr-num');
+                    if (cntrNum) {
+                        besucherVal = parseInt((cntrNum.textContent || '0').replace(/\./g, ''), 10) || 0;
+                    }
+
+                    let endetAmStr = 'Unbekannt';
+                    let merklisteVal = 0;
+
+                    const tailwindStatsBoxes = document.querySelectorAll('.space-y-xxsmall');
+                    let originalStatsBox = null;
+                    tailwindStatsBoxes.forEach(box => {
+                        const text = box.textContent || '';
+                        if ((text.includes('Besuche') || text.includes('Merkliste')) && box.parentElement) {
+                            originalStatsBox = box;
+                            const merkMatch = text.match(/(\d+)\s*(mal|x)\s*gemerkt/i) || text.match(/Merkliste\s*:?\s*(\d+)/i);
+                            if (merkMatch) merklisteVal = parseInt(merkMatch[1], 10);
+
+                            const endMatch = text.match(/Endet am:?\s*([\d\.]+)/i);
+                            if (endMatch) {
+                                let dateStr = endMatch[1].trim();
+                                let parts = dateStr.split('.');
+                                if (parts.length === 3) {
+                                    let d = parts[0].padStart(2, '0');
+                                    let m = parts[1].padStart(2, '0');
+                                    let y = parts[2];
+                                    if (y.length === 2) y = "20" + y;
+                                    endetAmStr = `${d}.${m}.${y}`;
+                                } else {
+                                    endetAmStr = dateStr;
+                                }
+                            }
+                        }
+                    });
+
+                    let daysOnline = 1;
+                    if (erstelltDateStr !== 'Unbekannt') {
+                        const parts = erstelltDateStr.split('.');
+                        if (parts.length === 3) {
+                            const createdDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                            const diffTime = Math.abs(new Date() - createdDate);
+                            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                            if (diffDays > 0) daysOnline = diffDays;
+                        }
+                    }
+                    const avgVisitors = (besucherVal / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
+                    const avgWatchers = (merklisteVal / daysOnline).toFixed(1).replace('.0', '').replace('.', ',');
+
+                    Array.from(infoContainer.children).forEach(child => {
+                        if (child.id !== 'buyer-protection-banner') {
+                            child.style.display = 'none';
+                        }
+                    });
+
+                    if (originalStatsBox) {
+                        originalStatsBox.style.display = 'none';
+                    }
+
+                    const oldCustomStats = mainInfoBox.querySelectorAll('.custom-moved-stats');
+                    oldCustomStats.forEach(el => el.remove());
+
+                    const customStats = document.createElement('div');
+                    customStats.className = 'custom-moved-stats';
+                    customStats.style.marginTop = '0px';
+                    customStats.style.display = 'flex';
+                    customStats.style.flexDirection = 'column';
+                    customStats.style.gap = '8px';
+                    customStats.style.color = '#757575';
+                    customStats.style.fontSize = '13px';
+
+                    const svgClass = "shrink-0 block align-middle";
+                    const iconColor = "#A6A6A6";
+                    const mkIcon = (svg, title) => `<span title="${title}" style="display: inline-flex; align-items: center; margin-right: 6px;">${svg}</span>`;
+
+                    const iconLoc = `<svg viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}" style="width: 16px; height: 16px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>`;
+                    const iconErstellt = `<svg viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}" style="width: 16px; height: 16px;"><path d="m3 11 18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>`;
+                    const iconEndet = `<svg viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}" style="width: 16px; height: 16px;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
+                    const iconBesucher = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+                    const iconMerkliste = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
+                    const iconAvgVis = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><svg x="0" y="0" width="18" height="18" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg><svg x="7" y="9" width="16" height="16" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></svg>`;
+                    const iconAvgWat = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><svg x="0" y="0" width="18" height="18" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg><svg x="7" y="9" width="16" height="16" viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></svg>`;
+                    const iconId = `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="${svgClass}"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>`;
+
+                    const makeItem = (iconHtml, text, width = '145px') => `<div style="display: flex; align-items: center; gap: 4px; white-space: nowrap; width: ${width}; flex-shrink: 0; margin-right: 0;">${iconHtml}<span>${text}</span></div>`;
+
+                    const row1 = document.createElement('div');
+                    row1.style.display = 'flex'; row1.style.alignItems = 'center'; row1.style.justifyContent = 'space-between';
+                    row1.innerHTML = `<div style="display: flex; align-items: center; gap: 4px; white-space: nowrap;">${mkIcon(iconLoc, 'Ort')}<span>${ortText}</span></div>`;
+
+                    const row2 = document.createElement('div');
+                    row2.style.display = 'flex'; row2.style.alignItems = 'center'; row2.style.flexWrap = 'wrap';
+                    row2.innerHTML = makeItem(mkIcon(iconErstellt, 'Erstellt am'), erstelltDateStr) + makeItem(mkIcon(iconEndet, 'Endet am'), endetAmStr, 'auto');
+
+                    const row3 = document.createElement('div');
+                    row3.style.display = 'flex'; row3.style.alignItems = 'center'; row3.style.flexWrap = 'wrap';
+                    row3.innerHTML = makeItem(mkIcon(iconBesucher, 'Besucher'), `${besucherVal} Besucher`) + makeItem(mkIcon(iconMerkliste, 'Merkliste'), `${merklisteVal}x gemerkt`, 'auto');
+
+                    const row4 = document.createElement('div');
+                    row4.style.display = 'flex'; row4.style.alignItems = 'center'; row4.style.flexWrap = 'wrap';
+                    row4.innerHTML = makeItem(mkIcon(iconAvgVis, 'Besucher pro Tag'), `${avgVisitors} pro Tag`) + makeItem(mkIcon(iconAvgWat, 'Gemerkt pro Tag'), `${avgWatchers} pro Tag`, 'auto');
+
+                    let adId = 'Unbekannt';
+                    const adIdBox = document.getElementById('viewad-ad-id-box') || document.getElementById('custom-rescued-ad-id-box') || document.querySelector('.j-sidebar-content');
+                    if (adIdBox) {
+                        const textContent = adIdBox.textContent || '';
+                        const match = textContent.match(/Anzeigen-ID\s*(\d+)/i);
+                        if (match) adId = match[1];
+                    }
+                    if (adId === 'Unbekannt') {
+                         const match = window.location.href.match(/(\d+)$/);
+                         if (match) adId = match[1];
+                    }
+
+                    const row5 = document.createElement('div');
+                    row5.style.display = 'flex'; row5.style.alignItems = 'center'; row5.style.flexWrap = 'wrap';
+                    row5.style.marginTop = '4px';
+                    row5.innerHTML = makeItem(mkIcon(iconId, 'Anzeigen-ID'), adId, 'auto');
+
+                    customStats.appendChild(row1);
+                    customStats.appendChild(row2);
+                    customStats.appendChild(row3);
+                    customStats.appendChild(row4);
+                    customStats.appendChild(row5);
+
+                    const buyerProtection = infoContainer.querySelector('#buyer-protection-banner');
+                    if (buyerProtection) {
+                        infoContainer.insertBefore(customStats, buyerProtection);
+                    } else {
+                        infoContainer.appendChild(customStats);
+                    }
                 }
             }
         }
@@ -751,36 +1012,9 @@
                     }
                 }
 
-                const isOwnAd = document.getElementById('pvap-mngad-actns') !== null || document.querySelector('a[href*="/p-anzeige-bearbeiten.html"]') !== null;
-                if (isOwnAd) {
+                if (isOwnAdCurrent) {
                     const watchlistBox = document.getElementById('viewad-action-watchlist');
                     if (watchlistBox) watchlistBox.style.setProperty('display', 'none', 'important');
-                }
-
-                const adIdBox = document.getElementById('custom-rescued-ad-id-box') || document.getElementById('viewad-ad-id-box');
-                if (adIdBox && extraInfo && !document.getElementById('custom-ad-id-row')) {
-                    const idListItems = adIdBox.querySelectorAll('li');
-                    if (idListItems.length >= 2) {
-                        const idLabel = idListItems[0].textContent.trim();
-                        const idValue = idListItems[1].textContent.trim();
-
-                        const wrapper = document.createElement('div');
-                        wrapper.id = 'custom-ad-id-row';
-                        wrapper.className = 'text-bodySmall text-onSurfaceNonessential';
-                        wrapper.style.display = 'flex';
-                        wrapper.style.alignItems = 'center';
-                        wrapper.style.width = '100%';
-                        wrapper.style.marginTop = '6px';
-
-                        const svgHash = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#A6A6A6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="shrink-0 block align-middle" style="margin-right: 4px;"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>`;
-
-                        wrapper.innerHTML = `
-                            <span title="${idLabel}" style="display: flex; align-items: center;">${svgHash}</span>
-                            <span style="font-weight: normal; color: #757575;">${idLabel} ${idValue}</span>
-                        `;
-
-                        extraInfo.parentNode.insertBefore(wrapper, extraInfo.nextSibling);
-                    }
                 }
             }
         }
@@ -1058,233 +1292,228 @@
             const editLinks = document.querySelectorAll('a[href*="/p-anzeige-bearbeiten.html"]');
             editLinks.forEach(link => {
                 const container = link.closest('ul') || link.parentElement;
-                if (!container || container.dataset.klInjected) return;
+                if (!container) return;
 
                 const match = link.getAttribute('href').match(/adId=(\d+)/);
                 if (!match) return;
                 const adId = match[1];
 
-                const mehrBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent.includes('Mehr'));
+                let shareBtnEl = null;
                 let printBtn = null;
+                let liDup = null;
+                let liRelist = null;
                 let printLi = null;
 
-                if (mehrBtn) {
-                    const mehrLi = mehrBtn.closest('li');
-                    if (mehrLi) {
-                        mehrLi.style.position = 'absolute';
-                        mehrLi.style.opacity = '0';
-                        mehrLi.style.pointerEvents = 'none';
+                if (!container.dataset.klButtonsInjected) {
+                    container.dataset.klButtonsInjected = 'true';
+
+                    if (isDetailPage) {
+                        container.dataset.klStyled = 'true';
+                        container.classList.add('kl-button-container');
+                        container.classList.remove('space-y-xxsmall', 'flex-col');
+                        if (container.parentElement) {
+                            container.parentElement.style.width = '100%';
+                            container.parentElement.style.maxWidth = '100%';
+                        }
                     }
 
-                    printBtn = document.createElement('button');
-                    printBtn.type = 'button';
-                    printBtn.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn";
+                    const mehrBtn = Array.from(container.querySelectorAll('button')).find(b => b.textContent.includes('Mehr'));
+                    if (mehrBtn) {
+                        const mehrLi = mehrBtn.closest('li');
+                        if (mehrLi) {
+                            mehrLi.style.position = 'absolute';
+                            mehrLi.style.opacity = '0';
+                            mehrLi.style.pointerEvents = 'none';
+                        }
+
+                        printBtn = document.createElement('button');
+                        printBtn.type = 'button';
+                        printBtn.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn";
+
+                        if (isOverviewPage) {
+                            printBtn.innerHTML = `${klPrinterSvg}`;
+                            printBtn.classList.add('custom-icon-only-btn');
+                            printBtn.title = "Verkaufsschild drucken";
+                        } else {
+                            printBtn.innerHTML = `${klPrinterSvg}`;
+                            printBtn.classList.add('custom-icon-only-btn');
+                            printBtn.title = "Verkaufsschild drucken";
+                            printLi = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                            printLi.style.margin = '0';
+                            printLi.appendChild(printBtn);
+                        }
+
+                        printBtn.onclick = async (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            printBtn.blur();
+                            printBtn.removeAttribute('disabled');
+                            printBtn.classList.remove('is-disabled');
+
+                            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+                            document.body.click();
+
+                            const antiFlashStyle = document.createElement('style');
+                            antiFlashStyle.id = 'hide-dropdown-flash';
+                            antiFlashStyle.textContent = `
+                                [role="menu"], [data-testid*="menu"], [id^="radix-"] {
+                                    opacity: 0 !important;
+                                    visibility: hidden !important;
+                                    pointer-events: none !important;
+                                    transform: scale(0) !important;
+                                }
+                            `;
+                            document.head.appendChild(antiFlashStyle);
+
+                            await new Promise(r => setTimeout(r, 50));
+                            mehrBtn.click();
+
+                            let attempts = 0;
+                            const interval = setInterval(() => {
+                                attempts++;
+                                const menuId = mehrBtn.getAttribute('aria-controls');
+                                let targetMenu = menuId ? document.getElementById(menuId) : null;
+                                if (!targetMenu) targetMenu = document.querySelector('[data-state="open"]');
+
+                                if (targetMenu) {
+                                    const nativePrintBtn = Array.from(targetMenu.querySelectorAll('button, a, [role="menuitem"]'))
+                                        .find(b => b.textContent.includes('Verkaufsschild') && b !== printBtn);
+
+                                    if (nativePrintBtn) {
+                                        clearInterval(interval);
+                                        nativePrintBtn.click();
+                                        setTimeout(() => {
+                                            document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+                                            document.body.click();
+                                            antiFlashStyle.remove();
+                                            printBtn.removeAttribute('disabled');
+                                            printBtn.classList.remove('is-disabled');
+                                        }, 100);
+                                        return;
+                                    }
+                                }
+
+                                if (attempts > 30) {
+                                    clearInterval(interval);
+                                    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
+                                    document.body.click();
+                                    antiFlashStyle.remove();
+                                    printBtn.removeAttribute('disabled');
+                                    printBtn.classList.remove('is-disabled');
+                                }
+                            }, 50);
+                        };
+                    }
+
+                    const doAction = (e, type) => {
+                        e.preventDefault();
+                        localStorage.setItem('__KL_AUTO_ACTION', JSON.stringify({action: type, adId}));
+                        localStorage.setItem('__KL_AUTO_REDIRECT', 'true');
+                        window.location.href = link.href;
+                    };
+
+                    liDup = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                    liDup.style.margin = '0';
+                    liDup.appendChild(createBtn('Duplizieren', klDupSvg, (e) => doAction(e, 'duplicate')));
+
+                    liRelist = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                    liRelist.style.margin = '0';
+                    liRelist.appendChild(createBtn('Neu einstellen', klRelistSvg, (e) => doAction(e, 'relist')));
 
                     if (isOverviewPage) {
-                        printBtn.innerHTML = `${klPrinterSvg}`;
-                        printBtn.classList.add('custom-icon-only-btn');
-                        printBtn.title = "Verkaufsschild drucken";
-                    } else {
-                        printBtn.innerHTML = `${klPrinterSvg}<span>Verkaufsschild</span>`;
-                        printLi = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                        printLi.style.margin = '0';
-                        printLi.style.width = '100%';
-                        printLi.style.display = 'flex';
-                        printLi.appendChild(printBtn);
-                    }
+                        const shareAction = (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const card = link.closest('li[data-testid="ad-card"]');
+                            const titleLink = card ? card.querySelector('a[href*="/s-anzeige/"]') : null;
+                            const url = titleLink ? titleLink.href : window.location.href;
 
-                    printBtn.onclick = async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-
-                        printBtn.blur();
-                        printBtn.removeAttribute('disabled');
-                        printBtn.classList.remove('is-disabled');
-
-                        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-                        document.body.click();
-
-                        const antiFlashStyle = document.createElement('style');
-                        antiFlashStyle.id = 'hide-dropdown-flash';
-                        antiFlashStyle.textContent = `
-                            [role="menu"], [data-testid*="menu"], [id^="radix-"] {
-                                opacity: 0 !important;
-                                visibility: hidden !important;
-                                pointer-events: none !important;
-                                transform: scale(0) !important;
+                            const titleHeading = card ? card.querySelector('h2, .text-title4') : null;
+                            let adTitle = 'Anzeige';
+                            if (titleHeading) {
+                                const clone = titleHeading.cloneNode(true);
+                                const srOnly = clone.querySelector('.sr-only');
+                                if (srOnly) srOnly.remove();
+                                adTitle = clone.textContent.trim();
+                            } else if (titleLink) {
+                                adTitle = titleLink.textContent.trim();
                             }
-                        `;
-                        document.head.appendChild(antiFlashStyle);
 
-                        await new Promise(r => setTimeout(r, 50));
-                        mehrBtn.click();
-
-                        let attempts = 0;
-                        const interval = setInterval(() => {
-                            attempts++;
-                            const menuId = mehrBtn.getAttribute('aria-controls');
-                            let targetMenu = menuId ? document.getElementById(menuId) : null;
-                            if (!targetMenu) targetMenu = document.querySelector('[data-state="open"]');
-
-                            if (targetMenu) {
-                                const nativePrintBtn = Array.from(targetMenu.querySelectorAll('button, a, [role="menuitem"]'))
-                                    .find(b => b.textContent.includes('Verkaufsschild') && b !== printBtn);
-
-                                if (nativePrintBtn) {
-                                    clearInterval(interval);
-                                    nativePrintBtn.click();
-                                    setTimeout(() => {
-                                        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-                                        document.body.click();
-                                        antiFlashStyle.remove();
-                                        printBtn.removeAttribute('disabled');
-                                        printBtn.classList.remove('is-disabled');
-                                    }, 100);
-                                    return;
+                            const imgEl = card ? card.querySelector('.imagebox-image img') : null;
+                            let imgUrl = '';
+                            if (imgEl) {
+                                imgUrl = imgEl.src;
+                                if (imgUrl.includes('data:image') && imgEl.dataset.src) {
+                                    imgUrl = imgEl.dataset.src;
                                 }
                             }
+                            showCustomShareModal(url, adTitle, imgUrl);
+                        };
 
-                            if (attempts > 30) {
-                                clearInterval(interval);
-                                document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', keyCode: 27, bubbles: true }));
-                                document.body.click();
-                                antiFlashStyle.remove();
-                                printBtn.removeAttribute('disabled');
-                                printBtn.classList.remove('is-disabled');
+                        shareBtnEl = document.createElement('button');
+                        shareBtnEl.type = 'button';
+                        shareBtnEl.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn custom-icon-only-btn";
+                        shareBtnEl.innerHTML = `${klShareSvg}`;
+                        shareBtnEl.onclick = shareAction;
+                        shareBtnEl.title = "Anzeige teilen";
+                    }
+
+                    if (isOverviewPage) {
+                        container.append(liDup, liRelist);
+                    } else {
+                        // In Detail page, inject custom Share if it doesn't already exist natively
+                        let hasTeilen = false;
+                        Array.from(container.children).forEach(child => {
+                            if (child.textContent.includes('Teilen') || child.querySelector('svg[data-title="share"]')) {
+                                hasTeilen = true;
                             }
-                        }, 50);
-                    };
-                }
+                        });
 
-                const doAction = (e, type) => {
-                    e.preventDefault();
-                    localStorage.setItem('__KL_AUTO_ACTION', JSON.stringify({action: type, adId}));
-                    localStorage.setItem('__KL_AUTO_REDIRECT', 'true');
-                    window.location.href = link.href;
-                };
-
-                const liDup = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                liDup.style.margin = '0';
-                liDup.appendChild(createBtn('Duplizieren', klDupSvg, (e) => doAction(e, 'duplicate')));
-
-                const liRelist = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                liRelist.style.margin = '0';
-                liRelist.appendChild(createBtn('Neu einstellen', klRelistSvg, (e) => doAction(e, 'relist')));
-
-                let shareBtnEl = null;
-                if (isOverviewPage) {
-                    const shareAction = (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        const card = link.closest('li[data-testid="ad-card"]');
-                        const titleLink = card ? card.querySelector('a[href*="/s-anzeige/"]') : null;
-                        const url = titleLink ? titleLink.href : window.location.href;
-
-                        const titleHeading = card ? card.querySelector('h2, .text-title4') : null;
-                        let adTitle = 'Anzeige';
-                        if (titleHeading) {
-                            const clone = titleHeading.cloneNode(true);
-                            const srOnly = clone.querySelector('.sr-only');
-                            if (srOnly) srOnly.remove();
-                            adTitle = clone.textContent.trim();
-                        } else if (titleLink) {
-                            adTitle = titleLink.textContent.trim();
+                        if (!hasTeilen) {
+                            let liTeilen = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                            liTeilen.style.margin = '0';
+                            let tBtn = document.createElement('button');
+                            tBtn.className = 'custom-native-btn-detail custom-icon-only-btn';
+                            tBtn.innerHTML = `${klShareSvg}`;
+                            tBtn.title = 'Anzeige teilen';
+                            tBtn.onclick = (e) => {
+                                e.preventDefault(); e.stopPropagation();
+                                let nativeShare = document.querySelector('button:has(svg[data-title="share"])') || document.querySelector('.j-share-ad') || document.getElementById('custom-rescued-share-btn');
+                                if (nativeShare) nativeShare.click();
+                            };
+                            liTeilen.appendChild(tBtn);
+                            container.appendChild(liTeilen);
                         }
 
-                        const imgEl = card ? card.querySelector('.imagebox-image img') : null;
-                        let imgUrl = '';
-                        if (imgEl) {
-                            imgUrl = imgEl.src;
-                            if (imgUrl.includes('data:image') && imgEl.dataset.src) {
-                                imgUrl = imgEl.dataset.src;
-                            }
-                        }
-                        showCustomShareModal(url, adTitle, imgUrl);
-                    };
-
-                    shareBtnEl = document.createElement('button');
-                    shareBtnEl.type = 'button';
-                    shareBtnEl.className = "inline-flex items-center justify-center gap-xsmall text-bodyRegularStrong box-border rounded-full cursor-pointer whitespace-nowrap no-underline hover:no-underline focus:outline-none focus-visible:outline-2 focus-visible:ring-2 focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-accent focus-visible:ring-surface border-2 border-solid border-utility text-interactive h-xlarge min-h-xlarge min-w-xlarge w-fit bg-transparent hover:border-secondary hover:bg-secondaryContainer hover:text-onSecondaryContainer active:border-secondary active:bg-secondaryContainer active:text-onSecondaryContainer px-medium custom-native-btn custom-icon-only-btn";
-                    shareBtnEl.innerHTML = `${klShareSvg}`;
-                    shareBtnEl.onclick = shareAction;
-                    shareBtnEl.title = "Anzeige teilen";
-                }
-
-                if (isOverviewPage) {
-                    container.append(liDup, liRelist);
-                } else {
-                    if (printLi) container.append(printLi);
-                    container.append(liDup, liRelist);
-                }
-
-                if (isDetailPage) {
-                    let shareBtn = document.getElementById('custom-rescued-share-btn') || document.querySelector('button.j-share-ad, a.j-share-ad');
-                    if (shareBtn && !shareBtn.dataset.movedToActions) {
-                        shareBtn.dataset.movedToActions = 'true';
-                        shareBtn.className = 'custom-native-btn-detail j-share-ad';
-                        shareBtn.style.display = 'inline-flex';
-                        shareBtn.innerHTML = `${klShareSvg}<span>Teilen</span>`;
-                        const liShareDetail = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
-                        liShareDetail.style.margin = '0';
-                        liShareDetail.appendChild(shareBtn);
-                        container.appendChild(liShareDetail);
+                        if (printLi) container.append(printLi);
+                        container.append(liDup, liRelist);
                     }
                 }
 
-                container.dataset.klInjected = 'true';
+                const actionEls = Array.from(container.querySelectorAll('a, button, span.text-onSurfaceSubdued, span.flex.items-center')).filter(el => {
+                    const parentTag = el.parentElement ? el.parentElement.tagName : '';
+                    if (parentTag !== 'LI' && parentTag !== 'ASTRO-ISLAND') return false;
+                    if (el.tagName === 'SPAN' && el.classList.contains('inline-flex')) return false;
+                    return el.textContent && el.textContent.trim().length > 0 || el.classList.contains('custom-icon-only-btn');
+                });
 
-                if (isDetailPage) {
-                    if (!container.dataset.klStyled) {
-                        container.dataset.klStyled = 'true';
-                        container.style.display = 'flex';
-                        container.style.flexWrap = 'wrap';
-                        container.style.gap = '8px';
-                        container.style.listStyle = 'none';
-                        container.style.padding = '0';
-                        container.style.margin = '0';
-
-                        if (container.parentElement && !container.parentElement.querySelector('h2.sectionheadline')) {
-                            const h2 = document.createElement('h2');
-                            h2.className = 'sectionheadline';
-                            h2.setAttribute('style', 'margin-bottom: 12px !important;');
-                            h2.textContent = 'Deine Anzeige';
-                            container.parentElement.insertBefore(h2, container);
-                        }
-
-                        const orderMap = {
-                            'Bearbeiten': 1, 'Reservieren': 2, 'Aktivieren': 2, 'Deaktivieren': 2, 'Pausieren': 2,
-                            'Löschen': 3, 'Verlängern': 4, 'Verkaufsschild': 5, 'drucken': 5,
-                            'Duplizieren': 6, 'Neu einstellen': 7, 'Teilen': 8
-                        };
-
-                        const getOrder = (li) => {
-                            const text = li.textContent || '';
-                            for (const [key, val] of Object.entries(orderMap)) {
-                                if (text.includes(key)) return val;
-                            }
-                            return 99;
-                        };
-
-                        const listItems = Array.from(container.children);
-                        listItems.sort((a, b) => getOrder(a) - getOrder(b));
-                        listItems.forEach(li => container.appendChild(li));
-                    }
-                }
-
-                Array.from(container.querySelectorAll('a, button')).forEach(btn => {
+                actionEls.forEach(btn => {
                     if (!btn.classList.contains('custom-purple-btn')) {
                         if (!btn.classList.contains('custom-native-btn-detail')) {
                             btn.classList.add('custom-native-btn-detail');
                         }
 
-                        const text = btn.textContent;
+                        const text = btn.textContent || "";
                         const needsInjection = !btn.dataset.iconInjected || !btn.querySelector('svg');
 
                         if (needsInjection) {
                             btn.dataset.iconInjected = 'true';
-                            if (text.includes('drucken') || text.includes('Verkaufsschild')) {
-                                btn.innerHTML = `${klPrinterSvg}<span>Verkaufsschild</span>`;
+                            if (text.includes('drucken') || text.includes('Verkaufsschild') || btn.title.includes('drucken')) {
                                 if (isDetailPage) {
+                                    btn.innerHTML = `${klPrinterSvg}`;
+                                    btn.classList.add('custom-icon-only-btn');
+                                    btn.title = "Verkaufsschild drucken";
                                     const preventDisable = () => {
                                         if (btn.hasAttribute('disabled') || btn.classList.contains('is-disabled')) {
                                             btn.removeAttribute('disabled');
@@ -1301,6 +1530,8 @@
                                         const observer = new MutationObserver(preventDisable);
                                         observer.observe(btn, { attributes: true, attributeFilter: ['disabled', 'class'] });
                                     }
+                                } else {
+                                    btn.innerHTML = `${klPrinterSvg}<span>Verkaufsschild</span>`;
                                 }
                             }
                             else if (text.includes('Reservieren')) {
@@ -1317,30 +1548,87 @@
                             else if (text.includes('Verlängern')) {
                                 btn.innerHTML = `${klReactivateSvg}<span>Verlängern</span>`;
                             }
+                            else if (text.includes('Teilen') || btn.querySelector('svg[data-title="share"]') || btn.title.includes('Teilen')) {
+                                if (isDetailPage) {
+                                    btn.innerHTML = `${klShareSvg}`;
+                                    btn.classList.add('custom-icon-only-btn');
+                                    btn.title = "Anzeige teilen";
+                                } else {
+                                    btn.innerHTML = `${klShareSvg}<span>Teilen</span>`;
+                                }
+                            }
+                            else if (text.includes('Bearbeiten')) {
+                                btn.innerHTML = `${klEditSvg}<span>Bearbeiten</span>`;
+                            }
+                            else if (text.includes('Löschen')) {
+                                btn.innerHTML = `${klTrashSvg}<span>Löschen</span>`;
+                            }
                         }
 
                         if (text.includes('Verlängern')) {
-                            if (btn.hasAttribute('disabled') || btn.getAttribute('aria-disabled') === 'true' || btn.classList.contains('is-disabled')) {
+                            if (btn.hasAttribute('disabled') || btn.getAttribute('aria-disabled') === 'true' || btn.classList.contains('is-disabled') || btn.tagName === 'SPAN') {
                                 btn.setAttribute('data-custom-tooltip', 'Du kannst deine Anzeigen innerhalb von 8\nTagen vor Ablauf um 60 Tage verlängern.');
                                 btn.removeAttribute('title');
-                                btn.onclick = (e) => e.preventDefault();
+                                if (btn.tagName !== 'SPAN') btn.onclick = (e) => e.preventDefault();
                             } else {
                                 btn.removeAttribute('title');
                                 btn.removeAttribute('data-custom-tooltip');
-                                btn.onclick = null;
+                                if (btn.tagName !== 'SPAN') btn.onclick = null;
                             }
                         }
                     }
                 });
 
-                if (isOverviewPage) {
+                if (isDetailPage) {
+                    const orderMap = {
+                        'Bearbeiten': 1, 'Reservieren': 2, 'Aktivieren': 2, 'Deaktivieren': 2, 'Pausieren': 2,
+                        'Löschen': 3, 'Verlängern': 4, 'Duplizieren': 5, 'Neu einstellen': 6,
+                        'Verkaufsschild': 8, 'drucken': 8, 'Teilen': 9
+                    };
+
+                    const getOrder = (li) => {
+                        const text = li.textContent || '';
+                        const btn = li.querySelector('button, a');
+                        const title = btn ? (btn.title || '') : '';
+                        const searchStr = text + ' ' + title;
+
+                        for (const [key, val] of Object.entries(orderMap)) {
+                            if (searchStr.includes(key)) return val;
+                        }
+                        return 99;
+                    };
+
+                    const listItems = Array.from(container.children).filter(child => !child.classList.contains('kl-spacer'));
+                    listItems.sort((a, b) => getOrder(a) - getOrder(b));
+
+                    while (container.firstChild) {
+                        container.removeChild(container.firstChild);
+                    }
+
+                    let spacerInserted = false;
+                    listItems.forEach(li => {
+                        if (getOrder(li) >= 8 && !spacerInserted) {
+                            const spacer = document.createElement(container.tagName === 'UL' ? 'li' : 'span');
+                            spacer.className = 'kl-spacer';
+                            container.appendChild(spacer);
+                            spacerInserted = true;
+                        }
+                        container.appendChild(li);
+                    });
+                }
+
+                if (isOverviewPage && !container.dataset.klLayoutInjected) {
+                    container.dataset.klLayoutInjected = 'true';
                     const card = container.closest('li[data-testid="ad-card"]');
                     if (card) {
                         const footer = card.querySelector('footer');
                         const infoCol = card.querySelector('.pl-medium.align-top');
 
+                        const existingShareBtn = container.querySelector('button[title="Anzeige teilen"]');
+                        const existingPrintBtn = container.querySelector('button[title="Verkaufsschild drucken"]');
+
                         if (infoCol) {
-                            if (shareBtnEl && !shareBtnEl.parentElement) {
+                            if (existingShareBtn && !existingShareBtn.closest('.text-title3')) {
                                 let priceEl = card.querySelector('.text-title3');
                                 if (!priceEl) {
                                     priceEl = Array.from(card.querySelectorAll('li, p, span, div')).find(el =>
@@ -1356,6 +1644,7 @@
                                     leftContent.style.alignItems = 'center';
                                     leftContent.style.gap = '8px';
                                     leftContent.style.flexWrap = 'nowrap';
+
                                     while (priceEl.firstChild) {
                                         leftContent.appendChild(priceEl.firstChild);
                                     }
@@ -1371,11 +1660,23 @@
                                         if (badgeLi) {
                                             const badgeSpan = badgeLi.querySelector('span');
                                             if (badgeSpan) {
+                                                badgeSpan.classList.add('custom-direkt-kaufen-badge');
+                                                badgeSpan.title = 'Direkt kaufen';
                                                 badgeSpan.style.height = '24px';
                                                 badgeSpan.style.minHeight = '24px';
-                                                badgeSpan.style.padding = '0 8px';
+                                                badgeSpan.style.width = '24px';
+                                                badgeSpan.style.padding = '0';
+                                                badgeSpan.style.justifyContent = 'center';
                                                 badgeSpan.style.fontSize = '12px';
                                                 badgeSpan.style.whiteSpace = 'nowrap';
+
+                                                const textSpan = badgeSpan.querySelector('span.truncate') || badgeSpan.querySelector('span:not(.inline-block-icon)');
+                                                if (textSpan) textSpan.style.display = 'none';
+
+                                                Array.from(badgeSpan.childNodes).forEach(node => {
+                                                    if (node.nodeType === Node.TEXT_NODE) node.textContent = '';
+                                                });
+
                                                 leftContent.appendChild(badgeSpan);
                                             }
                                             badgeLi.style.display = 'none';
@@ -1383,14 +1684,14 @@
                                     }
 
                                     priceEl.appendChild(leftContent);
-                                    priceEl.appendChild(shareBtnEl);
+                                    priceEl.appendChild(existingShareBtn);
                                 } else {
-                                    shareBtnEl.style.marginLeft = 'auto';
-                                    infoCol.appendChild(shareBtnEl);
+                                    existingShareBtn.style.marginLeft = 'auto';
+                                    infoCol.appendChild(existingShareBtn);
                                 }
                             }
 
-                            if (printBtn && !printBtn.parentElement) {
+                            if (existingPrintBtn && !existingPrintBtn.closest('.custom-bottom-row')) {
                                 let bottomRow = infoCol.querySelector('.custom-bottom-row');
                                 if (!bottomRow) {
                                     bottomRow = document.createElement('div');
@@ -1404,7 +1705,7 @@
                                 } else {
                                     bottomRow.style.justifyContent = 'space-between';
                                 }
-                                bottomRow.appendChild(printBtn);
+                                bottomRow.appendChild(existingPrintBtn);
                             }
 
                             if (footer) {
@@ -1669,7 +1970,12 @@
 
                                                     const leftContent = priceEl.querySelector('div');
                                                     if (leftContent) {
-                                                        leftContent.appendChild(span);
+                                                        const badge = leftContent.querySelector('.custom-direkt-kaufen-badge');
+                                                        if (badge) {
+                                                            leftContent.insertBefore(span, badge);
+                                                        } else {
+                                                            leftContent.appendChild(span);
+                                                        }
                                                     } else {
                                                         priceEl.appendChild(span);
                                                     }
@@ -1985,7 +2291,11 @@
                 const span = nav.querySelector('span.sr-only');
                 if (span && span.textContent.includes('Seiten-Navigation')) {
                     if (!nav.closest('#custom-top-pagination')) {
-                        return nav.parentElement;
+                        const parent = nav.parentElement;
+                        if (parent && !parent.id) {
+                            parent.id = 'custom-bottom-pagination';
+                        }
+                        return parent;
                     }
                 }
             }
@@ -2002,33 +2312,24 @@
                     masterToolbar = document.createElement('div');
                     masterToolbar.id = 'kl-master-toolbar';
 
-                    // Linker Bereich: Titel "Meine Anzeigen" gefolgt von der Paginierung
-                    const leftGroup = document.createElement('div');
-                    leftGroup.style.display = 'flex';
-                    leftGroup.style.alignItems = 'center';
-                    leftGroup.style.gap = '16px';
-
                     const titleHeader = document.createElement('h2');
                     titleHeader.id = 'my-ads-header';
                     titleHeader.className = 'text-title2 text-onSurfaceSubdued';
                     titleHeader.style.margin = '0';
                     titleHeader.style.whiteSpace = 'nowrap';
                     titleHeader.textContent = 'Meine Anzeigen';
-                    leftGroup.appendChild(titleHeader);
+                    masterToolbar.appendChild(titleHeader);
 
-                    const pagContainer = document.createElement('div');
-                    pagContainer.id = 'custom-top-pagination';
-                    leftGroup.appendChild(pagContainer);
-
-                    masterToolbar.appendChild(leftGroup);
-
-                    // Rechter Bereich: Filter & Suche
                     const controlsWrapper = document.createElement('div');
                     controlsWrapper.id = 'custom-controls-wrapper';
                     controlsWrapper.style.display = 'flex';
                     controlsWrapper.style.alignItems = 'center';
                     controlsWrapper.style.gap = '12px';
                     masterToolbar.appendChild(controlsWrapper);
+
+                    const pagContainer = document.createElement('div');
+                    pagContainer.id = 'custom-top-pagination';
+                    controlsWrapper.appendChild(pagContainer);
 
                     const spinnerSvg = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#326916" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="custom-spin" style="flex-shrink: 0;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>`;
                     const svgSearch = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`;
@@ -2251,7 +2552,7 @@
                     pointer-events: auto;
                 `;
 
-                const scriptVersion = typeof GM_info !== 'undefined' ? GM_info.script.version : '2.6.138';
+                const scriptVersion = typeof GM_info !== 'undefined' ? GM_info.script.version : '2.6.150';
 
                 infoBox.innerHTML = `
                     Script von Zer089

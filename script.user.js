@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name          Kleinanzeigen - Anzeige duplizieren / neu einstellen BACKUP
+// @name          Kleinanzeigen - Anzeige duplizieren / neu einstellen
 // @namespace     https://github.com/Zer089/Kleinanzeigen.de-Anzeige_duplizieren_neu_einstellen
 // @description   Bietet eine "Anzeige duplizieren / neu einstellen" Funktion beim Bearbeiten einer vorhandenen Anzeige in Kleinanzeigen.
 // @icon          https://play-lh.googleusercontent.com/PuqeuAmOMsDoB9gRCVr-EQHthinCbtaKPzMbxabfmCY9RI9r1fmWncCb4k6umBszzPaszT_o2RopSpIhy9BAiQ=w240-h480-rw
